@@ -18,17 +18,16 @@
         <span th:text="${user.first_name}">Customer</span>!
     </p>
 
-    <p th:if="${status == 'success'}">
-        Your enrollment was saved successfully.
-    </p>
-
-    <p th:if="${status == 'exists'}">
-        You are already actively enrolled in that plan.
-    </p>
-
-    <p th:if="${status == 'cancelled'}">
-        Your cancellation request was processed.
-    </p>
+    <p th:if="${status == 'success'}">Your enrollment was saved successfully.</p>
+    <p th:if="${status == 'exists'}">You are already actively enrolled in that plan.</p>
+    <p th:if="${status == 'cancelled'}">Your cancellation request was processed.</p>
+    <p th:if="${status == 'extension_requested'}">Your extension request was submitted and is pending review.</p>
+    <p th:if="${status == 'extension_pending'}">You already have a pending extension request for this enrollment.</p>
+    <p th:if="${status == 'extension_error'}">The extension request could not be submitted. Choose an active enrollment and a future date.</p>
+    <p th:if="${status == 'switched'}">Your provider/plan was changed successfully. Your previous enrollment remains in your history.</p>
+    <p th:if="${status == 'switch_error'}">The plan could not be changed. Your existing enrollment has not been intentionally replaced.</p>
+    <p th:if="${status == 'same_plan'}">Choose a different plan to switch providers.</p>
+    <p th:if="${status == 'switch_household_error'}">Family coverage requires a household size between 2 and 20.</p>
 
     <section>
         <h2>My Enrollments</h2>
@@ -40,33 +39,13 @@
         <article th:each="e : ${enrollments}" class="plan">
             <h3 th:text="${e.plan_name}">Plan name</h3>
 
-            <p>
-                Provider:
-                <span th:text="${e.provider_name}">Provider</span>
-            </p>
-
-            <p>
-                Coverage:
-                <span th:text="${e.coverage_type}">individual</span>
-            </p>
-
-            <p>
-                Monthly premium: $<span th:text="${e.monthly_premium}">0.00</span>
-            </p>
-
-            <p>
-                Deductible: $<span th:text="${e.deductible}">0.00</span>
-            </p>
-
-            <p>
-                Status:
-                <span th:text="${e.enrollment_status}">active</span>
-            </p>
-
-            <p>
-                Start date:
-                <span th:text="${e.start_date}">Date</span>
-            </p>
+            <p>Provider: <span th:text="${e.provider_name}">Provider</span></p>
+            <p>Coverage: <span th:text="${e.coverage_type}">individual</span></p>
+            <p>Monthly premium: $<span th:text="${e.monthly_premium}">0.00</span></p>
+            <p>Deductible: $<span th:text="${e.deductible}">0.00</span></p>
+            <p>Household size: <span th:text="${e.household_size}">1</span></p>
+            <p>Status: <span th:text="${e.enrollment_status}">active</span></p>
+            <p>Start date: <span th:text="${e.start_date}">Date</span></p>
 
             <p th:if="${e.end_date != null}">
                 End date: <span th:text="${e.end_date}">Date</span>
@@ -75,13 +54,76 @@
             <form th:if="${e.enrollment_status == 'active'}"
                   th:action="@{/cancel-enrollment}" method="post"
                   onsubmit="return confirm('Are you sure you want to cancel this enrollment?');">
-                <input type="hidden" name="enrollmentId"
-                       th:value="${e.enrollment_id}">
+                <input type="hidden" name="enrollmentId" th:value="${e.enrollment_id}">
                 <button type="submit">Cancel Enrollment</button>
             </form>
+
+            <section th:if="${e.enrollment_status == 'active'}">
+                <h4>Request an Extension</h4>
+                <p>Submit a future requested end date for review.</p>
+
+                <form th:action="@{/request-extension}" method="post">
+                    <input type="hidden" name="enrollmentId" th:value="${e.enrollment_id}">
+
+                    <label>
+                        Requested end date:
+                        <input type="date" name="requestedEndDate"
+                               th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+                               required>
+                    </label>
+
+                    <button type="submit">Submit Extension Request</button>
+                </form>
+            </section>
+
+            <section th:if="${e.enrollment_status == 'active'}">
+                <h4>Change Plan or Provider</h4>
+
+                <form th:action="@{/switch-plan}" method="post">
+                    <input type="hidden" name="enrollmentId" th:value="${e.enrollment_id}">
+
+                    <label>
+                        New plan:
+                        <select name="newPlanId" required>
+                            <option value="">Choose a plan</option>
+                            <option th:each="p : ${availablePlans}"
+                                    th:if="${p.plan_id != e.plan_id}"
+                                    th:value="${p.plan_id}"
+                                    th:text="${p.provider_name + ' — ' + p.plan_name + ' (' + p.coverage_type + ') — $' + p.monthly_premium}">
+                            </option>
+                        </select>
+                    </label>
+
+                    <label>
+                        Household size for family coverage:
+                        <input type="number" name="householdSize"
+                               min="2" max="20" value="2">
+                    </label>
+
+                    <button type="submit"
+                            onclick="return confirm('Switch from your current plan to the selected plan?');">
+                        Switch Plan
+                    </button>
+                </form>
+            </section>
         </article>
 
         <p><a th:href="@{/plans}">Browse Insurance Plans</a></p>
+    </section>
+
+    <section>
+        <h2>My Extension Requests</h2>
+
+        <p th:if="${#lists.isEmpty(extensionRequests)}">
+            You have not submitted any extension requests.
+        </p>
+
+        <article th:each="r : ${extensionRequests}" class="plan">
+            <p>Enrollment: <span th:text="${r.enrollment_id}">0</span></p>
+            <p>Requested end date: <span th:text="${r.requested_end_date}">Date</span></p>
+            <p>Status: <span th:text="${r.request_status}">pending</span></p>
+            <p>Submitted: <span th:text="${r.created_at}">Date</span></p>
+        </article>
     </section>
 
     <section>
@@ -94,21 +136,10 @@
         <article th:each="a : ${assessments}" class="plan">
             <h3>Assessment</h3>
             <p>Age: <span th:text="${a.age}">0</span></p>
-            <p>
-                Coverage:
-                <span th:text="${a.coverage_type}">individual</span>
-            </p>
-            <p>
-                Monthly budget: $<span th:text="${a.monthly_budget}">0.00</span>
-            </p>
-            <p>
-                Household size:
-                <span th:text="${a.household_size}">1</span>
-            </p>
-            <p>
-                Submitted:
-                <span th:text="${a.created_at}">Date</span>
-            </p>
+            <p>Coverage: <span th:text="${a.coverage_type}">individual</span></p>
+            <p>Monthly budget: $<span th:text="${a.monthly_budget}">0.00</span></p>
+            <p>Household size: <span th:text="${a.household_size}">1</span></p>
+            <p>Submitted: <span th:text="${a.created_at}">Date</span></p>
         </article>
 
         <p><a th:href="@{/assessment}">Complete an Assessment</a></p>
