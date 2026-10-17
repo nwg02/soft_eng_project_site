@@ -256,6 +256,28 @@ public class WebController {
         return "redirect:/dashboard?status=success";
     }
 
+
+    @PostMapping("/cancel-enrollment")
+    public String cancelEnrollment(@RequestParam int enrollmentId,
+                                HttpSession session) {
+        Map<String, Object> user = currentUser(session);
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        db.update(
+                "UPDATE enrollments " +
+                "SET enrollment_status = 'cancelled', end_date = CURRENT_DATE " +
+                "WHERE enrollment_id = ? AND customer_id = ? " +
+                "AND enrollment_status = 'active'",
+                enrollmentId, user.get("customer_id")
+        );
+
+        return "redirect:/dashboard?status=cancelled";
+    }
+
+
     private Map<String, Object> currentUser(HttpSession session) {
         Object user = session.getAttribute("user");
 

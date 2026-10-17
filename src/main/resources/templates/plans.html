@@ -6,46 +6,197 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Insurance Plans</title>
     <link rel="stylesheet" th:href="@{/styles.css}">
+    <style>
+        .compare-controls {
+            margin: 1.5rem 0;
+            padding: 1rem;
+            border: 1px solid #ccc;
+        }
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        .compare-table th,
+        .compare-table td {
+            border: 1px solid #ccc;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        .compare-table th {
+            background: #edf1f4;
+        }
+        .plan-select {
+            display: block;
+            margin: 1rem 0;
+        }
+        #comparison {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+    </style>
 </head>
 <body>
 <div th:replace="~{fragments :: header}"></div>
 
 <main>
     <h1>Sample Insurance Plans</h1>
-    <p>These sample plans are loaded from the MySQL database.</p>
+    <p>Review plans, compare their features, and enroll in a plan.</p>
 
     <p th:if="${param.error != null}">
         The selected plan could not be found. Please choose another plan.
     </p>
 
-    <article class="plan" th:each="p : ${plans}">
-        <h2 th:text="${p.plan_name}">Plan name</h2>
-        <p th:text="${p.provider_name}">Provider</p>
+    <section class="compare-controls">
+        <h2>Compare Policies</h2>
+        <p>Select at least two plans to compare their coverage and costs.</p>
+        <button type="button" id="compareButton">Compare Selected Plans</button>
+        <button type="button" id="clearButton">Clear Selection</button>
+        <p id="compareMessage" role="status" aria-live="polite"></p>
+    </section>
 
-        <p>
-            Coverage:
-            <span th:text="${p.coverage_type}">individual</span>
-        </p>
+    <section id="comparison" hidden aria-live="polite">
+        <h2>Policy Comparison</h2>
+        <table class="compare-table">
+            <thead id="comparisonHead"></thead>
+            <tbody id="comparisonBody"></tbody>
+        </table>
+    </section>
 
-        <p>
-            Monthly premium: $<span th:text="${p.monthly_premium}">0.00</span>
-        </p>
+    <section id="plans">
+        <article class="plan"
+                 th:each="p : ${plans}"
+                 th:attr="data-plan-id=${p.plan_id},
+                          data-plan-name=${p.plan_name},
+                          data-provider=${p.provider_name},
+                          data-coverage=${p.coverage_type},
+                          data-premium=${p.monthly_premium},
+                          data-deductible=${p.deductible},
+                          data-description=${p.description}">
 
-        <p>
-            Deductible: $<span th:text="${p.deductible}">0.00</span>
-        </p>
+            <h2 th:text="${p.plan_name}">Plan name</h2>
+            <p th:text="${p.provider_name}">Provider</p>
 
-        <p th:text="${p.description}">Plan description</p>
+            <p>
+                Coverage:
+                <span th:text="${p.coverage_type}">individual</span>
+            </p>
 
-        <form th:action="@{/enroll}" method="post">
-            <input type="hidden" name="planId" th:value="${p.plan_id}">
-            <button type="submit">Enroll in This Plan</button>
-        </form>
-    </article>
+            <p>
+                Monthly premium: $<span th:text="${p.monthly_premium}">0.00</span>
+            </p>
+
+            <p>
+                Deductible: $<span th:text="${p.deductible}">0.00</span>
+            </p>
+
+            <p th:text="${p.description}">Plan description</p>
+
+            <label class="plan-select">
+                <input type="checkbox" class="compare-checkbox">
+                Select for comparison
+            </label>
+
+            <form th:action="@{/enroll}" method="post">
+                <input type="hidden" name="planId" th:value="${p.plan_id}">
+                <button type="submit">Enroll in This Plan</button>
+            </form>
+        </article>
+    </section>
 
     <p><a th:href="@{/dashboard}">Return to Dashboard</a></p>
 </main>
 
 <div th:replace="~{fragments :: footer}"></div>
+
+<script>
+(() => {
+    const checkboxes = [...document.querySelectorAll(".compare-checkbox")];
+    const compareButton = document.getElementById("compareButton");
+    const clearButton = document.getElementById("clearButton");
+    const message = document.getElementById("compareMessage");
+    const comparison = document.getElementById("comparison");
+    const head = document.getElementById("comparisonHead");
+    const body = document.getElementById("comparisonBody");
+
+    function selectedPlans() {
+        return checkboxes
+            .filter(box => box.checked)
+            .map(box => box.closest(".plan"));
+    }
+
+    compareButton.addEventListener("click", () => {
+        const selected = selectedPlans();
+
+        if (selected.length < 2) {
+            message.textContent = "Select at least two plans to compare.";
+            comparison.hidden = true;
+            return;
+        }
+
+        const fields = [
+            ["Provider", "provider"],
+            ["Coverage", "coverage"],
+            ["Monthly premium", "premium"],
+            ["Deductible", "deductible"],
+            ["Description", "description"]
+        ];
+
+        const row = document.createElement("tr");
+        const label = document.createElement("th");
+        label.scope = "col";
+        label.textContent = "Feature";
+        row.appendChild(label);
+
+        selected.forEach(plan => {
+            const th = document.createElement("th");
+            th.scope = "col";
+            th.textContent = plan.dataset.planName;
+            row.appendChild(th);
+        });
+
+        head.replaceChildren(row);
+        body.replaceChildren();
+
+        fields.forEach(([title, key]) => {
+            const tr = document.createElement("tr");
+            const th = document.createElement("th");
+            th.scope = "row";
+            th.textContent = title;
+            tr.appendChild(th);
+
+            selected.forEach(plan => {
+                const td = document.createElement("td");
+                const value = plan.dataset[key] || "Not provided";
+
+                if (key === "premium" || key === "deductible") {
+                    const amount = Number(value);
+                    td.textContent = Number.isFinite(amount)
+                        ? "$" + amount.toFixed(2)
+                        : value;
+                } else {
+                    td.textContent = value;
+                }
+
+                tr.appendChild(td);
+            });
+
+            body.appendChild(tr);
+        });
+
+        comparison.hidden = false;
+        message.textContent = selected.length + " plans selected for comparison.";
+        comparison.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    clearButton.addEventListener("click", () => {
+        checkboxes.forEach(box => box.checked = false);
+        comparison.hidden = true;
+        head.replaceChildren();
+        body.replaceChildren();
+        message.textContent = "Comparison cleared.";
+    });
+})();
+</script>
 </body>
 </html>

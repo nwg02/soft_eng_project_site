@@ -26,6 +26,10 @@
         You are already actively enrolled in that plan.
     </p>
 
+    <p th:if="${status == 'cancelled'}">
+        Your cancellation request was processed.
+    </p>
+
     <section>
         <h2>My Enrollments</h2>
 
@@ -67,6 +71,14 @@
             <p th:if="${e.end_date != null}">
                 End date: <span th:text="${e.end_date}">Date</span>
             </p>
+
+            <form th:if="${e.enrollment_status == 'active'}"
+                  th:action="@{/cancel-enrollment}" method="post"
+                  onsubmit="return confirm('Are you sure you want to cancel this enrollment?');">
+                <input type="hidden" name="enrollmentId"
+                       th:value="${e.enrollment_id}">
+                <button type="submit">Cancel Enrollment</button>
+            </form>
         </article>
 
         <p><a th:href="@{/plans}">Browse Insurance Plans</a></p>
