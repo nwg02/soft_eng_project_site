@@ -1,11 +1,112 @@
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Dashboard</title><link rel="stylesheet" th:href="@{/styles.css}"></head>
-<body><div th:replace="~{fragments :: header}"></div><main>
-<h1>Dashboard</h1><p>Welcome, <strong th:text="${user.first_name}">Customer</strong>.</p>
-<p><a class="button" th:href="@{/assessment}">Complete an assessment</a> <a class="button" th:href="@{/plans}">View plans</a></p>
-<h2>Your saved assessments</h2>
-<p th:if="${#lists.isEmpty(assessments)}">You have not submitted an assessment yet.</p>
-<table th:if="${!#lists.isEmpty(assessments)}"><thead><tr><th>Age</th><th>Coverage</th><th>Monthly budget</th><th>Household size</th><th>Created</th></tr></thead>
-<tbody><tr th:each="a : ${assessments}"><td th:text="${a.age}"></td><td th:text="${a.coverage_type}"></td><td th:text="${a.monthly_budget}"></td><td th:text="${a.household_size}"></td><td th:text="${a.created_at}"></td></tr></tbody></table>
-</main><div th:replace="~{fragments :: footer}"></div></body></html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<div th:replace="~{fragments :: header}"></div>
+
+<main>
+    <h1>Dashboard</h1>
+
+    <p>
+        Welcome,
+        <span th:text="${user.first_name}">Customer</span>!
+    </p>
+
+    <p th:if="${status == 'success'}">
+        Your enrollment was saved successfully.
+    </p>
+
+    <p th:if="${status == 'exists'}">
+        You are already actively enrolled in that plan.
+    </p>
+
+    <section>
+        <h2>My Enrollments</h2>
+
+        <p th:if="${#lists.isEmpty(enrollments)}">
+            You do not have any enrollments yet.
+        </p>
+
+        <article th:each="e : ${enrollments}" class="plan">
+            <h3 th:text="${e.plan_name}">Plan name</h3>
+
+            <p>
+                Provider:
+                <span th:text="${e.provider_name}">Provider</span>
+            </p>
+
+            <p>
+                Coverage:
+                <span th:text="${e.coverage_type}">individual</span>
+            </p>
+
+            <p>
+                Monthly premium: $<span th:text="${e.monthly_premium}">0.00</span>
+            </p>
+
+            <p>
+                Deductible: $<span th:text="${e.deductible}">0.00</span>
+            </p>
+
+            <p>
+                Status:
+                <span th:text="${e.enrollment_status}">active</span>
+            </p>
+
+            <p>
+                Start date:
+                <span th:text="${e.start_date}">Date</span>
+            </p>
+
+            <p th:if="${e.end_date != null}">
+                End date: <span th:text="${e.end_date}">Date</span>
+            </p>
+        </article>
+
+        <p><a th:href="@{/plans}">Browse Insurance Plans</a></p>
+    </section>
+
+    <section>
+        <h2>My Assessment History</h2>
+
+        <p th:if="${#lists.isEmpty(assessments)}">
+            You have not completed an assessment yet.
+        </p>
+
+        <article th:each="a : ${assessments}" class="plan">
+            <h3>Assessment</h3>
+            <p>Age: <span th:text="${a.age}">0</span></p>
+            <p>
+                Coverage:
+                <span th:text="${a.coverage_type}">individual</span>
+            </p>
+            <p>
+                Monthly budget: $<span th:text="${a.monthly_budget}">0.00</span>
+            </p>
+            <p>
+                Household size:
+                <span th:text="${a.household_size}">1</span>
+            </p>
+            <p>
+                Submitted:
+                <span th:text="${a.created_at}">Date</span>
+            </p>
+        </article>
+
+        <p><a th:href="@{/assessment}">Complete an Assessment</a></p>
+    </section>
+
+    <form th:action="@{/logout}" method="post">
+        <button type="submit">Log Out</button>
+    </form>
+</main>
+
+<div th:replace="~{fragments :: footer}"></div>
+</body>
+</html>

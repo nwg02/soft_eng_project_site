@@ -1,10 +1,51 @@
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Insurance Plans</title><link rel="stylesheet" th:href="@{/styles.css}"></head>
-<body><div th:replace="~{fragments :: header}"></div><main>
-<h1>Sample Insurance Plans</h1><p>These sample plans are loaded from the MySQL database.</p>
-<article class="plan" th:each="p : ${plans}">
-<h2 th:text="${p.plan_name}"></h2><p th:text="${p.provider_name}"></p><p>Coverage: <span th:text="${p.coverage_type}"></span></p>
-<p>Monthly premium: $<span th:text="${p.monthly_premium}"></span></p><p>Deductible: $<span th:text="${p.deductible}"></span></p><p th:text="${p.description}"></p>
-</article>
-</main><div th:replace="~{fragments :: footer}"></div></body></html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Insurance Plans</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<div th:replace="~{fragments :: header}"></div>
+
+<main>
+    <h1>Sample Insurance Plans</h1>
+    <p>These sample plans are loaded from the MySQL database.</p>
+
+    <p th:if="${param.error != null}">
+        The selected plan could not be found. Please choose another plan.
+    </p>
+
+    <article class="plan" th:each="p : ${plans}">
+        <h2 th:text="${p.plan_name}">Plan name</h2>
+        <p th:text="${p.provider_name}">Provider</p>
+
+        <p>
+            Coverage:
+            <span th:text="${p.coverage_type}">individual</span>
+        </p>
+
+        <p>
+            Monthly premium: $<span th:text="${p.monthly_premium}">0.00</span>
+        </p>
+
+        <p>
+            Deductible: $<span th:text="${p.deductible}">0.00</span>
+        </p>
+
+        <p th:text="${p.description}">Plan description</p>
+
+        <form th:action="@{/enroll}" method="post">
+            <input type="hidden" name="planId" th:value="${p.plan_id}">
+            <button type="submit">Enroll in This Plan</button>
+        </form>
+    </article>
+
+    <p><a th:href="@{/dashboard}">Return to Dashboard</a></p>
+</main>
+
+<div th:replace="~{fragments :: footer}"></div>
+</body>
+</html>

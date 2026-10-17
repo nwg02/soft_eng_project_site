@@ -1,3 +1,4 @@
+
 package edu.gsu.gisu;
 
 import jakarta.servlet.http.HttpSession;
@@ -38,20 +39,34 @@ public class WebController {
                            Model model,
                            HttpSession session) {
         if (password.length() < 8) {
-            model.addAttribute("error", "Password must be at least 8 characters.");
+            model.addAttribute("error",
+                    "Password must be at least 8 characters.");
             return "register";
         }
+
         try {
+            String normalizedEmail = email.trim().toLowerCase();
             String hash = BCrypt.hashpw(password, BCrypt.gensalt());
-            db.update("INSERT INTO customers (first_name, last_name, email, password_hash) VALUES (?, ?, ?, ?)",
-                    firstName.trim(), lastName.trim(), email.trim().toLowerCase(), hash);
+
+            db.update(
+                    "INSERT INTO customers " +
+                    "(first_name, last_name, email, password_hash) " +
+                    "VALUES (?, ?, ?, ?)",
+                    firstName.trim(), lastName.trim(),
+                    normalizedEmail, hash
+            );
+
             Map<String, Object> user = db.queryForMap(
-                    "SELECT customer_id, first_name, last_name, email, role FROM customers WHERE email = ?",
-                    email.trim().toLowerCase());
+                    "SELECT customer_id, first_name, last_name, email, role " +
+                    "FROM customers WHERE email = ?",
+                    normalizedEmail
+            );
+
             session.setAttribute("user", user);
             return "redirect:/dashboard";
         } catch (DuplicateKeyException ex) {
-            model.addAttribute("error", "An account with that email already exists.");
+            model.addAttribute("error",
+                    "An account with that email already exists.");
             return "register";
         }
     }
@@ -62,18 +77,28 @@ public class WebController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam String email, @RequestParam String password,
-                        Model model, HttpSession session) {
+    public String login(@RequestParam String email,
+                        @RequestParam String password,
+                        Model model,
+                        HttpSession session) {
         List<Map<String, Object>> users = db.queryForList(
-                "SELECT customer_id, first_name, last_name, email, role, password_hash FROM customers WHERE email = ?",
-                email.trim().toLowerCase());
-        if (users.isEmpty() || !BCrypt.checkpw(password, (String) users.get(0).get("password_hash"))) {
-            model.addAttribute("error", "Email or password is incorrect.");
+                "SELECT customer_id, first_name, last_name, email, role, " +
+                "password_hash FROM customers WHERE email = ?",
+                email.trim().toLowerCase()
+        );
+
+        if (users.isEmpty() ||
+                !BCrypt.checkpw(password,
+                        (String) users.get(0).get("password_hash"))) {
+            model.addAttribute("error",
+                    "Email or password is incorrect.");
             return "login";
         }
+
         Map<String, Object> user = users.get(0);
         user.remove("password_hash");
         session.setAttribute("user", user);
+
         return "redirect:/dashboard";
     }
 
@@ -84,20 +109,47 @@ public class WebController {
     }
 
     @GetMapping("/dashboard")
-    public String dashboard(HttpSession session, Model model) {
+    public String dashboard(@RequestParam(required = false) String status,
+                            HttpSession session,
+                            Model model) {
         Map<String, Object> user = currentUser(session);
-        if (user == null) return "redirect:/login";
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        Object customerId = user.get("customer_id");
+
         model.addAttribute("user", user);
+
         model.addAttribute("assessments", db.queryForList(
-                "SELECT assessment_id, age, coverage_type, monthly_budget, household_size, created_at " +
-                "FROM insurance_assessments WHERE customer_id = ? ORDER BY created_at DESC",
-                user.get("customer_id")));
+                "SELECT assessment_id, age, coverage_type, monthly_budget, " +
+                "household_size, created_at FROM insurance_assessments " +
+                "WHERE customer_id = ? ORDER BY created_at DESC",
+                customerId
+        ));
+
+        model.addAttribute("enrollments", db.queryForList(
+                "SELECT e.enrollment_id, e.enrollment_status, " +
+                "e.start_date, e.end_date, e.created_at, " +
+                "p.provider_name, p.plan_name, p.coverage_type, " +
+                "p.monthly_premium, p.deductible " +
+                "FROM enrollments e " +
+                "JOIN insurance_plans p ON e.plan_id = p.plan_id " +
+                "WHERE e.customer_id = ? " +
+                "ORDER BY e.created_at DESC",
+                customerId
+        ));
+
+        model.addAttribute("status", status);
         return "dashboard";
     }
 
     @GetMapping("/assessment")
     public String assessmentPage(HttpSession session) {
-        if (currentUser(session) == null) return "redirect:/login";
+        if (currentUser(session) == null) {
+            return "redirect:/login";
+        }
         return "assessment";
     }
 
@@ -106,27 +158,50 @@ public class WebController {
                                    @RequestParam String coverageType,
                                    @RequestParam BigDecimal monthlyBudget,
                                    @RequestParam int householdSize,
-                                   HttpSession session, Model model) {
+                                   HttpSession session,
+                                   Model model) {
         Map<String, Object> user = currentUser(session);
-        if (user == null) return "redirect:/login";
-        if (age < 18 || age > 110 || householdSize < 1 || householdSize > 20 ||
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        if (age < 18 || age > 110 ||
+                householdSize < 1 || householdSize > 20 ||
                 monthlyBudget.compareTo(BigDecimal.ZERO) <= 0 ||
-                !(coverageType.equals("individual") || coverageType.equals("family"))) {
-            model.addAttribute("error", "Please check your answers and try again.");
+                !(coverageType.equals("individual") ||
+                  coverageType.equals("family"))) {
+            model.addAttribute("error",
+                    "Please check your answers and try again.");
             return "assessment";
         }
-        db.update("INSERT INTO insurance_assessments " +
-                        "(customer_id, age, coverage_type, monthly_budget, household_size) VALUES (?, ?, ?, ?, ?)",
-                user.get("customer_id"), age, coverageType, monthlyBudget, householdSize);
+
+        db.update(
+                "INSERT INTO insurance_assessments " +
+                "(customer_id, age, coverage_type, monthly_budget, " +
+                "household_size) VALUES (?, ?, ?, ?, ?)",
+                user.get("customer_id"), age, coverageType,
+                monthlyBudget, householdSize
+        );
+
         List<Map<String, Object>> plans = db.queryForList(
-                "SELECT plan_id, provider_name, plan_name, coverage_type, monthly_premium, deductible, description " +
-                "FROM insurance_plans WHERE coverage_type = ? AND monthly_premium <= ? ORDER BY monthly_premium",
-                coverageType, monthlyBudget);
+                "SELECT plan_id, provider_name, plan_name, coverage_type, " +
+                "monthly_premium, deductible, description " +
+                "FROM insurance_plans WHERE coverage_type = ? " +
+                "AND monthly_premium <= ? ORDER BY monthly_premium",
+                coverageType, monthlyBudget
+        );
+
         if (plans.isEmpty()) {
             plans = db.queryForList(
-                    "SELECT plan_id, provider_name, plan_name, coverage_type, monthly_premium, deductible, description " +
-                    "FROM insurance_plans WHERE coverage_type = ? ORDER BY monthly_premium LIMIT 2", coverageType);
+                    "SELECT plan_id, provider_name, plan_name, coverage_type, " +
+                    "monthly_premium, deductible, description " +
+                    "FROM insurance_plans WHERE coverage_type = ? " +
+                    "ORDER BY monthly_premium LIMIT 2",
+                    coverageType
+            );
         }
+
         model.addAttribute("plans", plans);
         model.addAttribute("saved", true);
         return "assessment";
@@ -135,18 +210,61 @@ public class WebController {
     @GetMapping("/plans")
     public String plans(Model model) {
         model.addAttribute("plans", db.queryForList(
-                "SELECT plan_id, provider_name, plan_name, coverage_type, monthly_premium, deductible, description " +
-                "FROM insurance_plans ORDER BY coverage_type, monthly_premium"));
+                "SELECT plan_id, provider_name, plan_name, coverage_type, " +
+                "monthly_premium, deductible, description " +
+                "FROM insurance_plans ORDER BY coverage_type, monthly_premium"
+        ));
         return "plans";
+    }
+
+    @PostMapping("/enroll")
+    public String enroll(@RequestParam int planId,
+                         HttpSession session) {
+        Map<String, Object> user = currentUser(session);
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        List<Map<String, Object>> plans = db.queryForList(
+                "SELECT plan_id FROM insurance_plans WHERE plan_id = ?",
+                planId
+        );
+
+        if (plans.isEmpty()) {
+            return "redirect:/plans?error=invalid";
+        }
+
+        Integer existing = db.queryForObject(
+                "SELECT COUNT(*) FROM enrollments " +
+                "WHERE customer_id = ? AND plan_id = ? " +
+                "AND enrollment_status = 'active'",
+                Integer.class, user.get("customer_id"), planId
+        );
+
+        if (existing != null && existing > 0) {
+            return "redirect:/dashboard?status=exists";
+        }
+
+        db.update(
+                "INSERT INTO enrollments " +
+                "(customer_id, plan_id, enrollment_status, start_date) " +
+                "VALUES (?, ?, 'active', CURRENT_DATE)",
+                user.get("customer_id"), planId
+        );
+
+        return "redirect:/dashboard?status=success";
     }
 
     private Map<String, Object> currentUser(HttpSession session) {
         Object user = session.getAttribute("user");
+
         if (user instanceof Map<?, ?>) {
             @SuppressWarnings("unchecked")
             Map<String, Object> result = (Map<String, Object>) user;
             return result;
         }
+
         return null;
     }
 }
