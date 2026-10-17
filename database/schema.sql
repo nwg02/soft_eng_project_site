@@ -46,6 +46,26 @@ CREATE TABLE IF NOT EXISTS payments (
         REFERENCES insurance_plans(plan_id)
 );
 
+CREATE TABLE IF NOT EXISTS enrollments (
+    enrollment_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL,
+    plan_id INT NOT NULL,
+    enrollment_status VARCHAR(30) NOT NULL DEFAULT 'active',
+    start_date DATE NOT NULL,
+    end_date DATE NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_enrollment_customer
+        FOREIGN KEY (customer_id)
+        REFERENCES customers(customer_id),
+
+    CONSTRAINT fk_enrollment_plan
+        FOREIGN KEY (plan_id)
+        REFERENCES insurance_plans(plan_id)
+);
+
 INSERT INTO insurance_plans
     (provider_name, plan_name, coverage_type, monthly_premium, deductible, description)
 SELECT 'GISU Health', 'Individual Basic', 'individual', 150.00, 3000.00,
