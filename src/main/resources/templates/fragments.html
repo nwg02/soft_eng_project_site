@@ -15,6 +15,7 @@
           <a th:href="@{/saved-plans}">Saved plans</a>
           <a th:href="@{/agent-assistance}">Agent help</a>
           <a th:href="@{/reports}">Reports</a>
+          <a th:href="@{/billing}">Billing &amp; payments</a>
           <a th:href="@{/notifications}">Notifications</a>
           <form th:action="@{/logout}" method="post"><button type="submit">Log out</button></form>
         </div>
@@ -38,7 +39,8 @@
       <label th:if="${session.user != null}" class="chat-account-optin">
         <input type="checkbox" id="chat-account-consent">
         <span><strong>Use Gemini to summarize my account for this question</strong>
-          <small>Optional! This shares the question text to Google.
+          <small>Optional. Sends this question and a limited account summary to Google.
+          No payment amounts, dates, private notes or account identifiers are included.
           Unchecked uses GISU's private summary.</small></span>
       </label>
       <form id="chat-form" class="chat-form"><label for="chat-input" class="sr-only">Your insurance question</label><input type="text" id="chat-input" maxlength="800" autocomplete="off" placeholder="Ask about coverage…" required><button type="submit" id="chat-send">Send</button></form>

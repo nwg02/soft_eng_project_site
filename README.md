@@ -193,3 +193,40 @@ Verify with `mvn test`, then start the local profile and inspect the homepage on
 desktop and mobile widths; open a plan, check official document and handoff links,
 test an official destination click while signed in, and verify the dashboard records only a
 visit. The original fictional enrollment routes should no longer accept POSTs.
+
+
+## Manual billing and payment history
+
+GISU includes an account-only `/billing` page for **user-entered** insurance-related expenses:
+insurance premiums, copays/coinsurance, prescriptions and other related expenses. Members
+can log a planned payment with an expected due date, record a payment they say they have
+already made, mark a planned item as paid (using the current date) or delete an entry.
+Two totals distinguish planned and self-recorded paid amounts, with the newest 100
+entries shown under separate headings. Billing totals and a link to the full history
+also appear on the dashboard and the Account menu.
+
+**Safety and data provenance:** GISU does not bill users, process payments, connect to
+insurance companies, import bank/card transactions, verify payment receipts or represent
+the ledger as insurer-generated records. The form never collects bank account numbers,
+card information, policy numbers or financial credentials. Billing categories are
+fixed choices with no free-text memo fields. All reads and modifications are scoped to
+the signed-in GISU account.
+
+The feature uses the existing MySQL `payment_history` table from
+`database/migrations/V2__georgia_marketplace_schema.sql`. No new MySQL migration is
+required if V2 is already applied. The local-only H2 schema creates a matching table
+automatically without removing existing accounts or saved data. Entries from this
+feature use the distinct `planned` and `recorded_paid` statuses, so unrelated
+older records are not mislabeled. The `payment_date` field denotes either the expected
+date for a planned item or the recorded payment date for a paid item.
+
+Creating an entry or marking it paid generates an **in-app notification**, not an external
+message. The account-aware chatbot can answer `What is my billing history?` privately,
+including your manual totals. With explicit Gemini opt-in, the outgoing account snapshot
+contains only counts of planned and paid entries—not payment amounts, dates or transaction
+details; the user's typed question is also sent to Gemini.
+
+Test locally with `mvn test` then the local Spring Boot profile. Sign in, create a
+planned payment and a recorded payment, mark the planned item paid, remove one entry and
+verify the totals and in-app notifications. Sign in as another account to verify privacy.
+Railway and `main` remain unchanged.

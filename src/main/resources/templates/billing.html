@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Manage manually entered insurance-related expenses and payment history in your GISU account.">
+  <title>Billing &amp; Payment History | GISU</title>
+  <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<div th:replace="~{fragments :: header}"></div>
+<main class="billing-main">
+  <section class="billing-intro">
+    <a class="billing-back" th:href="@{/dashboard}">← Dashboard</a>
+    <h1>Billing &amp; payment history</h1>
+    <p>Keep track of insurance-related expenses you've entered yourself.</p>
+    <div class="billing-disclosure" role="note">
+      <strong>Personal tracking only.</strong> GISU does not connect to insurers,
+      verify bills, process payments, or confirm that a charge was paid.
+      Don't enter card numbers, bank details or account numbers.
+    </div>
+  </section>
+
+  <div class="billing-overview" aria-label="Billing overview">
+    <section class="billing-stat">
+      <span>Planned expenses</span>
+      <strong th:text="${billingOverview.plannedLabel}">$0.00</strong>
+      <small th:text="|${billingOverview.plannedCount} entries you marked as planned|">0 planned entries</small>
+    </section>
+    <section class="billing-stat">
+      <span>Recorded as paid</span>
+      <strong th:text="${billingOverview.paidLabel}">$0.00</strong>
+      <small th:text="|${billingOverview.paidCount} entries you marked as paid|">0 paid entries</small>
+    </section>
+  </div>
+
+  <p class="plan-bookmark-feedback" th:if="${param.event != null and param.event[0] == 'added'}" role="status">Billing entry saved to your account.</p>
+  <p class="plan-bookmark-feedback" th:if="${param.event != null and param.event[0] == 'paid'}" role="status">Entry marked as paid in your personal log. No payment was processed.</p>
+  <p class="plan-bookmark-feedback" th:if="${param.event != null and param.event[0] == 'deleted'}" role="status">Entry removed from your personal log.</p>
+  <p class="error" th:if="${param.event != null and param.event[0] == 'unavailable'}" role="alert">That entry could not be updated or does not belong to your account.</p>
+  <p class="error" th:if="${error}" th:text="${error}" role="alert"></p>
+
+  <section class="billing-create" aria-labelledby="billing-create-title">
+    <div class="billing-create-heading">
+      <h2 id="billing-create-title">Add an expense</h2>
+      <p>Use a planned date for something you expect to pay, or enter a date for a payment you've already made.</p>
+    </div>
+    <form th:action="@{/billing}" method="post" class="billing-form">
+      <label for="billing-category">Expense category</label>
+      <select id="billing-category" name="category" required>
+        <option value="premium">Insurance premium</option>
+        <option value="copay">Copay or coinsurance</option>
+        <option value="prescription">Prescription</option>
+        <option value="other">Other coverage-related expense</option>
+      </select>
+      <div class="billing-form-grid">
+        <div>
+          <label for="billing-amount">Amount (USD)</label>
+          <input id="billing-amount" type="number" name="amount" min="0.01" max="100000" step="0.01" inputmode="decimal" placeholder="125.00" required>
+        </div>
+        <div>
+          <label for="billing-status">Record type</label>
+          <select id="billing-status" name="paymentStatus" required>
+            <option value="planned">Planned payment</option>
+            <option value="recorded_paid">Already paid (self-reported)</option>
+          </select>
+        </div>
+      </div>
+      <label for="billing-date">Date</label>
+      <input id="billing-date" type="date" name="entryDate" th:value="${today}" required>
+      <small>For a planned payment: expected due date. For a payment already made: actual payment date. You can mark a planned entry paid later.</small>
+      <button type="submit" class="button button-primary">Save billing entry</button>
+    </form>
+  </section>
+
+  <section class="billing-history" id="billing-history" aria-labelledby="billing-history-title">
+    <div class="billing-section-heading">
+      <h2 id="billing-history-title">Payment history</h2>
+      <p>Only your most recent 100 self-entered records are shown.</p>
+    </div>
+
+    <div class="billing-history-group">
+      <h3>Planned payments <span th:text="${billingOverview.plannedCount}">0</span></h3>
+      <div class="dashboard-empty" th:if="${#lists.isEmpty(plannedEntries)}">
+        <p>No planned payments yet. Add a planned expense above to track it here.</p>
+      </div>
+      <article class="billing-entry" th:each="r : ${plannedEntries}">
+        <div class="billing-entry-details">
+          <span class="billing-entry-category" th:text="${r.category}">Insurance premium</span>
+          <strong th:text="${r.amountLabel}">$125.00</strong>
+          <small>Planned date: <time th:text="${r.date}">2026-11-15</time></small>
+        </div>
+        <div class="billing-entry-actions">
+          <form th:action="@{/billing/{id}/paid(id=${r.id})}" method="post">
+            <button class="button button-primary" type="submit">Mark paid</button>
+          </form>
+          <form th:action="@{/billing/{id}/delete(id=${r.id})}" method="post"
+                onsubmit="return confirm('Remove this billing record from GISU?');">
+            <button class="button button-outline" type="submit">Delete</button>
+          </form>
+        </div>
+      </article>
+    </div>
+
+    <div class="billing-history-group">
+      <h3>Recorded payments <span th:text="${billingOverview.paidCount}">0</span></h3>
+      <div class="dashboard-empty" th:if="${#lists.isEmpty(paidEntries)}">
+        <p>No payments recorded yet. GISU does not retrieve transaction history from any insurer.</p>
+      </div>
+      <article class="billing-entry" th:each="r : ${paidEntries}">
+        <div class="billing-entry-details">
+          <span class="billing-entry-category" th:text="${r.category}">Insurance premium</span>
+          <strong th:text="${r.amountLabel}">$125.00</strong>
+          <small>Paid date (self-reported): <time th:text="${r.date}">2026-11-04</time></small>
+        </div>
+        <div class="billing-entry-actions">
+          <form th:action="@{/billing/{id}/delete(id=${r.id})}" method="post"
+                onsubmit="return confirm('Remove this billing record from GISU?');">
+            <button class="button button-outline" type="submit">Delete</button>
+          </form>
+        </div>
+      </article>
+    </div>
+    <p class="billing-note">These totals are based solely on entries you added. They are not insurer balances, statements, or payment confirmations.</p>
+  </section>
+</main>
+<div th:replace="~{fragments :: footer}"></div>
+</body>
+</html>

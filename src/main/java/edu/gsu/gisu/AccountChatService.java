@@ -16,18 +16,20 @@ import java.util.Map;
  */
 @Service
 public class AccountChatService {
-    public enum Topic { NOTIFICATIONS, REPORTS, SAVED_PLANS, ASSESSMENTS, AGENT_REQUESTS, OVERVIEW }
+    public enum Topic { NOTIFICATIONS, REPORTS, BILLING, SAVED_PLANS, ASSESSMENTS, AGENT_REQUESTS, OVERVIEW }
     public record Summary(String localAnswer, String geminiSnapshot) {}
 
     private final JdbcTemplate db;
     private final SavedPlanService savedPlans;
     private final AccountActivityService activity;
+    private final BillingService billing;
 
     public AccountChatService(JdbcTemplate db, SavedPlanService savedPlans,
-                              AccountActivityService activity) {
+                              AccountActivityService activity, BillingService billing) {
         this.db = db;
         this.savedPlans = savedPlans;
         this.activity = activity;
+        this.billing = billing;
     }
 
     public Topic detectTopic(String message) {
@@ -36,12 +38,16 @@ public class AccountChatService {
         // Avoid intercepting general education questions such as "What is a notification?"
         boolean ownAccount = normalized.contains(" my ") || normalized.contains(" mine ") ||
                 normalized.contains(" our ") || normalized.contains(" i have ") ||
+                normalized.contains(" have i ") || normalized.contains(" did i ") ||
                 normalized.contains(" i saved ") || normalized.contains(" i submitted ");
         if (!ownAccount) return null;
         if (containsAny(normalized, " notification ", " notifications ", " alerts ", " alert "))
             return Topic.NOTIFICATIONS;
         if (containsAny(normalized, " report ", " reports ", " claim ", " claims ",
                 " issue ", " issues ")) return Topic.REPORTS;
+        if (containsAny(normalized, " billing ", " bills ", " bill ",
+                " payments ", " payment ", " expenses ", " expense ",
+                " paid ", " charges ", " charge ")) return Topic.BILLING;
         if (containsAny(normalized, " saved plan ", " saved plans ",
                 " saved insurance plan ", " saved insurance plans ",
                 " bookmarked ", " bookmarks ", " shortlist ", " my plans ",
@@ -66,6 +72,7 @@ public class AccountChatService {
         return switch (topic) {
             case NOTIFICATIONS -> notifications(customerId);
             case REPORTS -> reports(customerId);
+            case BILLING -> billing(customerId);
             case SAVED_PLANS -> plans(customerId);
             case ASSESSMENTS -> assessments(customerId);
             case AGENT_REQUESTS -> agentRequests(customerId);
@@ -94,6 +101,23 @@ public class AccountChatService {
         if (count == 0) local.append(" Updates will appear here when you record assistance requests or issue notes.");
         local.append("\nOpen Notifications to mark messages as read.");
         return new Summary(local.toString(), snapshot.toString());
+    }
+
+    private Summary billing(int customerId) {
+        BillingService.Overview o = billing.overview(customerId);
+        String local = "Your manual GISU billing log shows " + o.plannedCount() +
+                " planned expense(s) totaling " + o.getPlannedLabel() + " and " +
+                o.paidCount() + " self-recorded paid expense(s) totaling " +
+                o.getPaidLabel() + ". " +
+                "GISU does not verify insurer bills or process payments. " +
+                "Open Billing & payment history to view or change your entries.";
+        // Gemini only receives count metadata. Never send amounts, dates,
+        // invoice information or individual financial transactions.
+        String limited = "User-entered GISU billing counts: planned=" +
+                o.plannedCount() + "; marked paid=" + o.paidCount() +
+                ". No amounts, dates, payment information or invoices provided. " +
+                "Do not claim these are actual insurer charges or verified payments.";
+        return new Summary(local, limited);
     }
 
     private Summary reports(int customerId) {
@@ -191,9 +215,12 @@ public class AccountChatService {
         int open = activity.openReportCount(customerId);
         int requests = activity.agentRequestCount(customerId);
         int unread = activity.unreadCount(customerId);
+        BillingService.Overview billingCounts = billing.overview(customerId);
         String facts = saved + " saved plan documents, " + assessments + " assessments, " +
                 notes + " issue notes (" + open + " open), " +
-                requests + " demo assistance requests and " + unread + " unread notifications.";
+                requests + " demo assistance requests, " + unread + " unread notifications, " +
+                billingCounts.plannedCount() + " planned billing entries and " +
+                billingCounts.paidCount() + " self-recorded paid entries.";
         return new Summary("Your GISU dashboard has " + facts +
                 "\nYou can ask me about any category for more details. These are classroom account records, not confirmed insurance coverage.",
                 "Account overview: " + facts + " No personal notes, identity or demographic details supplied.");

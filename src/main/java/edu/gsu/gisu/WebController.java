@@ -19,14 +19,17 @@ public class WebController {
     private final SavedPlanService savedPlanService;
     private final AccountActivityService accountActivityService;
     private final EnrollmentReferralService enrollmentReferralService;
+    private final BillingService billingService;
 
     public WebController(JdbcTemplate db, SavedPlanService savedPlanService,
                          AccountActivityService accountActivityService,
-                         EnrollmentReferralService enrollmentReferralService) {
+                         EnrollmentReferralService enrollmentReferralService,
+                         BillingService billingService) {
         this.db = db;
         this.savedPlanService = savedPlanService;
         this.accountActivityService = accountActivityService;
         this.enrollmentReferralService = enrollmentReferralService;
+        this.billingService = billingService;
     }
 
     @GetMapping("/")
@@ -148,6 +151,8 @@ public class WebController {
         var savedPlans = savedPlanService.savedPlans(((Number) customerId).intValue());
         model.addAttribute("savedPlans", savedPlans);
         model.addAttribute("savedCount", savedPlans.size());
+        model.addAttribute("billingOverview",
+                billingService.overview(((Number) customerId).intValue()));
         model.addAttribute("officialSiteVisits",
                 enrollmentReferralService.history(((Number) customerId).intValue()));
         model.addAttribute("officialSiteVisitCount",

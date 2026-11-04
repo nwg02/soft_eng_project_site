@@ -23,6 +23,7 @@
         <a th:href="@{/saved-plans}">Saved plans</a>
         <a th:href="@{/agent-assistance}">Agent help</a>
         <a th:href="@{/reports}">Reports</a>
+        <a th:href="@{/billing}">Billing</a>
         <a th:href="@{/notifications}">Notifications</a>
       </nav>
     </section>
@@ -58,6 +59,18 @@
           <small th:text="${n.created_at}">Date</small>
         </p>
       </div>
+    </section>
+
+    <section class="dashboard-billing-summary" aria-labelledby="dashboard-billing-title">
+      <div>
+        <span class="eyebrow">USER-ENTERED FINANCES</span>
+        <h2 id="dashboard-billing-title">Billing &amp; payments</h2>
+        <p>Planned: <strong th:text="${billingOverview.plannedLabel}">$0.00</strong>
+          <span aria-hidden="true"> · </span>
+          Recorded as paid: <strong th:text="${billingOverview.paidLabel}">$0.00</strong></p>
+        <small>Personal tracking only. These are not insurer bills or verified transactions.</small>
+      </div>
+      <a class="button button-outline" th:href="@{/billing}">View payment history →</a>
     </section>
 
     <p class="plan-bookmark-feedback" th:if="${bookmark == 'saved'}" role="status">Plan saved to your account.</p>

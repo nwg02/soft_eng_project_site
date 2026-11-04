@@ -547,3 +547,58 @@
   .dashboard-welcome{padding:20px}
   .dashboard-quick-actions a{flex:1 1 calc(50% - 12px);justify-content:center}
 }
+
+
+/* Manual billing and payment history */
+.billing-main{max-width:1050px!important;padding:44px 24px 85px!important}
+.billing-intro{max-width:810px;margin-bottom:23px}
+.billing-back{font-size:12px;font-weight:750;text-decoration:none;color:#5272a5}
+.billing-intro h1{font-size:clamp(33px,4vw,47px);margin:18px 0 10px}
+.billing-intro>p{color:#5b7290;font-size:15px;margin:0 0 19px}
+.billing-disclosure{background:#f4f7fc;border:1px solid #d5e3f4;border-radius:10px;padding:14px 17px;color:#526b89;font-size:12px;line-height:1.7}
+.billing-disclosure strong{color:#263f67}
+.billing-overview{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin:25px 0}
+.billing-stat{border:1px solid #d9e5f5;background:#fff;border-radius:12px;padding:21px 23px}
+.billing-stat>span,.billing-stat strong,.billing-stat small{display:block}
+.billing-stat>span{color:#5b7492;font-size:12px;font-weight:750}
+.billing-stat strong{color:#0039a6;font-size:29px;letter-spacing:-.6px;line-height:1.3;margin:9px 0 4px}
+.billing-stat small{color:#73869e;font-size:11px}
+.billing-create{display:grid;grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);gap:36px;padding:26px 29px;border:1px solid #d8e5f5;border-radius:13px;background:#f8fbff;margin:27px 0 47px}
+.billing-create-heading h2{font-size:24px;margin:2px 0 10px}
+.billing-create-heading p{font-size:13px;color:#627a98;line-height:1.7;margin:0}
+.billing-form{display:grid;gap:10px}
+.billing-form label{font-size:12px;font-weight:750;color:#28476e;margin-top:3px}
+.billing-form input,.billing-form select{width:100%;min-width:0;border:1px solid #bdcee7;border-radius:8px;background:#fff;color:#192f53;font:inherit;font-size:14px;padding:10px 12px}
+.billing-form input:focus,.billing-form select:focus{outline:2px solid #85abea;outline-offset:1px}
+.billing-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.billing-form-grid>div{display:grid;gap:8px}
+.billing-form small{font-size:11px;line-height:1.6;color:#70819c}
+.billing-form button{justify-self:start;margin-top:8px}
+.billing-history{scroll-margin-top:24px}
+.billing-section-heading h2{font-size:29px;margin:0 0 6px}
+.billing-section-heading p{font-size:12px;color:#7083a0;margin:0}
+.billing-history-group{margin-top:30px}
+.billing-history-group h3{font-size:20px;margin:0 0 14px}
+.billing-history-group h3 span{display:inline-block;background:#eef3fb;color:#5274a5;font-size:11px;letter-spacing:0;padding:4px 9px;border-radius:999px;vertical-align:middle;margin-left:6px}
+.billing-entry{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:17px 20px;background:#fff;border:1px solid #dce6f3;border-radius:10px;margin:10px 0}
+.billing-entry-details{min-width:0}
+.billing-entry-category{display:block;color:#4e6c92;font-size:12px;font-weight:700}
+.billing-entry-details strong{display:block;color:#12284d;font-size:21px;letter-spacing:-.4px;margin:4px 0}
+.billing-entry-details small{display:block;color:#7387a1;font-size:11px}
+.billing-entry-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.billing-entry-actions form{margin:0}
+.billing-entry-actions .button{font-size:12px;padding:9px 13px}
+.billing-note{font-size:11px;color:#71839d;margin-top:30px;line-height:1.75}
+.dashboard-billing-summary{display:flex;align-items:center;justify-content:space-between;gap:25px;padding:18px 22px;border:1px solid #d8e5f5;border-radius:12px;background:#f8fbff;margin:22px 0 28px}
+.dashboard-billing-summary h2{font-size:21px;margin:8px 0 6px}
+.dashboard-billing-summary p{font-size:12px;margin:5px 0;color:#536b8d}
+.dashboard-billing-summary small{font-size:11px;color:#798aa2}
+.dashboard-billing-summary>a{flex-shrink:0;font-size:12px}
+@media(max-width:790px){.billing-create{grid-template-columns:1fr;gap:20px}}
+@media(max-width:600px){
+  .billing-main{padding:30px 18px 60px!important}
+  .billing-overview,.billing-form-grid{grid-template-columns:1fr}
+  .billing-create{padding:21px 17px}
+  .billing-entry{align-items:flex-start;flex-direction:column}
+  .dashboard-billing-summary{align-items:flex-start;flex-direction:column}
+}

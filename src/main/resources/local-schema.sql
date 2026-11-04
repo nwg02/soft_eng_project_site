@@ -87,6 +87,22 @@ CREATE TABLE IF NOT EXISTS payments (
     FOREIGN KEY (plan_id) REFERENCES insurance_plans(plan_id)
 );
 
+-- User-entered educational billing records; NOT insurer invoices or verified payments.
+-- Matches database/migrations/V2__georgia_marketplace_schema.sql (MySQL).
+CREATE TABLE IF NOT EXISTS payment_history (
+    payment_history_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL,
+    external_reference VARCHAR(160),
+    amount DECIMAL(12,2),
+    currency CHAR(3) NOT NULL DEFAULT 'USD',
+    payment_date DATE,
+    payment_status VARCHAR(40),
+    source_description VARCHAR(300),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_local_payment_history_customer FOREIGN KEY (customer_id)
+        REFERENCES customers(customer_id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS extension_requests (
     request_id INT AUTO_INCREMENT PRIMARY KEY,
     enrollment_id INT NOT NULL,
