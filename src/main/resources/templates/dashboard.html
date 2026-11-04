@@ -24,9 +24,19 @@
         <a th:href="@{/agent-assistance}">Agent help</a>
         <a th:href="@{/reports}">Reports</a>
         <a th:href="@{/billing}">Billing</a>
+        <a th:href="@{/account/security}">Security &amp; 2FA</a>
         <a th:href="@{/notifications}">Notifications</a>
       </nav>
     </section>
+    <section class="dashboard-security-summary">
+      <div>
+        <h2>Login security</h2>
+        <p th:if="${twoFactorEnabled}">Authenticator two-factor verification is enabled.</p>
+        <p th:if="${!twoFactorEnabled}">Two-factor verification is off. You can set it up from account security.</p>
+      </div>
+      <a class="button button-outline" th:href="@{/account/security}">Manage security →</a>
+    </section>
+
     <section class="dashboard-tool-section" aria-label="Account tools">
       <div class="dashboard-section-heading">
         <div><span class="eyebrow">MORE ACCOUNT TOOLS</span><h2>Manage your research</h2></div>

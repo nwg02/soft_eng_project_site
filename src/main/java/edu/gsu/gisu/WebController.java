@@ -20,16 +20,18 @@ public class WebController {
     private final AccountActivityService accountActivityService;
     private final EnrollmentReferralService enrollmentReferralService;
     private final BillingService billingService;
+    private final TwoFactorService twoFactorService;
 
     public WebController(JdbcTemplate db, SavedPlanService savedPlanService,
                          AccountActivityService accountActivityService,
                          EnrollmentReferralService enrollmentReferralService,
-                         BillingService billingService) {
+                         BillingService billingService, TwoFactorService twoFactorService) {
         this.db = db;
         this.savedPlanService = savedPlanService;
         this.accountActivityService = accountActivityService;
         this.enrollmentReferralService = enrollmentReferralService;
         this.billingService = billingService;
+        this.twoFactorService = twoFactorService;
     }
 
     @GetMapping("/")
@@ -73,6 +75,7 @@ public class WebController {
                     normalizedEmail
             );
 
+            session.changeSessionId();
             session.setAttribute("user", user);
             return "redirect:/dashboard";
         } catch (DuplicateKeyException ex) {
@@ -92,6 +95,7 @@ public class WebController {
         model.addAttribute("dashboardLoginRequired", "dashboard".equals(reason));
         model.addAttribute("savedPlanLoginRequired", "savedplan".equals(reason));
         model.addAttribute("accountLoginRequired", "account".equals(reason));
+        model.addAttribute("verifyRestartRequired", "verify-restart".equals(reason));
         return "login";
     }
 
@@ -123,8 +127,18 @@ public class WebController {
 
         Map<String, Object> user = users.get(0);
         user.remove("password_hash");
+        session.changeSessionId();
+        session.removeAttribute("user");
+        session.removeAttribute("pending2faUser");
+        session.removeAttribute("pending2faAttempts");
+        if (twoFactorService.enabled(((Number) user.get("customer_id")).intValue())) {
+            // Password alone never creates an authenticated account session
+            // after the user enables 2FA.
+            session.setAttribute("pending2faUser", user);
+            session.setAttribute("pending2faAttempts", 0);
+            return "redirect:/login/verify";
+        }
         session.setAttribute("user", user);
-
         return "redirect:/dashboard";
     }
 
@@ -153,6 +167,8 @@ public class WebController {
         model.addAttribute("savedCount", savedPlans.size());
         model.addAttribute("billingOverview",
                 billingService.overview(((Number) customerId).intValue()));
+        model.addAttribute("twoFactorEnabled",
+                twoFactorService.enabled(((Number) customerId).intValue()));
         model.addAttribute("officialSiteVisits",
                 enrollmentReferralService.history(((Number) customerId).intValue()));
         model.addAttribute("officialSiteVisitCount",

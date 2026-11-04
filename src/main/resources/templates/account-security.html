@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Account Security | GISU</title>
+  <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<div th:replace="~{fragments :: header}"></div>
+<main class="security-main">
+  <section class="security-intro">
+    <a th:href="@{/dashboard}" class="billing-back">← Dashboard</a>
+    <h1>Account security</h1>
+    <p>Manage authenticator-app login protection and try the classroom identity-check simulation.</p>
+  </section>
+
+  <p class="plan-bookmark-feedback" th:if="${param.event != null and param.event[0] == 'enabled'}" role="status">Authenticator 2FA is enabled. Save your one-time recovery codes below before leaving this page.</p>
+  <p class="plan-bookmark-feedback" th:if="${param.event != null and param.event[0] == 'disabled'}" role="status">Authenticator 2FA was disabled for your account.</p>
+  <p class="plan-bookmark-feedback" th:if="${param.event != null and param.event[0] == 'demo'}" role="status">You completed the mock identity-check exercise. No real identity was verified.</p>
+  <p class="error" th:if="${param.event != null and param.event[0] == 'demo-invalid'}" role="alert">Enter the displayed classroom demo code and acknowledge that it is not identity verification.</p>
+  <p class="error" th:if="${param.event != null and param.event[0] == 'wrong-password'}" role="alert">The current account password was incorrect.</p>
+  <p class="error" th:if="${param.event != null and param.event[0] == 'wrong-code'}" role="alert">That authenticator code was incorrect or already used. Try a fresh code.</p>
+  <p class="error" th:if="${param.event != null and param.event[0] == 'no-setup'}" role="alert">Begin authenticator setup before confirming a code.</p>
+
+  <section class="security-card" aria-labelledby="auth-title">
+    <div class="security-card-heading">
+      <div>
+        <span class="eyebrow">OPTIONAL LOGIN PROTECTION</span>
+        <h2 id="auth-title">Authenticator app (2FA)</h2>
+      </div>
+      <span th:if="${twoFactorEnabled}" class="security-pill security-pill-on">Enabled</span>
+      <span th:if="${!twoFactorEnabled}" class="security-pill">Off</span>
+    </div>
+    <p>Require a six-digit code from an authenticator app after your password. An unused recovery code also works if your phone is unavailable.</p>
+
+    <div th:if="${!twoFactorEnabled and !twoFactorPending}">
+      <form class="security-form" th:action="@{/account/security/2fa/start}" method="post">
+        <label for="setup-password">Confirm your current GISU password</label>
+        <input id="setup-password" type="password" name="password" autocomplete="current-password" required>
+        <button class="button button-primary" type="submit">Set up authenticator</button>
+      </form>
+    </div>
+
+    <div class="security-setup" th:if="${twoFactorPending and !twoFactorEnabled}">
+      <h3>Finish setup</h3>
+      <p>In Google Authenticator, Microsoft Authenticator, 1Password or another TOTP app, choose <strong>Add account manually</strong>. Enter account name <strong>GISU</strong>, choose a time-based key, and paste this secret:</p>
+      <div class="security-secret">
+        <code th:text="${twoFactorSecret}">BASE32KEY</code>
+      </div>
+      <p class="security-warning">Keep this secret private. Anyone with it can generate login codes. Never send it to the chatbot.</p>
+      <form class="security-form" th:action="@{/account/security/2fa/confirm}" method="post">
+        <label for="setup-code">Enter the current 6-digit code to activate 2FA</label>
+        <input id="setup-code" name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="000000" required>
+        <button class="button button-primary" type="submit">Verify and enable 2FA</button>
+      </form>
+      <p class="security-muted">If your app uses QR-only setup, choose its manual entry option. A new code is generated every 30 seconds.</p>
+    </div>
+
+    <div th:if="${twoFactorEnabled}">
+      <p class="security-status">Your account requires an authenticator or unused recovery code after sign-in.</p>
+      <details class="security-disable">
+        <summary>Disable authenticator 2FA</summary>
+        <p>This reduces login protection. To disable it, enter your password and a fresh authenticator code or unused recovery code.</p>
+        <form class="security-form" th:action="@{/account/security/2fa/disable}" method="post">
+          <label for="disable-password">Current GISU password</label>
+          <input id="disable-password" name="password" type="password" autocomplete="current-password" required>
+          <label for="disable-code">Authenticator or recovery code</label>
+          <input id="disable-code" name="code" maxlength="30" autocomplete="one-time-code" required>
+          <button class="button button-outline" type="submit">Disable 2FA</button>
+        </form>
+      </details>
+    </div>
+
+    <div class="security-recovery" th:if="${!#lists.isEmpty(recoveryCodes)}" role="region" aria-label="One-time recovery codes">
+      <h3>Save these recovery codes now</h3>
+      <p>Each recovery code works once. This is the only time GISU will show them. Store them outside GISU, not in chat or public files.</p>
+      <div class="security-code-grid">
+        <code th:each="c : ${recoveryCodes}" th:text="${c}">AAAA-BBBB-CCCC</code>
+      </div>
+      <p class="security-warning">If you lose both the authenticator and every recovery code, you may be locked out of your account.</p>
+    </div>
+  </section>
+
+  <section class="security-card" aria-labelledby="identity-title">
+    <div class="security-card-heading">
+      <div><span class="eyebrow">CLASSROOM EXERCISE</span><h2 id="identity-title">Mock identity verification</h2></div>
+      <span class="security-pill">Demo only</span>
+    </div>
+    <p>Simulate a verification step without uploading an ID or providing sensitive information. Completing this does <strong>not</strong> establish or verify your real identity.</p>
+    <form class="security-form" th:action="@{/account/security/demo}" method="post">
+      <label for="demo-code">Classroom test code: <strong>GISU26</strong></label>
+      <input id="demo-code" name="demoCode" maxlength="15" placeholder="Enter GISU26" required>
+      <label class="security-checkbox"><input type="checkbox" name="acknowledge" value="true" required>
+        I understand this is a simulated check, not real identity verification.</label>
+      <button class="button button-primary" type="submit">Complete demo check</button>
+    </form>
+    <div class="security-demo-history" th:if="${!#lists.isEmpty(demoVerificationHistory)}">
+      <h3>Demo activity</h3>
+      <p th:each="r : ${demoVerificationHistory}">
+        <strong>Simulation completed</strong> · <span th:text="${r.created_at}">Date</span>
+      </p>
+    </div>
+  </section>
+</main>
+<div th:replace="~{fragments :: footer}"></div>
+</body>
+</html>

@@ -602,3 +602,54 @@
   .billing-entry{align-items:flex-start;flex-direction:column}
   .dashboard-billing-summary{align-items:flex-start;flex-direction:column}
 }
+
+
+/* Authenticator security settings and classroom-only ID simulation */
+.security-main{max-width:960px!important;padding:42px 24px 80px!important}
+.security-intro{margin:0 0 29px}
+.security-intro h1{font-size:clamp(32px,4vw,46px);margin:17px 0 10px}
+.security-intro>p{font-size:14px;color:#637a98;max-width:670px}
+.security-card{border:1px solid #d7e4f4;border-radius:13px;background:#fff;padding:26px 29px;margin:22px 0}
+.security-card-heading{display:flex;justify-content:space-between;align-items:center;gap:15px}
+.security-card-heading h2{font-size:23px;margin:8px 0}
+.security-card>p{max-width:760px;color:#5d7492;font-size:13px;line-height:1.7}
+.security-pill{display:inline-flex;align-items:center;border:1px solid #ccd9ed;border-radius:99px;padding:6px 10px;color:#5b7392;background:#f2f6fc;font-size:11px;font-weight:800;white-space:nowrap}
+.security-pill-on{border-color:#bbd9c5;background:#edf9f0;color:#246044}
+.security-form{display:grid;gap:12px;max-width:520px;margin:22px 0 0}
+.security-form label{font-size:12px;color:#294a72;font-weight:700}
+.security-form input:not([type=checkbox]){
+  border:1px solid #bdcee7;border-radius:8px;box-sizing:border-box;
+  width:100%;padding:12px;color:#14284b;font:inherit;font-size:14px
+}
+.security-form button{justify-self:start}
+.security-form input:focus{outline:2px solid #95b6ed;outline-offset:1px}
+.security-setup{padding:21px 0 0;border-top:1px solid #e6edf6;margin-top:25px}
+.security-setup h3,.security-recovery h3{font-size:18px;margin:0 0 11px}
+.security-setup p,.security-recovery p{font-size:12px;color:#607690;line-height:1.7}
+.security-secret{border:1px solid #ceddf2;border-radius:9px;background:#f5f8fe;padding:16px;overflow-wrap:anywhere}
+.security-secret code{font-size:19px;font-weight:800;letter-spacing:1.9px;color:#154a96}
+.security-warning{color:#8a4c2d!important;font-size:11px!important}
+.security-muted{font-size:12px;color:#6d819c;line-height:1.7}
+.security-status{color:#315d47!important}
+.security-disable{border:1px solid #d7e3f0;border-radius:9px;margin-top:25px;padding:14px 18px}
+.security-disable summary{cursor:pointer;font-size:13px;font-weight:750;color:#405d7f}
+.security-disable p{font-size:12px;color:#667c98}
+.security-recovery{margin-top:23px;padding:23px;background:#f1f6ff;border:1px solid #acc7ef;border-radius:10px}
+.security-code-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;max-width:560px}
+.security-code-grid code{background:white;border:1px solid #d4e2f2;border-radius:7px;padding:12px;font-size:15px;font-weight:800;letter-spacing:1px;word-break:break-all}
+.security-checkbox{display:flex!important;align-items:center;gap:9px}
+.security-checkbox input{width:16px;height:16px;flex-shrink:0}
+.security-demo-history{border-top:1px solid #e6edf6;padding-top:15px;margin-top:20px}
+.security-demo-history h3{font-size:16px}
+.security-demo-history p{font-size:12px;color:#5c7392}
+.dashboard-security-summary{border:1px solid #dce6f3;border-radius:11px;padding:17px 22px;margin:20px 0;background:#f8fbff;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.dashboard-security-summary h2{font-size:19px;margin:0 0 7px}
+.dashboard-security-summary p{font-size:12px;margin:0;color:#5d7492}
+.dashboard-security-summary .button{flex-shrink:0;font-size:12px}
+@media(max-width:650px){
+.security-main{padding:30px 18px 60px!important}
+.security-card{padding:21px 18px}
+.security-code-grid{grid-template-columns:1fr}
+.security-secret code{font-size:14px;letter-spacing:1px}
+.dashboard-security-summary{flex-direction:column;align-items:flex-start}
+}

@@ -115,6 +115,41 @@ CREATE TABLE IF NOT EXISTS extension_requests (
 );
 
 
+
+-- Classroom-only identity-verification simulation. No identity documents are collected.
+CREATE TABLE IF NOT EXISTS identity_verification_attempts (
+    verification_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL,
+    verification_method VARCHAR(60) NOT NULL DEFAULT 'mock',
+    verification_status VARCHAR(40) NOT NULL DEFAULT 'not_started',
+    result_message VARCHAR(500),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_local_verification_customer FOREIGN KEY (customer_id)
+        REFERENCES customers(customer_id) ON DELETE CASCADE
+);
+
+-- Optional real authenticator (TOTP) login verification; stored encrypted at rest.
+CREATE TABLE IF NOT EXISTS account_totp_settings (
+    customer_id INT PRIMARY KEY,
+    secret_ciphertext VARCHAR(600) NOT NULL,
+    enabled BOOLEAN NOT NULL DEFAULT FALSE,
+    last_used_step BIGINT NOT NULL DEFAULT -1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    enabled_at TIMESTAMP,
+    CONSTRAINT fk_local_totp_customer FOREIGN KEY (customer_id)
+        REFERENCES customers(customer_id) ON DELETE CASCADE
+);
+
+-- One-time recovery codes are bcrypt hashes, never stored in plaintext.
+CREATE TABLE IF NOT EXISTS account_totp_recovery_codes (
+    recovery_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL,
+    recovery_hash VARCHAR(150) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_local_recovery_customer FOREIGN KEY (customer_id)
+        REFERENCES customers(customer_id) ON DELETE CASCADE
+);
+
 -- In-app classroom assistance requests. No external agent receives these records.
 CREATE TABLE IF NOT EXISTS agent_requests (
     agent_request_id BIGINT AUTO_INCREMENT PRIMARY KEY,

@@ -4,3 +4,6 @@ target/
 
 # Local H2 development database (contains test account credentials)
 gisu-local.*
+
+# Private development encryption key (automatically created for local 2FA)
+.gisu-totp-key

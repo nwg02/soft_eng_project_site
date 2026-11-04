@@ -230,3 +230,60 @@ Test locally with `mvn test` then the local Spring Boot profile. Sign in, create
 planned payment and a recorded payment, mark the planned item paid, remove one entry and
 verify the totals and in-app notifications. Sign in as another account to verify privacy.
 Railway and `main` remain unchanged.
+
+
+## Mock identity check and optional authenticator 2FA
+
+**Security & 2FA** is accessible in the signed-in Account dropdown and on Dashboard.
+
+### Mock identity verification (classroom only)
+- The `/account/security` page displays a public test code, `GISU26`, with a confirmation checkbox.
+- The account can record that it completed the mock exercise. A dated
+  `demo_completed` entry is saved in `identity_verification_attempts`.
+- **No actual identity is verified or claimed.** Do not upload driver's licenses,
+  government IDs, SSNs, selfies, medical information or personal records.
+- The table already exists in the production V2 migration, and is created
+  automatically in local H2.
+
+### Authenticator-app two-factor login (TOTP)
+- Optional real, time-based six-digit authenticator codes. Users set it up by
+  confirming their GISU password, manually entering the displayed secret in an
+  authenticator app, and confirming the current six-digit code.
+- After activation, **a password alone does not create an authenticated user session**.
+  The account must enter the current authenticator code or one of the one-time
+  recovery codes on `/login/verify` before accessing the dashboard, billing,
+  saved plans, notifications, account-chat records or other logged-in pages.
+- Six random recovery codes are shown **only once**, immediately after enabling.
+  They are bcrypt-hashed in the database, accepted once and then deleted.
+  Authenticator codes use HMAC-SHA1/TOTP with a 30-second step, allow one step of
+  clock drift and cannot be reused. Five incorrect codes end that sign-in attempt.
+- Disabling 2FA requires the GISU password plus a fresh authenticator code or
+  an unused recovery code. No phone or email provider is required.
+- Authenticator secrets are encrypted with AES-256-GCM before storage.
+
+**Local encryption key:** Running with the `local` profile creates a stable,
+private file `.gisu-totp-key` in the project directory when you begin setup.
+It is excluded by `.gitignore`. Keep this file with your local H2 database:
+**deleting or changing it makes enabled authenticator accounts inaccessible**,
+even if the database remains. Never commit or send this file to anyone.
+Alternatively set `GISU_TOTP_ENCRYPTION_KEY` to base64 of 32 random bytes,
+generated with `openssl rand -base64 32`, and keep it stable.
+
+**Production:** Apply `database/migrations/V6__totp_login_security.sql`
+only after V5, and configure `GISU_TOTP_ENCRYPTION_KEY` in the Railway
+environment *before* activating 2FA. Do not store that key in Git or logs.
+Neither V6 nor the environment has been changed on Railway. Without the
+configured key, production authenticator setup cannot be completed; if a key
+changes after setup, previously enabled accounts can be locked out.
+
+This is a feature for a classroom prototype. It does not replace a full
+production-grade security audit (CSRF protections, global login rate limiting,
+account recovery policies, session/cookie settings, HTTPS enforcement and
+secure database administration still require review).
+
+Run `mvn test` and `mvn spring-boot:run -Dspring-boot.run.profiles=local`.
+In Account -> Security & 2FA, perform the mock demonstration, then test
+authenticator setup, save recovery codes, log out and sign in with a fresh
+code or recovery code, and verify the account remains inaccessible before
+completing the second step. Do not enable 2FA on an account unless you
+have saved your recovery codes.
