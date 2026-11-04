@@ -413,3 +413,23 @@ The application uses secure HTTP-only, SameSite=Lax session cookies in the
 default server profile and explicitly permits HTTP cookies in the `local`
 profile. **No production environment variables, database migrations, Railway
 service, or `main` branch were changed by this preparation.**
+
+
+## Final security protection and assessment labels
+
+Spring Security now enforces **CSRF tokens for all POST actions** (including
+registration, sign-in, billing, and chat). Server-rendered forms include
+Thymeleaf's hidden token; the chat widget sends the token with its JSON
+request. In-app sign-in/2FA continues to use the existing account session,
+rather than the Spring Security sample login page.
+
+A bounded in-memory rate limiter adds limits on repeated sign-in attempts,
+registrations, chat calls and AI assessment requests. This is suitable for
+the single-instance classroom setup; a multi-instance public deployment
+would need shared/edge throttling as well. Run `mvn verify` and check
+`SecurityHardeningFlowTest` before deployment.
+
+The Gemini assessment will never display catalog identifiers such as
+`gsu-plan-1` or `gisu-plan-01` in explanatory prose. It replaces known
+IDs with their real plan names, including on previously saved reviews,
+without changing the catalog keys used for links and storage.

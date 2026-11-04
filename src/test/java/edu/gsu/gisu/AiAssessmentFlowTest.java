@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("local")
 @TestPropertySource(properties = {
         "spring.datasource.url=jdbc:h2:mem:gisu_ai_assessment_tests;MODE=MySQL;DATABASE_TO_LOWER=TRUE;NON_KEYWORDS=ROLE;DB_CLOSE_DELAY=-1",
@@ -99,6 +99,19 @@ class AiAssessmentFlowTest {
     }
 
     @Test
+    void internalCatalogSlugsAreNotShownInAiProse() {
+        String clean = AiAssessmentService.publicSummary(
+                "Compare gsu-plan-1, GISU_PLAN_05 and gisu-plan-99 with care.");
+        assertTrue(clean.contains(
+                GeorgiaPlanCatalog.findBySlug("gisu-plan-01").orElseThrow().name()));
+        assertTrue(clean.contains(
+                GeorgiaPlanCatalog.findBySlug("gisu-plan-05").orElseThrow().name()));
+        assertTrue(clean.contains("a plan option"));
+        assertFalse(clean.toLowerCase().contains("gisu-plan-"));
+        assertFalse(clean.toLowerCase().contains("gsu-plan-"));
+    }
+
+    @Test
     void generationRequiresExplicitConsentAndNeverDisclosesAnotherAccount() throws Exception {
         Account a = register();
         Account b = register();
@@ -122,8 +135,8 @@ class AiAssessmentFlowTest {
                 .andExpect(redirectedUrl("/dashboard?status=assessment_not_found"));
 
         String summary = "This is a Gemini educational comparison for the chosen " +
-                "priority. Check the monthly rates, local doctor network, and " +
-                "other real plan documents with the insurer before any application.";
+                "priority. The option gsu-plan-1 is worth researching alongside other " +
+                "plan documents. Check actual plan prices and provider networks.";
         db.update("INSERT INTO assessment_ai_reviews " +
                 "(assessment_id, customer_id, summary_text, plan_slugs, model_name) " +
                 "VALUES (?, ?, ?, ?, ?)",
@@ -132,7 +145,9 @@ class AiAssessmentFlowTest {
         mvc.perform(get("/assessment/results/" + id).session(a.session()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("AI-selected documents to compare")))
-                .andExpect(content().string(containsString(summary)))
+                .andExpect(content().string(containsString(
+                        GeorgiaPlanCatalog.findBySlug("gisu-plan-01").orElseThrow().name())))
+                .andExpect(content().string(not(containsString("gsu-plan-1"))))
                 .andExpect(content().string(containsString("Document 1 of 2")));
 
         mvc.perform(get("/assessment/results/" + id).session(b.session()))

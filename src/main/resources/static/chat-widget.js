@@ -12,6 +12,7 @@
     const messages = document.getElementById("chat-messages");
     const mode = document.getElementById("chat-mode");
     const accountConsent = document.getElementById("chat-account-consent");
+    const csrfInput = document.getElementById("chat-csrf");
     if (!toggle || !panel || !form || !messages) return;
 
     function appendMessage(text, cssClass) {
@@ -63,7 +64,10 @@
       try {
         const response = await fetch("/api/chat", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": csrfInput ? csrfInput.value : ""
+          },
           credentials: "same-origin",
           body: JSON.stringify({
             message: message,

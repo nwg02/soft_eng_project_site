@@ -107,10 +107,16 @@ does not.
 
 The following safeguards still need review and/or implementation:
 
-- **CSRF protection on authenticated POST forms and chat requests**. Cookies
-  and SameSite settings help but do not replace full CSRF protection.
-- **Global login/registration and AI request rate limiting**, not just the
-  existing per-session chat limit; enforce reasonable AI service budgets.
+- **CSRF protection:** Implemented using Spring Security for all POST
+  operations. Thymeleaf inserts a hidden session token in server-rendered
+  forms, and the chat widget sends an `X-CSRF-TOKEN` header. Dedicated
+  filter-enabled integration tests check that missing/incorrect tokens are
+  rejected. Traditional workflow tests run with servlet filters disabled to
+  isolate controller behavior; the security test runs with filters enabled.
+- **Login and API rate limits:** Implemented single-instance, bounded-window
+  throttles for login, registration, AI analysis and chat. For a scaled
+  production deployment add shared/edge rate limits and enforce API budgets;
+  in-memory limits are per instance and cannot stop distributed abuse.
 - Confirm production HTTPS, trusted proxy forwarding, session invalidation,
   and user isolation after deployment.
 - Establish an administrator recovery policy for lost 2FA devices and
@@ -137,3 +143,28 @@ do not run guessed destructive SQL against customer records.
 
 **Current state:** No migrations run, no `main` merge, and no Railway
 environment or service modified as part of this preparation.
+
+
+## Security implementation added during final review
+
+The feature branch now includes `WebSecurityConfig.java` and
+`RequestRateLimitFilter.java`. No new database migration is required.
+CSRF is enforced even on the public registration/login POST routes; the
+forms still work in browsers because Thymeleaf supplies the hidden token.
+For API clients submitting JSON to `/api/chat`, the session token must
+be sent in the `X-CSRF-TOKEN` header.
+
+`SecurityHardeningFlowTest` exercises Spring Security's actual servlet
+filter chain and asserts 403 on POST requests without CSRF tokens, successful
+requests with tokens, and 429 after repeated sign-in failures. Existing
+`*FlowTest` classes disable the filters to test business logic independently.
+Do not disable filters in production or the local running application.
+
+AI assessments now replace internal catalog IDs in their prose with
+published plan names, including when showing **previously saved** AI reviews.
+The stored catalog slugs used for backend references remain unchanged.
+
+After pulling the branch, manually test registration, login, 2FA, logout,
+chat, saved plans, assessment generation, billing, reminders, and enrollment
+requests in a real browser with cookies enabled. This verifies that the
+browser submits CSRF tokens and that new sessions behave correctly.

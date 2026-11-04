@@ -41,7 +41,7 @@
         <input type="checkbox" id="chat-account-consent">
         <span><strong>Share this question and a brief account summary with Gemini</strong></span>
       </label>
-      <form id="chat-form" class="chat-form"><label for="chat-input" class="sr-only">Your insurance question</label><input type="text" id="chat-input" maxlength="800" autocomplete="off" placeholder="Ask about coverage…" required><button type="submit" id="chat-send">Send</button></form>
+      <form id="chat-form" class="chat-form"><input type="hidden" id="chat-csrf" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"><label for="chat-input" class="sr-only">Your insurance question</label><input type="text" id="chat-input" maxlength="800" autocomplete="off" placeholder="Ask about coverage…" required><button type="submit" id="chat-send">Send</button></form>
     </section>
   </div>
   <script th:src="@{/chat-widget.js}" src="/chat-widget.js" defer></script>
