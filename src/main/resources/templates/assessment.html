@@ -1,18 +1,80 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Insurance Assessment</title><link rel="stylesheet" th:href="@{/styles.css}"></head>
-<body><div th:replace="~{fragments :: header}"></div><main>
-<h1>Insurance Assessment</h1><p>Enter your details to save an assessment and view sample plan recommendations.</p>
-<p class="error" th:if="${error}" th:text="${error}"></p>
-<p th:if="${saved}">Your assessment was saved.</p>
-<form class="form" th:action="@{/assessment}" method="post">
-<label>Age<input type="number" name="age" min="18" max="110" required></label>
-<label>Coverage type<select name="coverageType" required><option value="individual">Individual</option><option value="family">Family</option></select></label>
-<label>Monthly budget ($)<input type="number" name="monthlyBudget" min="1" step="0.01" required></label>
-<label>Household size<input type="number" name="householdSize" min="1" max="20" required></label>
-<button type="submit">Submit assessment</button></form>
-<section th:if="${plans != null}"><h2>Suggested plans</h2><article class="plan" th:each="p : ${plans}">
-<h3 th:text="${p.plan_name}"></h3><p th:text="${p.description}"></p>
-<p>Monthly premium: $<span th:text="${p.monthly_premium}"></span></p><p>Deductible: $<span th:text="${p.deductible}"></span></p>
-</article></section>
-</main><div th:replace="~{fragments :: footer}"></div></body></html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Complete an educational Georgia health insurance needs assessment and find official plan documents to review.">
+  <title>Coverage Assessment | GISU</title>
+  <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<div th:replace="~{fragments :: header}"></div>
+<main class="assessment-main">
+  <section class="assessment-header">
+    <span class="eyebrow">YOUR GEORGIA COVERAGE GUIDE</span>
+    <h1>Let's narrow down what to look for.</h1>
+    <p>Answer a few questions to organize the official 2027 plan documents around your preferences. Your answers are saved to your GISU account so you can review the results again.</p>
+    <div class="assessment-notice" role="note"><strong>Important:</strong> This is not an insurance quote or eligibility check. GISU cannot yet confirm which plans serve your ZIP code, calculate your premium or subsidy, or determine what coverage is best for you.</div>
+  </section>
+
+  <p class="error" th:if="${error}" th:text="${error}" role="alert"></p>
+  <form class="assessment-form" th:action="@{/assessment}" method="post">
+    <fieldset>
+      <legend>1. Where and who is the coverage for?</legend>
+      <div class="assessment-fields">
+        <label>Georgia ZIP code
+          <input type="text" name="zipCode" inputmode="numeric" pattern="[0-9]{5}" minlength="5" maxlength="5" placeholder="30303" autocomplete="postal-code" required>
+          <small>Used for your assessment record, not to verify a plan's service area.</small>
+        </label>
+        <label>Your age
+          <input type="number" name="age" min="18" max="110" placeholder="25" required>
+          <small>Age is not used to generate insurance prices here.</small>
+        </label>
+        <label>Coverage you're researching
+          <select name="coverageType" required>
+            <option value="individual">Individual coverage</option>
+            <option value="family">Family coverage</option>
+          </select>
+        </label>
+        <label>Household size
+          <input type="number" name="householdSize" min="1" max="20" value="1" required>
+          <small>Use 2 or more if researching family coverage.</small>
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>2. Your budget and preferences</legend>
+      <div class="assessment-fields">
+        <label>Monthly premium budget ($)
+          <input type="number" name="monthlyBudget" min="0" max="10000" step="0.01" placeholder="300" required>
+          <small>We save your budget but cannot filter by price until verified ZIP/age-specific rates are available.</small>
+        </label>
+        <label>Annual household income range <span class="optional-label">(optional)</span>
+          <select name="incomeRange">
+            <option value="prefer_not" selected>Prefer not to say</option>
+            <option value="under_30000">Under $30,000</option>
+            <option value="30000_60000">$30,000–$59,999</option>
+            <option value="60000_100000">$60,000–$99,999</option>
+            <option value="over_100000">$100,000 or more</option>
+          </select>
+          <small>This optional range is not used to estimate tax credits or eligibility.</small>
+        </label>
+      </div>
+      <label class="priority-label" for="priority">What's most important when comparing plans?</label>
+      <select id="priority" name="priority" required>
+        <option value="balanced">Balance between monthly and care costs (explore Silver first)</option>
+        <option value="lower_premium">Explore potentially lower-premium metal levels (Bronze first)</option>
+        <option value="lower_deductible">Explore smaller deductibles stated in plan names</option>
+        <option value="provider_flexibility">Explore flexible network designs (PPO first)</option>
+      </select>
+    </fieldset>
+    <div class="assessment-submit">
+      <button type="submit" class="button button-primary">See plan documents to review →</button>
+      <p>We never ask for Social Security numbers, medical history, or payment details.</p>
+    </div>
+  </form>
+</main>
+<div th:replace="~{fragments :: footer}"></div>
+</body>
+</html>

@@ -86,3 +86,13 @@ The public `/plans` page displays a curated, static 2027 Georgia marketplace pla
 **Limitations:** This is not a statewide inventory. There is no ZIP/county/age-specific availability filter, premium quoting, provider network or subsidy calculation yet. The deductible shown is parsed from the marketed plan name, not a substitute for the official plan document (and not necessarily an out-of-network deductible). Enrollment must occur on an official insurer/marketplace site. Do not represent browsing or clicking as enrollment or coverage. For a complete catalog, import Georgia Access 2027 Plan, Service Area, Benefits, and Rate PUFs into the marketplace tables, validate source dimensions, and verify plan URLs before publishing.
 
 Anonymous visits to `/dashboard` redirect to `/login?reason=dashboard`, where an explanatory notice appears. The CSS uses Georgia State-inspired blue (#0039A6). None of these changes deploy to Railway or merge to main automatically.
+
+## Educational assessment and document suggestions (feature branch)
+
+- Signed-in users can complete `/assessment` with a Georgia-format ZIP, age, coverage type, household size, monthly premium budget, optional **broad income range**, and coverage priority.
+- The completed assessment is stored locally and linked from the dashboard; the new `/assessment/results/{id}` page enforces signed-in ownership before showing saved answers.
+- Results order **four official 2027 issuer plan documents** according to the selected research priority: Bronze metal level first for exploring potentially lower monthly premiums; smaller deductible *figures in plan names* first; PPO designs first for network flexibility; or Silver first for a balanced starting point.
+- Budget, ZIP, age, income and household details are **not used to filter availability, calculate subsidy eligibility, price policies, or assess medical needs**. Results explicitly explain that limitation; the user must follow official sources for quotes and eligibility.
+- The Explore Plans page and assessment results now use **the same 12-entry verified-document catalog** (`GeorgiaPlanCatalog.java`) so links and names remain consistent.
+- For an existing local H2 database, `local-schema.sql` applies add-column-if-missing updates automatically. For the **production MySQL database**, apply `database/migrations/V3__assessment_preferences.sql` once, after V2 and after backing up the database. No production migration was applied.
+- No Social Security number, exact income, medical history, or payment data is collected in this assessment. Do not use real personal details in classroom demos. Results are not professional insurance advice.

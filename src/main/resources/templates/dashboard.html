@@ -126,6 +126,7 @@
         </article>
     </section>
 
+    <p class="error" th:if="${status == 'assessment_not_found'}">That assessment could not be found in your account.</p>
     <section>
         <h2>My Assessment History</h2>
 
@@ -135,11 +136,13 @@
 
         <article th:each="a : ${assessments}" class="plan">
             <h3>Assessment</h3>
+            <p>ZIP code: <span th:text="${a.zip_code ?: 'Not recorded'}">30303</span></p>
             <p>Age: <span th:text="${a.age}">0</span></p>
             <p>Coverage: <span th:text="${a.coverage_type}">individual</span></p>
             <p>Monthly budget: $<span th:text="${a.monthly_budget}">0.00</span></p>
             <p>Household size: <span th:text="${a.household_size}">1</span></p>
             <p>Submitted: <span th:text="${a.created_at}">Date</span></p>
+            <p><a th:href="@{/assessment/results/{id}(id=${a.assessment_id})}">Review results and official plan documents →</a></p>
         </article>
 
         <p><a th:href="@{/assessment}">Complete an Assessment</a></p>

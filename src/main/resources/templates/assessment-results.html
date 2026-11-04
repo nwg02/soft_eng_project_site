@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="View your GISU educational assessment summary and official 2027 Georgia insurance documents to compare.">
+  <title>Your Assessment Results | GISU</title>
+  <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<div th:replace="~{fragments :: header}"></div>
+<main class="assessment-main">
+  <section class="assessment-header">
+    <span class="eyebrow">YOUR SAVED ASSESSMENT</span>
+    <h1>Your coverage research starts here.</h1>
+    <p>These are plan documents worth exploring based on the comparison topic you selected, <strong>not verified matches or a ranked recommendation of suitable policies.</strong></p>
+    <div class="assessment-result-actions">
+      <a class="button button-outline" th:href="@{/assessment}">Start a new assessment</a>
+      <a class="button button-outline" th:href="@{/dashboard}">Return to dashboard</a>
+    </div>
+  </section>
+
+  <section class="assessment-summary" aria-label="Your saved answers">
+    <h2>Assessment summary</h2>
+    <dl>
+      <div><dt>ZIP code</dt><dd th:text="${assessment.zip_code ?: 'Not recorded'}">30303</dd></div>
+      <div><dt>Age</dt><dd th:text="${assessment.age}">25</dd></div>
+      <div><dt>Coverage type</dt><dd th:text="${assessment.coverage_type}">individual</dd></div>
+      <div><dt>Household size</dt><dd th:text="${assessment.household_size}">1</dd></div>
+      <div><dt>Monthly premium budget</dt><dd th:text="|$${assessment.monthly_budget}|">$300.00</dd></div>
+    </dl>
+    <p class="assessment-muted">Your budget, ZIP code, age, household size and optional income range did not determine plan eligibility, prices, or subsidy amounts. Your selected coverage priority determines the document ordering below.</p>
+  </section>
+
+  <section class="assessment-recommendations">
+    <div class="assessment-heading"><span class="eyebrow">START WITH THESE DOCUMENTS</span><h2>Four plans to compare further</h2><p th:text="${priorityExplanation}">Explanation of selection logic.</p></div>
+    <div class="assessment-results-grid">
+      <article class="assessment-plan" th:each="p, iter : ${suggestions}">
+        <div class="assessment-plan-top"><span class="level-pill" th:classappend="${#strings.toLowerCase(p.metal)}" th:text="${#strings.toUpperCase(p.metal)}">SILVER</span><span class="assessment-card-counter" th:text="|Document ${iter.count} of 4|">Document 1 of 4</span></div>
+        <p class="assessment-plan-issuer" th:text="${p.issuer}">Company</p>
+        <h3 th:text="${p.name}">Plan name</h3>
+        <dl class="market-metrics">
+          <div><dt>Network design</dt><dd th:text="${p.type}">HMO</dd></div>
+          <div><dt>Deductible in name*</dt><dd th:text="${p.deductibleLabel}">$0</dd></div>
+          <div><dt>Actual monthly premium</dt><dd>Quote required</dd></div>
+          <div><dt>Service area</dt><dd>Not verified</dd></div>
+        </dl>
+        <p class="assessment-plan-doc" th:text="${p.documentLabel}">Official issuer document</p>
+        <a class="button button-primary" th:href="${p.documentUrl}" target="_blank" rel="noopener noreferrer">View official plan document ↗</a>
+        <a th:href="${p.shopUrl}" target="_blank" rel="noopener noreferrer">Check availability with insurer ↗</a>
+      </article>
+    </div>
+  </section>
+
+  <section class="assessment-next-steps">
+    <h2>Before making a coverage decision</h2>
+    <p>Verify that a plan is offered in your county and ZIP code, check its current doctor and prescription network, and request an official quote that considers your household and potential financial assistance. Your budget isn't a filter here because GISU does not have verified rate data.</p>
+    <div class="assessment-result-actions">
+      <a class="button button-primary" th:href="@{/plans}">Compare all 12 plan documents →</a>
+      <a class="button button-outline" href="https://georgiaaccess.gov/" target="_blank" rel="noopener noreferrer">Visit Georgia Access ↗</a>
+    </div>
+    <p class="market-footnote">*Deductible figures are read from the published plan names, not verified family deductibles or all cost-sharing terms. A document appearing here does not mean the plan is available to you. GISU is an educational prototype and does not provide insurance advice or enrollment.</p>
+  </section>
+</main>
+<div th:replace="~{fragments :: footer}"></div>
+</body>
+</html>

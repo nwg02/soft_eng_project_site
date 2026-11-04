@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -140,7 +139,8 @@ public class WebController {
 
         model.addAttribute("assessments", db.queryForList(
                 "SELECT assessment_id, age, coverage_type, monthly_budget, " +
-                "household_size, created_at FROM insurance_assessments " +
+                "household_size, zip_code, income_range, priority, created_at " +
+                "FROM insurance_assessments " +
                 "WHERE customer_id = ? ORDER BY created_at DESC",
                 customerId
         ));
@@ -172,68 +172,6 @@ public class WebController {
 
         model.addAttribute("status", status);
         return "dashboard";
-    }
-
-    @GetMapping("/assessment")
-    public String assessmentPage(HttpSession session) {
-        if (currentUser(session) == null) {
-            return "redirect:/login";
-        }
-        return "assessment";
-    }
-
-    @PostMapping("/assessment")
-    public String submitAssessment(@RequestParam int age,
-                                   @RequestParam String coverageType,
-                                   @RequestParam BigDecimal monthlyBudget,
-                                   @RequestParam int householdSize,
-                                   HttpSession session,
-                                   Model model) {
-        Map<String, Object> user = currentUser(session);
-
-        if (user == null) {
-            return "redirect:/login";
-        }
-
-        if (age < 18 || age > 110 ||
-                householdSize < 1 || householdSize > 20 ||
-                monthlyBudget.compareTo(BigDecimal.ZERO) <= 0 ||
-                !(coverageType.equals("individual") ||
-                  coverageType.equals("family"))) {
-            model.addAttribute("error",
-                    "Please check your answers and try again.");
-            return "assessment";
-        }
-
-        db.update(
-                "INSERT INTO insurance_assessments " +
-                "(customer_id, age, coverage_type, monthly_budget, " +
-                "household_size) VALUES (?, ?, ?, ?, ?)",
-                user.get("customer_id"), age, coverageType,
-                monthlyBudget, householdSize
-        );
-
-        List<Map<String, Object>> plans = db.queryForList(
-                "SELECT plan_id, provider_name, plan_name, coverage_type, " +
-                "monthly_premium, deductible, description " +
-                "FROM insurance_plans WHERE coverage_type = ? " +
-                "AND monthly_premium <= ? ORDER BY monthly_premium",
-                coverageType, monthlyBudget
-        );
-
-        if (plans.isEmpty()) {
-            plans = db.queryForList(
-                    "SELECT plan_id, provider_name, plan_name, coverage_type, " +
-                    "monthly_premium, deductible, description " +
-                    "FROM insurance_plans WHERE coverage_type = ? " +
-                    "ORDER BY monthly_premium LIMIT 2",
-                    coverageType
-            );
-        }
-
-        model.addAttribute("plans", plans);
-        model.addAttribute("saved", true);
-        return "assessment";
     }
 
     // Plan education is available without a database connection.

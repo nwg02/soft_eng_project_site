@@ -17,9 +17,18 @@ CREATE TABLE IF NOT EXISTS insurance_assessments (
     coverage_type VARCHAR(20) NOT NULL,
     monthly_budget DECIMAL(10,2) NOT NULL,
     household_size INT NOT NULL,
+    zip_code VARCHAR(5),
+    income_range VARCHAR(40) NOT NULL DEFAULT 'prefer_not',
+    priority VARCHAR(40) NOT NULL DEFAULT 'balanced',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (customer_id) REFERENCES customers(customer_id) ON DELETE CASCADE
 );
+
+-- Upgrades existing local H2 databases created before the new assessment fields.
+-- H2 supports IF NOT EXISTS, so these are safe on repeated local app starts.
+ALTER TABLE insurance_assessments ADD COLUMN IF NOT EXISTS zip_code VARCHAR(5);
+ALTER TABLE insurance_assessments ADD COLUMN IF NOT EXISTS income_range VARCHAR(40) DEFAULT 'prefer_not' NOT NULL;
+ALTER TABLE insurance_assessments ADD COLUMN IF NOT EXISTS priority VARCHAR(40) DEFAULT 'balanced' NOT NULL;
 
 CREATE TABLE IF NOT EXISTS insurance_plans (
     plan_id INT AUTO_INCREMENT PRIMARY KEY,
