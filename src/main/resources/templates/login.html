@@ -1,10 +1,23 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Login</title><link rel="stylesheet" th:href="@{/styles.css}"></head>
-<body><div th:replace="~{fragments :: header}"></div><main>
-<h1>Login</h1><p class="error" th:if="${error}" th:text="${error}"></p>
-<form class="form" th:action="@{/login}" method="post">
-<label>Email<input type="email" name="email" required></label>
-<label>Password<input type="password" name="password" required></label>
-<button type="submit">Login</button></form>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Log in | GISU</title><link rel="stylesheet" th:href="@{/styles.css}" href="/styles.css"></head>
+<body><div th:replace="~{fragments :: header}"></div>
+<main class="auth-main">
+  <section class="auth-card">
+    <span class="eyebrow">YOUR GISU ACCOUNT</span>
+    <h1>Welcome back.</h1>
+    <p>Sign in to access your personalized health coverage dashboard.</p>
+    <div class="access-notice" th:if="${dashboardLoginRequired}" role="alert">
+      <strong>Dashboard unavailable</strong>
+      <p>You must sign in to access your dashboard.</p>
+    </div>
+    <p class="error" th:if="${error}" th:text="${error}" role="alert"></p>
+    <form class="form" th:action="@{/login}" method="post">
+      <label>Email address<input type="email" name="email" autocomplete="email" required></label>
+      <label>Password<input type="password" name="password" autocomplete="current-password" required></label>
+      <button class="button-primary" type="submit">Sign in</button>
+    </form>
+    <p class="auth-bottom">Don't have an account? <a th:href="@{/register}">Create one</a></p>
+  </section>
 </main><div th:replace="~{fragments :: footer}"></div></body></html>

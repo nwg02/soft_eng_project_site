@@ -74,7 +74,9 @@ public class WebController {
     }
 
     @GetMapping("/login")
-    public String loginPage() {
+    public String loginPage(@RequestParam(required = false) String reason,
+                            Model model) {
+        model.addAttribute("dashboardLoginRequired", "dashboard".equals(reason));
         return "login";
     }
 
@@ -117,7 +119,7 @@ public class WebController {
         Map<String, Object> user = currentUser(session);
 
         if (user == null) {
-            return "redirect:/login";
+            return "redirect:/login?reason=dashboard";
         }
 
         Object customerId = user.get("customer_id");

@@ -1,57 +1,204 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Learn how to compare health insurance plans in Georgia and browse verified plans through Georgia Access.">
-    <title>Explore Health Plans in Georgia | GISU</title>
-    <link rel="stylesheet" th:href="@{/styles.css}" href="/styles.css">
-</head>
-<body>
-<div th:replace="~{fragments :: header}"></div>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Browse genuine 2027 Georgia health insurance plans with individual insurer document links and plan comparisons.">
+<title>2027 Georgia Health Insurance Plans | GISU</title><link rel="stylesheet" th:href="@{/styles.css}" href="/styles.css"></head>
+<body><div th:replace="~{fragments :: header}"></div>
 <main class="plans-main">
-    <div class="plans-intro">
-        <span class="eyebrow">PLAN EXPLORER · GEORGIA</span>
-        <h1>Explore coverage with clarity.</h1>
-        <p class="plans-lead">Understanding the differences between health plans can help you make a more confident decision. Here's what to look for before you choose.</p>
-        <div class="hero-actions">
-            <a class="button button-primary" href="https://enroll.georgiaaccess.gov/" target="_blank" rel="noopener noreferrer">Browse available Georgia plans ↗</a>
-            <a class="button button-outline" th:href="@{/assessment}">Start your assessment →</a>
-        </div>
-        <div class="plans-status" role="note"><strong>About these listings:</strong> GISU is building a verified plan catalog. We are not displaying the original fictional classroom plans as real insurance products. For current plan availability, pricing and enrollment, use Georgia Access.</div>
+  <section class="plans-intro">
+    <span class="eyebrow">GEORGIA MARKETPLACE · COVERAGE YEAR 2027</span>
+    <h1>Compare real health plans. <em>All in one place.</em></h1>
+    <p class="plans-lead">Browse genuine Georgia health insurance plans, filter by company and coverage tier, compare options side by side, and view official plan documents without creating a GISU account.</p>
+    <div class="plans-status" role="note"><strong>Initial verified collection.</strong> These 12 examples are genuine 2027 Georgia plans from Alliant and Kaiser Permanente, not the complete statewide catalog. Availability depends on your county or ZIP code and eligibility. Prices are not shown without the information needed to produce an accurate quote.</div>
+  </section>
+  <section class="market-section" aria-labelledby="market-title">
+    <div class="market-heading"><div><span class="eyebrow">2027 PLAN EXPLORER</span><h2 id="market-title">Browse available plan documents</h2><p>Browse these published plan options. Verify your ZIP code and eligibility with the insurer before deciding.</p></div><div class="count-label" id="plan-count" aria-live="polite">Showing 12 of 12 plans</div></div>
+    <div class="market-filters" role="search">
+      <label>Search plans<input id="plan-search" type="search" placeholder="Search by name or type"></label>
+      <label>Insurance company<select id="provider-filter"><option value="all">All companies</option><option value="Alliant Health Plans">Alliant Health Plans</option><option value="Kaiser Permanente">Kaiser Permanente</option></select></label>
+      <label>Metal level<select id="tier-filter"><option value="all">All metal levels</option><option value="Bronze">Bronze</option><option value="Silver">Silver</option><option value="Gold">Gold</option></select></label>
+      <button type="button" id="clear-filters" class="button button-outline">Reset</button>
     </div>
+    <div class="market-grid" id="market-grid"><article class="market-plan" data-provider="Alliant Health Plans" data-tier="Gold" data-type="PPO" data-deductible="1500" data-name="SoloCare Gold PPO $1500 $10 Chiro">
+ <div class="market-card-top"><span class="level-pill gold">GOLD</span><span class="market-year">2027 · PPO</span></div>
+ <div class="market-issuer">Alliant Health Plans</div>
+ <h3>SoloCare Gold PPO $1500 $10 Chiro</h3>
+ <dl class="market-metrics"><div><dt>Deductible in plan name*</dt><dd>$1,500</dd></div><div><dt>Monthly premium</dt><dd>Personal quote required</dd></div></dl>
+ <p class="market-document">2027 Summary of Benefits &amp; Coverage · Official insurer document</p>
+ <label class="market-compare"><input type="checkbox" class="compare-plan"> Add to comparison</label>
+ <a class="button button-primary market-link" href="https://alliantplans.com/docs/solocare/2027/GA0040002-01.pdf" target="_blank" rel="noopener noreferrer">View this plan's details ↗</a>
+</article>
+<article class="market-plan" data-provider="Alliant Health Plans" data-tier="Silver" data-type="PPO" data-deductible="6500" data-name="SoloCare Silver PPO $6500 $25 Chiro">
+ <div class="market-card-top"><span class="level-pill silver">SILVER</span><span class="market-year">2027 · PPO</span></div>
+ <div class="market-issuer">Alliant Health Plans</div>
+ <h3>SoloCare Silver PPO $6500 $25 Chiro</h3>
+ <dl class="market-metrics"><div><dt>Deductible in plan name*</dt><dd>$6,500</dd></div><div><dt>Monthly premium</dt><dd>Personal quote required</dd></div></dl>
+ <p class="market-document">2027 Summary of Benefits &amp; Coverage · Official insurer document</p>
+ <label class="market-compare"><input type="checkbox" class="compare-plan"> Add to comparison</label>
+ <a class="button button-primary market-link" href="https://alliantplans.com/docs/solocare/2027/GA0040017-01.pdf" target="_blank" rel="noopener noreferrer">View this plan's details ↗</a>
+</article>
+<article class="market-plan" data-provider="Alliant Health Plans" data-tier="Silver" data-type="HMO" data-deductible="5000" data-name="SoloCare Silver HMO $5000 $25">
+ <div class="market-card-top"><span class="level-pill silver">SILVER</span><span class="market-year">2027 · HMO</span></div>
+ <div class="market-issuer">Alliant Health Plans</div>
+ <h3>SoloCare Silver HMO $5000 $25</h3>
+ <dl class="market-metrics"><div><dt>Deductible in plan name*</dt><dd>$5,000</dd></div><div><dt>Monthly premium</dt><dd>Personal quote required</dd></div></dl>
+ <p class="market-document">2027 Summary of Benefits &amp; Coverage · Official insurer document</p>
+ <label class="market-compare"><input type="checkbox" class="compare-plan"> Add to comparison</label>
+ <a class="button button-primary market-link" href="https://alliantplans.com/docs/solocare/2027/GA0110009-01.pdf" target="_blank" rel="noopener noreferrer">View this plan's details ↗</a>
+</article>
+<article class="market-plan" data-provider="Alliant Health Plans" data-tier="Gold" data-type="HMO" data-deductible="500" data-name="SoloCare Gold HMO $500 $15">
+ <div class="market-card-top"><span class="level-pill gold">GOLD</span><span class="market-year">2027 · HMO</span></div>
+ <div class="market-issuer">Alliant Health Plans</div>
+ <h3>SoloCare Gold HMO $500 $15</h3>
+ <dl class="market-metrics"><div><dt>Deductible in plan name*</dt><dd>$500</dd></div><div><dt>Monthly premium</dt><dd>Personal quote required</dd></div></dl>
+ <p class="market-document">2027 Summary of Benefits &amp; Coverage · Official insurer document</p>
+ <label class="market-compare"><input type="checkbox" class="compare-plan"> Add to comparison</label>
+ <a class="button button-primary market-link" href="https://alliantplans.com/docs/solocare/2027/GA0110052-01.pdf" target="_blank" rel="noopener noreferrer">View this plan's details ↗</a>
+</article>
+<article class="market-plan" data-provider="Alliant Health Plans" data-tier="Bronze" data-type="HMO" data-deductible="7800" data-name="SoloCare HSA Bronze HMO $7800 0% After DED">
+ <div class="market-card-top"><span class="level-pill bronze">BRONZE</span><span class="market-year">2027 · HMO</span></div>
+ <div class="market-issuer">Alliant Health Plans</div>
+ <h3>SoloCare HSA Bronze HMO $7800 0% After DED</h3>
+ <dl class="market-metrics"><div><dt>Deductible in plan name*</dt><dd>$7,800</dd></div><div><dt>Monthly premium</dt><dd>Personal quote required</dd></div></dl>
+ <p class="market-document">2027 Summary of Benefits &amp; Coverage · Official insurer document</p>
+ <label class="market-compare"><input type="checkbox" class="compare-plan"> Add to comparison</label>
+ <a class="button button-primary market-link" href="https://alliantplans.com/docs/solocare/2027/GA0110019-01.pdf" target="_blank" rel="noopener noreferrer">View this plan's details ↗</a>
+</article>
+<article class="market-plan" data-provider="Kaiser Permanente" data-tier="Gold" data-type="HMO" data-deductible="500" data-name="Gold HMO $500 $25">
+ <div class="market-card-top"><span class="level-pill gold">GOLD</span><span class="market-year">2027 · HMO</span></div>
+ <div class="market-issuer">Kaiser Permanente</div>
+ <h3>Gold HMO $500 $25</h3>
+ <dl class="market-metrics"><div><dt>Deductible in plan name*</dt><dd>$500</dd></div><div><dt>Monthly premium</dt><dd>Personal quote required</dd></div></dl>
+ <p class="market-document">2027 Evidence of Coverage · Official insurer document</p>
+ <label class="market-compare"><input type="checkbox" class="compare-plan"> Add to comparison</label>
+ <a class="button button-primary market-link" href="https://healthy.kaiserpermanente.org/content/dam/kporg/final/documents/health-plan-documents/eoc/ga/individual-family/2027/on-gold-500-25-ga-en.pdf" target="_blank" rel="noopener noreferrer">View this plan's details ↗</a>
+</article>
+<article class="market-plan" data-provider="Kaiser Permanente" data-tier="Gold" data-type="HMO" data-deductible="1000" data-name="Gold HMO $1000 $25">
+ <div class="market-card-top"><span class="level-pill gold">GOLD</span><span class="market-year">2027 · HMO</span></div>
+ <div class="market-issuer">Kaiser Permanente</div>
+ <h3>Gold HMO $1000 $25</h3>
+ <dl class="market-metrics"><div><dt>Deductible in plan name*</dt><dd>$1,000</dd></div><div><dt>Monthly premium</dt><dd>Personal quote required</dd></div></dl>
+ <p class="market-document">2027 Evidence of Coverage · Official insurer document</p>
+ <label class="market-compare"><input type="checkbox" class="compare-plan"> Add to comparison</label>
+ <a class="button button-primary market-link" href="https://healthy.kaiserpermanente.org/content/dam/kporg/final/documents/health-plan-documents/eoc/ga/individual-family/2027/on-gold-1000-25-ga-en.pdf" target="_blank" rel="noopener noreferrer">View this plan's details ↗</a>
+</article>
+<article class="market-plan" data-provider="Kaiser Permanente" data-tier="Silver" data-type="HMO" data-deductible="3000" data-name="Silver HMO $3000 $40">
+ <div class="market-card-top"><span class="level-pill silver">SILVER</span><span class="market-year">2027 · HMO</span></div>
+ <div class="market-issuer">Kaiser Permanente</div>
+ <h3>Silver HMO $3000 $40</h3>
+ <dl class="market-metrics"><div><dt>Deductible in plan name*</dt><dd>$3,000</dd></div><div><dt>Monthly premium</dt><dd>Personal quote required</dd></div></dl>
+ <p class="market-document">2027 Evidence of Coverage · Official insurer document</p>
+ <label class="market-compare"><input type="checkbox" class="compare-plan"> Add to comparison</label>
+ <a class="button button-primary market-link" href="https://healthy.kaiserpermanente.org/content/dam/kporg/final/documents/health-plan-documents/eoc/ga/individual-family/2027/on-silver-3000-40-ga-en.pdf" target="_blank" rel="noopener noreferrer">View this plan's details ↗</a>
+</article>
+<article class="market-plan" data-provider="Kaiser Permanente" data-tier="Silver" data-type="HMO" data-deductible="3300" data-name="Silver HMO $3300 $30">
+ <div class="market-card-top"><span class="level-pill silver">SILVER</span><span class="market-year">2027 · HMO</span></div>
+ <div class="market-issuer">Kaiser Permanente</div>
+ <h3>Silver HMO $3300 $30</h3>
+ <dl class="market-metrics"><div><dt>Deductible in plan name*</dt><dd>$3,300</dd></div><div><dt>Monthly premium</dt><dd>Personal quote required</dd></div></dl>
+ <p class="market-document">2027 Evidence of Coverage · Official insurer document</p>
+ <label class="market-compare"><input type="checkbox" class="compare-plan"> Add to comparison</label>
+ <a class="button button-primary market-link" href="https://healthy.kaiserpermanente.org/content/dam/kporg/final/documents/health-plan-documents/eoc/ga/individual-family/2027/on-silver-3300-30-ga-en.pdf" target="_blank" rel="noopener noreferrer">View this plan's details ↗</a>
+</article>
+<article class="market-plan" data-provider="Kaiser Permanente" data-tier="Silver" data-type="HMO" data-deductible="6000" data-name="Silver HMO $6000 $50">
+ <div class="market-card-top"><span class="level-pill silver">SILVER</span><span class="market-year">2027 · HMO</span></div>
+ <div class="market-issuer">Kaiser Permanente</div>
+ <h3>Silver HMO $6000 $50</h3>
+ <dl class="market-metrics"><div><dt>Deductible in plan name*</dt><dd>$6,000</dd></div><div><dt>Monthly premium</dt><dd>Personal quote required</dd></div></dl>
+ <p class="market-document">2027 Evidence of Coverage · Official insurer document</p>
+ <label class="market-compare"><input type="checkbox" class="compare-plan"> Add to comparison</label>
+ <a class="button button-primary market-link" href="https://healthy.kaiserpermanente.org/content/dam/kporg/final/documents/health-plan-documents/eoc/ga/individual-family/2027/on-silver-6000-50-ga-en.pdf" target="_blank" rel="noopener noreferrer">View this plan's details ↗</a>
+</article>
+<article class="market-plan" data-provider="Kaiser Permanente" data-tier="Bronze" data-type="HMO" data-deductible="6500" data-name="Bronze HMO $6500 40% HSA">
+ <div class="market-card-top"><span class="level-pill bronze">BRONZE</span><span class="market-year">2027 · HMO</span></div>
+ <div class="market-issuer">Kaiser Permanente</div>
+ <h3>Bronze HMO $6500 40% HSA</h3>
+ <dl class="market-metrics"><div><dt>Deductible in plan name*</dt><dd>$6,500</dd></div><div><dt>Monthly premium</dt><dd>Personal quote required</dd></div></dl>
+ <p class="market-document">2027 Evidence of Coverage · Official insurer document</p>
+ <label class="market-compare"><input type="checkbox" class="compare-plan"> Add to comparison</label>
+ <a class="button button-primary market-link" href="https://healthy.kaiserpermanente.org/content/dam/kporg/final/documents/health-plan-documents/eoc/ga/individual-family/2027/on-bronze-6500-40-hsa-ga-en.pdf" target="_blank" rel="noopener noreferrer">View this plan's details ↗</a>
+</article>
+<article class="market-plan" data-provider="Kaiser Permanente" data-tier="Bronze" data-type="HMO" data-deductible="7500" data-name="Bronze HMO $7500 $50 HSA">
+ <div class="market-card-top"><span class="level-pill bronze">BRONZE</span><span class="market-year">2027 · HMO</span></div>
+ <div class="market-issuer">Kaiser Permanente</div>
+ <h3>Bronze HMO $7500 $50 HSA</h3>
+ <dl class="market-metrics"><div><dt>Deductible in plan name*</dt><dd>$7,500</dd></div><div><dt>Monthly premium</dt><dd>Personal quote required</dd></div></dl>
+ <p class="market-document">2027 Evidence of Coverage · Official insurer document</p>
+ <label class="market-compare"><input type="checkbox" class="compare-plan"> Add to comparison</label>
+ <a class="button button-primary market-link" href="https://healthy.kaiserpermanente.org/content/dam/kporg/final/documents/health-plan-documents/eoc/ga/individual-family/2027/on-bronze-7500-50-hsa-ga-en.pdf" target="_blank" rel="noopener noreferrer">View this plan's details ↗</a>
+</article></div>
+    <p id="no-results" class="no-results" hidden>No plans match these filters. Try a different search.</p>
+    <p class="market-footnote">*The displayed deductible is the amount stated in each plan's marketing name. Review the plan document for actual in-network and out-of-network deductibles, variations, limits, and exceptions. These are examples, not personalized offers. All links lead to official insurer documents.</p>
+  </section>
+  <section class="market-comparison" id="compare-section" aria-labelledby="compare-title">
+    <div class="compare-heading"><div><span class="eyebrow">SIDE-BY-SIDE COMPARISON</span><h2 id="compare-title">Compare selected plans</h2><p>Select two or three plans above to compare them here.</p></div><button type="button" id="clear-compare" class="button button-outline">Clear selection</button></div>
+    <p id="compare-status" role="status" aria-live="polite">No plans selected yet.</p>
+    <div id="compare-table-wrap" class="compare-table-wrap" hidden><table class="compare-table"><thead id="compare-head"></thead><tbody id="compare-body"></tbody></table></div>
+  </section>
+  <section class="plans-cta">
+    <div><span class="eyebrow">ENROLLMENT</span><h2>Ready to check final pricing and apply?</h2><p>Use the plan document links above to review each specific policy. To confirm your exact premium, subsidy eligibility and enroll, continue with the insurer or Georgia Access.</p></div>
+    <a class="button button-light" href="https://enroll.georgiaaccess.gov/" target="_blank" rel="noopener noreferrer">Verify plans on Georgia Access ↗</a>
+  </section>
+  <section class="plan-sources"><p><strong>Data sources:</strong> <a href="https://alliantplans.com/solocare-sbcs/" target="_blank" rel="noopener noreferrer">Alliant 2027 Georgia SBCs</a> · <a href="https://healthy.kaiserpermanente.org/georgia/support/forms/documents/individual-family" target="_blank" rel="noopener noreferrer">Kaiser 2027 Georgia plan documents</a> · <a href="https://georgiaaccess.gov/public-use-files/" target="_blank" rel="noopener noreferrer">Georgia Access 2027 public-use data</a>. Collection reviewed November 4, 2026. This is a curated subset; future ZIP-specific and premium matching will use Georgia Access data.</p><p>GISU is an independent educational prototype, not an insurance issuer, insurance agent or enrollment platform. Browsing a document does not enroll you in coverage.</p></section>
+</main><div th:replace="~{fragments :: footer}"></div>
+<script>
+(() => {
+  const cards = [...document.querySelectorAll(".market-plan")];
+  const search = document.getElementById("plan-search");
+  const provider = document.getElementById("provider-filter");
+  const tier = document.getElementById("tier-filter");
+  const count = document.getElementById("plan-count");
+  const empty = document.getElementById("no-results");
+  const status = document.getElementById("compare-status");
+  const wrap = document.getElementById("compare-table-wrap");
+  const head = document.getElementById("compare-head");
+  const body = document.getElementById("compare-body");
 
-    <section class="plan-guide-section" aria-labelledby="plan-levels">
-        <span class="eyebrow">UNDERSTAND YOUR OPTIONS</span>
-        <h2 id="plan-levels">What do the metal levels mean?</h2>
-        <p class="section-help">Metal levels generally indicate how costs are shared when you use covered services, not the quality of care. Your actual costs depend on the specific plan and your circumstances.</p>
-        <div class="level-grid">
-            <article class="level-card"><span class="level-pill bronze">BRONZE</span><h3>Lower monthly premiums</h3><p>Bronze plans often have lower premiums and higher out-of-pocket costs when you need care.</p><span class="level-footnote">Consider if monthly affordability is a major priority.</span></article>
-            <article class="level-card"><span class="level-pill silver">SILVER</span><h3>A middle ground</h3><p>Silver plans balance premiums with out-of-pocket costs. Eligible shoppers can get extra cost-sharing savings through Silver marketplace plans.</p><span class="level-footnote">Compare carefully if you may qualify for savings.</span></article>
-            <article class="level-card"><span class="level-pill gold">GOLD</span><h3>More costs covered when you get care</h3><p>Gold plans often have higher monthly premiums but lower costs when you use covered care.</p><span class="level-footnote">Consider if you expect more frequent care.</span></article>
-        </div>
-    </section>
+  function updateFilters() {
+    const q = search.value.trim().toLowerCase();
+    let shown = 0;
+    for(const card of cards) {
+      const match = (provider.value === "all" || card.dataset.provider === provider.value) &&
+        (tier.value === "all" || card.dataset.tier === tier.value) &&
+        (card.dataset.name + " " + card.dataset.provider + " " + card.dataset.type).toLowerCase().includes(q);
+      card.hidden = !match;
+      if(match) shown++;
+    }
+    count.textContent = "Showing " + shown + " of " + cards.length + " plans";
+    empty.hidden = shown !== 0;
+  }
+  for(const control of [search, provider, tier]) control.addEventListener(control === search ? "input" : "change", updateFilters);
+  document.getElementById("clear-filters").addEventListener("click", () => {
+    search.value = ""; provider.value = "all"; tier.value = "all"; updateFilters();
+  });
 
-    <section class="cost-guide-section" aria-labelledby="compare-heading">
-        <div>
-            <span class="eyebrow">CHECK THE FULL PICTURE</span>
-            <h2 id="compare-heading">Look beyond the monthly premium.</h2>
-            <p>A plan with a low monthly price isn't always the least expensive overall. Check the details before enrolling.</p>
-        </div>
-        <div class="cost-grid">
-            <article><span class="cost-number">01</span><h3>Monthly premium</h3><p>The amount you pay each month to maintain coverage, before any applicable assistance.</p></article>
-            <article><span class="cost-number">02</span><h3>Deductible</h3><p>How much you may need to pay for certain covered services before the plan begins sharing those costs.</p></article>
-            <article><span class="cost-number">03</span><h3>Provider network</h3><p>Check whether your doctors, hospitals, and other preferred providers are in-network.</p></article>
-            <article><span class="cost-number">04</span><h3>Medication coverage</h3><p>Check the formulary, pharmacy network and what you may pay for prescriptions.</p></article>
-        </div>
-    </section>
-
-    <section class="plans-cta">
-        <div><span class="eyebrow">READY TO SHOP?</span><h2>See plans available where you live.</h2><p>Georgia Access is Georgia's official marketplace. You can view actual plan offerings, check assistance eligibility, and continue to enrollment there.</p></div>
-        <a class="button button-light" href="https://enroll.georgiaaccess.gov/" target="_blank" rel="noopener noreferrer">Continue to Georgia Access ↗</a>
-    </section>
-    <p class="plans-fineprint">This page provides general educational information, not personalized recommendations, insurance quotes, or a guarantee of coverage. Plan availability and prices vary by location, household, age, eligibility and plan year. GISU does not issue policies or process enrollments.</p>
-</main>
-<div th:replace="~{fragments :: footer}"></div>
-</body>
-</html>
+  function compareSelected() {
+    const chosen = cards.filter(card => card.querySelector(".compare-plan").checked);
+    if(!chosen.length) {status.textContent = "No plans selected yet.";wrap.hidden = true;return;}
+    status.textContent = chosen.length === 1 ? "Select one or two more plans to compare." : chosen.length + " plans selected.";
+    if(chosen.length < 2) {wrap.hidden=true;return;}
+    const top = document.createElement("tr");
+    const first = document.createElement("th");first.scope="col";first.textContent="Detail";top.appendChild(first);
+    for(const card of chosen){const cell=document.createElement("th");cell.scope="col";cell.textContent=card.dataset.name;top.appendChild(cell);}
+    head.replaceChildren(top);
+    body.replaceChildren();
+    for(const [label,field] of [["Insurer","provider"],["Metal level","tier"],["Plan type","type"],["Deductible in plan name*","deductible"]]) {
+      const row=document.createElement("tr"),th=document.createElement("th");th.scope="row";th.textContent=label;row.appendChild(th);
+      for(const card of chosen){const td=document.createElement("td");td.textContent=field==="deductible" ? "$"+Number(card.dataset[field]).toLocaleString("en-US") : card.dataset[field];row.appendChild(td);}
+      body.appendChild(row);
+    }
+    const row=document.createElement("tr"),th=document.createElement("th");th.textContent="Official document";th.scope="row";row.appendChild(th);
+    for(const card of chosen){const td=document.createElement("td");const a=document.createElement("a");a.href=card.querySelector(".market-link").href;a.target="_blank";a.rel="noopener noreferrer";a.textContent="View plan details ↗";td.appendChild(a);row.appendChild(td);}
+    body.appendChild(row);wrap.hidden=false;
+  }
+  for(const card of cards) card.querySelector(".compare-plan").addEventListener("change",ev=>{
+    const selected=cards.filter(item=>item.querySelector(".compare-plan").checked);
+    if(selected.length>3){ev.target.checked=false;status.textContent="You can compare up to three plans.";return;}
+    compareSelected();
+  });
+  document.getElementById("clear-compare").addEventListener("click",()=>{
+    for(const card of cards) card.querySelector(".compare-plan").checked=false;
+    compareSelected();
+  });
+})();
+</script></body></html>

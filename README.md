@@ -52,3 +52,17 @@ The first marketplace migration adds official plan catalog, service-area and rat
 - Claim records are tracking notes, not claims submitted to an insurer.
 - Agent requests are contact requests, not a promise of licensed-agent availability.
 - Recommendations are informational and do not replace official plan documents or professional advice.
+
+
+## 2027 curated plan explorer (feature branch)
+
+The public `/plans` page displays a curated, static 2027 Georgia marketplace plan **subset**, drawn from official insurer plan documents. It does not require a database or login to browse. Currently includes 5 Alliant SoloCare and 7 Kaiser Permanente individual/family plan examples, with issuer, plan name, metal level, plan type, and deductible amount as displayed in the plan name. Each card opens a direct issuer-hosted SBC/EOC for that particular plan; comparison and filters operate entirely in the browser.
+
+- Alliant source: https://alliantplans.com/solocare-sbcs/ (2027 Georgia section, on-market document variation 01)
+- Kaiser source: https://healthy.kaiserpermanente.org/georgia/support/forms/documents/individual-family (2027 plans offered by Georgia Access)
+- Georgia Access plan public use files: https://georgiaaccess.gov/public-use-files/
+- Sources reviewed November 4, 2026.
+
+**Limitations:** This is not a statewide inventory. There is no ZIP/county/age-specific availability filter, premium quoting, provider network or subsidy calculation yet. The deductible shown is parsed from the marketed plan name, not a substitute for the official plan document (and not necessarily an out-of-network deductible). Enrollment must occur on an official insurer/marketplace site. Do not represent browsing or clicking as enrollment or coverage. For a complete catalog, import Georgia Access 2027 Plan, Service Area, Benefits, and Rate PUFs into the marketplace tables, validate source dimensions, and verify plan URLs before publishing.
+
+Anonymous visits to `/dashboard` redirect to `/login?reason=dashboard`, where an explanatory notice appears. The CSS uses Georgia State-inspired blue (#0039A6). None of these changes deploy to Railway or merge to main automatically.
