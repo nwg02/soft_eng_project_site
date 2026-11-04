@@ -63,8 +63,8 @@ public class ChatController {
         this.apiKey = apiKey.trim();
         this.model = model.trim();
         this.geminiApiKey = System.getenv().getOrDefault("GEMINI_API_KEY", "").trim();
-        String requestedModel = System.getenv().getOrDefault("GEMINI_MODEL", "gemini-2.5-flash-lite").trim();
-        this.geminiModel = requestedModel.matches("[A-Za-z0-9._-]+") ? requestedModel : "gemini-2.5-flash-lite";
+        String requestedModel = System.getenv().getOrDefault("GEMINI_MODEL", "gemini-3.5-flash-lite").trim();
+        this.geminiModel = requestedModel.matches("[A-Za-z0-9._-]+") ? requestedModel : "gemini-3.5-flash-lite";
         this.http = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(6))
                 .build();

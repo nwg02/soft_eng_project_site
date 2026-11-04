@@ -38,7 +38,7 @@ The default application without the `local` profile still connects to the config
 
 ### AI chat helper
 
-The “Ask GISU” button works in **built-in guide mode** without an API key. For genuine Gemini AI replies, provide `GEMINI_API_KEY` as an environment variable in the **same terminal** that runs Spring Boot. The default model is `gemini-2.5-flash-lite`. You can optionally override it with `GEMINI_MODEL`.
+The “Ask GISU” button works in **built-in guide mode** without an API key. For genuine Gemini AI replies, provide `GEMINI_API_KEY` as an environment variable in the **same terminal** that runs Spring Boot. The default model is `gemini-3.5-flash-lite` (the older 2.5 family returns HTTP 404 for many newly created API projects). You can optionally override it with `GEMINI_MODEL`. If you previously set `GEMINI_MODEL=gemini-2.5-flash-lite`, run `unset GEMINI_MODEL` before starting Spring Boot.
 
 ```bash
 cd ~/Desktop/sprint2_site
