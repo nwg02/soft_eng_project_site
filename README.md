@@ -96,3 +96,7 @@ Anonymous visits to `/dashboard` redirect to `/login?reason=dashboard`, where an
 - The Explore Plans page and assessment results now use **the same 12-entry verified-document catalog** (`GeorgiaPlanCatalog.java`) so links and names remain consistent.
 - For an existing local H2 database, `local-schema.sql` applies add-column-if-missing updates automatically. For the **production MySQL database**, apply `database/migrations/V3__assessment_preferences.sql` once, after V2 and after backing up the database. No production migration was applied.
 - No Social Security number, exact income, medical history, or payment data is collected in this assessment. Do not use real personal details in classroom demos. Results are not professional insurance advice.
+
+### Local verification
+
+Use `mvn test` to run the automated H2-backed assessment flow tests in memory (without touching the regular local database or Railway). The feature branch also has a GitHub Actions workflow that runs these checks. After pulling the feature branch and restarting Spring Boot with `local` profile, create a test account and complete an assessment, review the document suggestions, then revisit them from Dashboard. Do not commit test accounts or API keys.
