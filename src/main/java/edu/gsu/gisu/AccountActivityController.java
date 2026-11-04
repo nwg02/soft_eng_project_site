@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
+import java.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * Educational, account-private support and tracking pages.
@@ -31,9 +33,12 @@ public class AccountActivityController {
     );
 
     private final AccountActivityService activity;
+    private final CoverageReminderService reminders;
 
-    public AccountActivityController(AccountActivityService activity) {
+    public AccountActivityController(AccountActivityService activity,
+                                     CoverageReminderService reminders) {
         this.activity = activity;
+        this.reminders = reminders;
     }
 
     @GetMapping("/agent-assistance")
@@ -120,9 +125,35 @@ public class AccountActivityController {
     public String notifications(HttpSession session, Model model) {
         Integer id = customerId(session);
         if (id == null) return "redirect:/login?reason=account";
+        reminders.refresh(id);
+        model.addAttribute("renewalReminders", reminders.renewals(id));
         model.addAttribute("notifications", activity.notifications(id));
         model.addAttribute("unreadCount", activity.unreadCount(id));
         return "notifications";
+    }
+
+    @PostMapping("/notifications/renewals")
+    public String createRenewalReminder(@RequestParam(required = false)
+                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                                         LocalDate renewalDate, HttpSession session) {
+        Integer id = customerId(session);
+        if (id == null) return "redirect:/login?reason=account";
+        if (!CoverageReminderService.validRenewalDate(renewalDate))
+            return "redirect:/notifications?event=invalid-date";
+        try {
+            reminders.addRenewal(id, renewalDate);
+        } catch (IllegalArgumentException ex) {
+            return "redirect:/notifications?event=invalid-date";
+        }
+        return "redirect:/notifications?event=reminder-saved";
+    }
+
+    @PostMapping("/notifications/renewals/{reminderId}/delete")
+    public String deleteRenewalReminder(@PathVariable long reminderId, HttpSession session) {
+        Integer id = customerId(session);
+        if (id == null) return "redirect:/login?reason=account";
+        boolean removed = reminders.deleteRenewal(id, reminderId);
+        return "redirect:/notifications?event=" + (removed ? "reminder-deleted" : "unavailable");
     }
 
     @PostMapping("/notifications/{notificationId}/read")

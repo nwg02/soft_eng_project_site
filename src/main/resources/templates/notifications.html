@@ -8,10 +8,33 @@
   <section class="activity-hero">
     <span class="eyebrow">YOUR GISU ACCOUNT</span>
     <h1>Notifications</h1>
-    <p>Updates about activity inside your GISU account. These appear on the site only; GISU does not send email, SMS, or insurer notifications.</p>
+    <p>Payment reminders, renewal dates, and account updates in one place.</p>
   </section>
   <p class="plan-bookmark-feedback" th:if="${param.event != null and (param.event[0] == 'read' or param.event[0] == 'all-read')}" role="status">Your notification preferences have been updated.</p>
   <p class="error" th:if="${param.event != null and param.event[0] == 'unavailable'}" role="alert">That notification wasn't available to update in your account.</p>
+  <p class="plan-bookmark-feedback" th:if="${param.event != null and param.event[0] == 'reminder-saved'}" role="status">Renewal reminder saved.</p>
+  <p class="plan-bookmark-feedback" th:if="${param.event != null and param.event[0] == 'reminder-deleted'}" role="status">Renewal reminder removed.</p>
+  <p class="error" th:if="${param.event != null and param.event[0] == 'invalid-date'}" role="alert">Choose a renewal date within the next two years.</p>
+
+  <section class="renewal-reminder-card" aria-labelledby="renewal-reminders-title">
+    <div>
+      <h2 id="renewal-reminders-title">Policy renewal reminders</h2>
+      <p>Add a renewal date to receive an alert here 30 days beforehand.</p>
+    </div>
+    <form class="renewal-reminder-form" th:action="@{/notifications/renewals}" method="post">
+      <label for="renewal-date">Renewal date</label>
+      <input id="renewal-date" name="renewalDate" type="date" required>
+      <button class="button button-primary" type="submit">Add reminder</button>
+    </form>
+    <div class="renewal-reminder-list" th:if="${!#lists.isEmpty(renewalReminders)}">
+      <div class="renewal-reminder-row" th:each="reminder : ${renewalReminders}">
+        <span>Policy renewal: <strong th:text="${reminder.renewal_date}">2027-01-01</strong></span>
+        <form th:action="@{/notifications/renewals/{id}/delete(id=${reminder.reminder_id})}" method="post">
+          <button class="button button-outline" type="submit">Remove</button>
+        </form>
+      </div>
+    </div>
+  </section>
 
   <section class="activity-history">
     <div class="activity-heading activity-notification-heading">
@@ -20,7 +43,7 @@
         <button class="button button-outline" type="submit">Mark all as read</button>
       </form>
     </div>
-    <div class="dashboard-empty" th:if="${#lists.isEmpty(notifications)}"><h3>No notifications yet</h3><p>You'll see updates here after recording an assistance request or saving an issue note.</p></div>
+    <div class="dashboard-empty" th:if="${#lists.isEmpty(notifications)}"><h3>No notifications yet</h3><p>Your account alerts will appear here.</p></div>
     <article th:each="n : ${notifications}" class="activity-item activity-notification" th:classappend="${n.read_at == null} ? ' activity-unread' : ''">
       <div class="activity-item-head">
         <strong th:text="${n.title}">Notification</strong>

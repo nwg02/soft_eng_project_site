@@ -233,3 +233,39 @@ CREATE TABLE IF NOT EXISTS payroll_demo_deductions (
     CONSTRAINT fk_local_deduction_customer FOREIGN KEY (customer_id)
         REFERENCES customers(customer_id) ON DELETE CASCADE
 );
+
+-- Internal enrollment requests, not official insurance applications.
+CREATE TABLE IF NOT EXISTS gisu_enrollment_requests (
+    request_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL,
+    plan_slug VARCHAR(64) NOT NULL,
+    requested_start DATE NOT NULL,
+    request_status VARCHAR(32) NOT NULL DEFAULT 'ready',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_gisu_request_customer FOREIGN KEY (customer_id)
+        REFERENCES customers(customer_id) ON DELETE CASCADE
+);
+
+-- A user-configured renewal reminder. Notifications are shown in the app.
+CREATE TABLE IF NOT EXISTS gisu_renewal_reminders (
+    reminder_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL,
+    renewal_date DATE NOT NULL,
+    label VARCHAR(80) NOT NULL DEFAULT 'Policy renewal',
+    notified_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_gisu_renewal_customer FOREIGN KEY (customer_id)
+        REFERENCES customers(customer_id) ON DELETE CASCADE
+);
+
+-- Dedupes billing due reminders across logins/page refreshes.
+CREATE TABLE IF NOT EXISTS gisu_notification_receipts (
+    receipt_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL,
+    source_type VARCHAR(40) NOT NULL,
+    source_id BIGINT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_gisu_notification_receipt UNIQUE (customer_id, source_type, source_id),
+    CONSTRAINT fk_gisu_receipt_customer FOREIGN KEY (customer_id)
+        REFERENCES customers(customer_id) ON DELETE CASCADE
+);

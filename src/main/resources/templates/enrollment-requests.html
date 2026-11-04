@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Enrollment Requests | GISU</title>
+  <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<div th:replace="~{fragments :: header}"></div>
+<main class="enrollment-requests-main">
+  <a class="billing-back" th:href="@{/dashboard}">← Dashboard</a>
+  <header class="enrollment-requests-hero">
+    <span class="eyebrow">MY COVERAGE</span>
+    <h1>Enrollment requests</h1>
+    <p>Review your selected plans and continue with the insurer when you're ready.</p>
+  </header>
+  <p class="plan-bookmark-feedback" th:if="${param.event != null and param.event[0] == 'saved'}" role="status">Plan added to your enrollment requests.</p>
+  <p class="plan-bookmark-feedback" th:if="${param.event != null and param.event[0] == 'deleted'}" role="status">Enrollment request removed.</p>
+  <p class="error" th:if="${param.event != null and param.event[0] == 'invalid'}" role="alert">Choose a valid plan and preferred start date.</p>
+
+  <div class="dashboard-empty" th:if="${#lists.isEmpty(requests)}">
+    <h2>No requests yet</h2>
+    <p>Find a plan and choose “Save enrollment request” to get started.</p>
+    <a class="button button-primary" th:href="@{/plans}">Browse plans</a>
+  </div>
+  <div class="enrollment-requests-list">
+    <article class="enrollment-request-row" th:each="r : ${requests}">
+      <div>
+        <span class="eyebrow" th:text="${r.issuer}">Insurance company</span>
+        <h2 th:text="${r.planName}">Selected plan</h2>
+        <p>Preferred start: <time th:text="${r.requested_start}">2027-01-01</time></p>
+        <span class="enrollment-request-status">Ready to apply</span>
+      </div>
+      <div class="enrollment-request-actions">
+        <a class="button button-primary" th:href="@{/enrollment/plan/{slug}(slug=${r.slug})}">Continue enrollment →</a>
+        <form th:action="@{/enrollment/requests/{id}/delete(id=${r.request_id})}" method="post">
+          <button class="button button-outline" type="submit">Remove</button>
+        </form>
+      </div>
+    </article>
+  </div>
+</main>
+<div th:replace="~{fragments :: footer}"></div>
+</body>
+</html>

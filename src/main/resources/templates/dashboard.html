@@ -26,6 +26,7 @@
         <a th:href="@{/billing}">Billing</a>
         <a th:href="@{/account/security}">Security &amp; 2FA</a>
         <a th:href="@{/notifications}">Notifications</a>
+        <a th:href="@{/enrollment/requests}">Enrollment requests</a>
       </nav>
     </section>
     <section class="dashboard-security-summary">
@@ -125,6 +126,7 @@
       <div class="dashboard-section-heading">
         <div><span class="eyebrow">OFFICIAL ENROLLMENT WEBSITES</span>
           <h2 id="referral-title">Links you've followed</h2></div>
+        <a class="button button-outline" th:href="@{/enrollment/requests}">My enrollment requests (<span th:text="${enrollmentRequestCount}">0</span>) →</a>
         <a class="button button-outline" th:href="@{/plans}">Find plans →</a>
       </div>
       <p th:if="${#lists.isEmpty(officialSiteVisits)}" class="dashboard-empty">

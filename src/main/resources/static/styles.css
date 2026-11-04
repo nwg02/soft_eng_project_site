@@ -743,3 +743,42 @@
   .payroll-history-item>div:last-child{text-align:left}
   .dashboard-finance-actions{width:100%}
 }
+
+
+/* Compact billing action, renewal reminders and enrollment requests */
+.enrollment-request-create,.renewal-reminder-card{
+  border:1px solid #d7e4f4;background:#f8fbff;border-radius:12px;
+  padding:22px 25px;margin:24px 0
+}
+.enrollment-request-create h2,.renewal-reminder-card h2{font-size:21px;margin:8px 0}
+.enrollment-request-create p,.renewal-reminder-card p{font-size:12px;color:#607a99;line-height:1.6}
+.enrollment-request-create form,.renewal-reminder-form{
+  display:flex;align-items:end;gap:12px;flex-wrap:wrap;margin:15px 0
+}
+.enrollment-request-create label,.renewal-reminder-form label{font-size:12px;font-weight:750;color:#3d5a80}
+.enrollment-request-create input,.renewal-reminder-form input{padding:10px 12px;border:1px solid #bdcfea;border-radius:8px;background:#fff;color:#233d63;font:inherit;font-size:13px}
+.enrollment-request-create form button,.renewal-reminder-form button{font-size:12px}
+.enrollment-request-create>a{font-size:12px;font-weight:750}
+.enrollment-requests-main{max-width:960px!important;padding:42px 24px 75px!important}
+.enrollment-requests-hero{margin:24px 0 30px}
+.enrollment-requests-hero h1{font-size:clamp(32px,4vw,45px);margin:10px 0}
+.enrollment-requests-hero p{font-size:14px;color:#5b7392}
+.enrollment-request-row{border:1px solid #d8e5f4;background:#fff;border-radius:12px;padding:22px 25px;margin:14px 0;display:flex;justify-content:space-between;align-items:center;gap:22px}
+.enrollment-request-row h2{font-size:19px;margin:8px 0}
+.enrollment-request-row p{font-size:12px;color:#68809d;margin:0 0 10px}
+.enrollment-request-status{border-radius:99px;background:#ebf3ff;color:#315d9d;font-size:11px;font-weight:750;padding:6px 9px}
+.enrollment-request-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.enrollment-request-actions form{margin:0}
+.enrollment-request-actions .button{font-size:12px}
+.renewal-reminder-form{align-items:end}
+.renewal-reminder-list{border-top:1px solid #dce6f4;margin-top:18px;padding-top:10px}
+.renewal-reminder-row{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid #e3ecf7;font-size:13px;color:#2d4a70}
+.renewal-reminder-row:last-child{border-bottom:0}
+.renewal-reminder-row form{margin:0}
+.renewal-reminder-row button{font-size:11px;padding:7px 11px}
+@media(max-width:650px){
+  .enrollment-requests-main{padding:28px 18px 60px!important}
+  .enrollment-request-row{align-items:flex-start;flex-direction:column}
+  .enrollment-request-actions{width:100%}
+  .renewal-reminder-card,.enrollment-request-create{padding:19px 17px}
+}

@@ -30,6 +30,7 @@
 
   <p class="plan-bookmark-feedback" th:if="${param.event != null and param.event[0] == 'added'}" role="status">Billing entry saved to your account.</p>
   <p class="plan-bookmark-feedback" th:if="${param.event != null and param.event[0] == 'paid'}" role="status">Entry marked as paid.</p>
+  <p class="plan-bookmark-feedback" th:if="${param.event != null and param.event[0] == 'payment'}" role="status">Sample payment completed and added to your history.</p>
   <p class="plan-bookmark-feedback" th:if="${param.event != null and param.event[0] == 'deleted'}" role="status">Entry removed from your personal log.</p>
   <p class="error" th:if="${param.event != null and param.event[0] == 'unavailable'}" role="alert">That entry could not be updated or does not belong to your account.</p>
   <p class="error" th:if="${error}" th:text="${error}" role="alert"></p>
@@ -84,6 +85,10 @@
           <small>Planned date: <time th:text="${r.date}">2026-11-15</time></small>
         </div>
         <div class="billing-entry-actions">
+          <form th:action="@{/billing/{id}/pay(id=${r.id})}" method="post"
+                onsubmit="return confirm('Record a sample payment for this bill?');">
+            <button class="button button-primary" type="submit">Pay bill (sample)</button>
+          </form>
           <form th:action="@{/billing/{id}/paid(id=${r.id})}" method="post">
             <button class="button button-primary" type="submit">Mark paid</button>
           </form>
@@ -105,6 +110,7 @@
           <span class="billing-entry-category" th:text="${r.category}">Insurance premium</span>
           <strong th:text="${r.amountLabel}">$125.00</strong>
           <small>Recorded payment date: <time th:text="${r.date}">2026-11-04</time></small>
+          <small th:if="${r.samplePayment}">Sample payment</small>
         </div>
         <div class="billing-entry-actions">
           <form th:action="@{/billing/{id}/delete(id=${r.id})}" method="post"

@@ -22,17 +22,23 @@ public class WebController {
     private final EnrollmentReferralService enrollmentReferralService;
     private final BillingService billingService;
     private final TwoFactorService twoFactorService;
+    private final CoverageReminderService coverageReminders;
+    private final EnrollmentRequestService enrollmentRequestService;
 
     public WebController(JdbcTemplate db, SavedPlanService savedPlanService,
                          AccountActivityService accountActivityService,
                          EnrollmentReferralService enrollmentReferralService,
-                         BillingService billingService, TwoFactorService twoFactorService) {
+                         BillingService billingService, TwoFactorService twoFactorService,
+                         CoverageReminderService coverageReminders,
+                         EnrollmentRequestService enrollmentRequestService) {
         this.db = db;
         this.savedPlanService = savedPlanService;
         this.accountActivityService = accountActivityService;
         this.enrollmentReferralService = enrollmentReferralService;
         this.billingService = billingService;
         this.twoFactorService = twoFactorService;
+        this.coverageReminders = coverageReminders;
+        this.enrollmentRequestService = enrollmentRequestService;
     }
 
     @GetMapping("/")
@@ -175,6 +181,8 @@ public class WebController {
         model.addAttribute("officialSiteVisitCount",
                 enrollmentReferralService.count(((Number) customerId).intValue()));
         int accountId = ((Number) customerId).intValue();
+        coverageReminders.refresh(accountId);
+        model.addAttribute("enrollmentRequestCount", enrollmentRequestService.count(accountId));
         model.addAttribute("unreadNotifications", accountActivityService.unreadCount(accountId));
         model.addAttribute("openReportCount", accountActivityService.openReportCount(accountId));
         model.addAttribute("agentRequestCount", accountActivityService.agentRequestCount(accountId));

@@ -27,7 +27,7 @@ public class BillingService {
     );
 
     public record Entry(long id, String category, BigDecimal amount, LocalDate date,
-                        String status) {
+                        String status, boolean samplePayment) {
         public String getAmountLabel() {
             return NumberFormat.getCurrencyInstance(Locale.US).format(amount);
         }
@@ -54,7 +54,7 @@ public class BillingService {
     public List<Entry> entries(int customerId) {
         return db.query(
                 "SELECT payment_history_id, source_description, amount, payment_date, " +
-                "payment_status FROM payment_history WHERE customer_id = ? " +
+                "payment_status, external_reference FROM payment_history WHERE customer_id = ? " +
                 "AND payment_status IN ('planned', 'recorded_paid') " +
                 "ORDER BY payment_date DESC, payment_history_id DESC LIMIT 100",
                 (rs, rowNum) -> new Entry(
@@ -62,7 +62,9 @@ public class BillingService {
                         safeCategory(rs.getString("source_description")),
                         rs.getBigDecimal("amount"),
                         rs.getDate("payment_date").toLocalDate(),
-                        rs.getString("payment_status")),
+                        rs.getString("payment_status"),
+                        rs.getString("external_reference") != null &&
+                                rs.getString("external_reference").startsWith("GISU-SAMPLE-")),
                 customerId);
     }
 
@@ -140,6 +142,28 @@ public class BillingService {
             notifyAccount(customerId, "Billing record marked paid",
                     "You marked a planned expense as paid in GISU. " +
                     "This is a personal record, not payment confirmation from an insurer.");
+        }
+        return changed == 1;
+    }
+
+    /**
+     * Explicit sample checkout: marks one OWNED planned bill paid in the GISU
+     * ledger. Never contacts a processor or charges a real payment method.
+     */
+    @Transactional
+    public boolean simulatePayment(int customerId, long recordId) {
+        if (recordId <= 0) return false;
+        String reference = "GISU-SAMPLE-" + java.util.UUID.randomUUID().toString()
+                .substring(0, 12).toUpperCase(java.util.Locale.ROOT);
+        int changed = db.update(
+                "UPDATE payment_history SET payment_status = 'recorded_paid', " +
+                "payment_date = CURRENT_DATE, external_reference = ? " +
+                "WHERE payment_history_id = ? AND customer_id = ? " +
+                "AND payment_status = 'planned'",
+                reference, recordId, customerId);
+        if (changed == 1) {
+            notifyAccount(customerId, "Payment recorded",
+                    "Your sample bill payment was recorded in GISU.");
         }
         return changed == 1;
     }

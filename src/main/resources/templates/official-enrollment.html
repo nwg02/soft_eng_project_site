@@ -23,6 +23,20 @@
       <strong th:text="${plan.deductibleLabel}">$0</strong></p>
     <a th:href="${plan.documentUrl}" target="_blank" rel="noopener noreferrer">Read official plan document ↗</a>
   </section>
+  <section class="enrollment-request-create" th:if="${signedIn}">
+    <div>
+      <span class="eyebrow">MY ENROLLMENT</span>
+      <h2>Save an enrollment request</h2>
+      <p>Keep this plan in your account as you prepare to apply.</p>
+    </div>
+    <form th:action="@{/enrollment/plan/{slug}/request(slug=${plan.slug})}" method="post">
+      <label for="enrollment-start-date">Preferred coverage start date</label>
+      <input id="enrollment-start-date" name="desiredStart" type="date" th:value="${today}" required>
+      <button class="button button-primary" type="submit">Save enrollment request</button>
+    </form>
+    <a th:href="@{/enrollment/requests}">View my requests →</a>
+  </section>
+
   <section class="enrollment-choices" aria-label="Official enrollment destinations">
     <article class="enrollment-choice">
       <h3>Insurance company</h3>

@@ -64,6 +64,15 @@ public class BillingController {
                 "#billing-history";
     }
 
+    @PostMapping("/billing/{id}/pay")
+    public String simulatePayBill(@PathVariable long id, HttpSession session) {
+        Integer customerId = accountId(session);
+        if (customerId == null) return "redirect:/login?reason=account";
+        boolean updated = billing.simulatePayment(customerId, id);
+        return "redirect:/billing?event=" + (updated ? "payment" : "unavailable") +
+                "#billing-history";
+    }
+
     @PostMapping("/billing/{id}/delete")
     public String delete(@PathVariable long id, HttpSession session) {
         Integer customerId = accountId(session);

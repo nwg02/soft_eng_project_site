@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
+import java.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * An official-site handoff, not a GISU enrollment or coverage confirmation.
@@ -18,9 +20,12 @@ import java.util.Map;
 public class OfficialEnrollmentController {
     private static final String GEORGIA_ACCESS = "https://georgiaaccess.gov/";
     private final EnrollmentReferralService referrals;
+    private final EnrollmentRequestService enrollmentRequests;
 
-    public OfficialEnrollmentController(EnrollmentReferralService referrals) {
+    public OfficialEnrollmentController(EnrollmentReferralService referrals,
+                                        EnrollmentRequestService enrollmentRequests) {
         this.referrals = referrals;
+        this.enrollmentRequests = enrollmentRequests;
     }
 
     @GetMapping("/enrollment/plan/{slug}")
@@ -30,6 +35,7 @@ public class OfficialEnrollmentController {
         model.addAttribute("plan", plan.get());
         model.addAttribute("signedIn", accountId(session) != null);
         model.addAttribute("marketplaceUrl", GEORGIA_ACCESS);
+        model.addAttribute("today", LocalDate.now().toString());
         return "official-enrollment";
     }
 
@@ -53,6 +59,35 @@ public class OfficialEnrollmentController {
         String officialUrl = "issuer".equals(destination)
                 ? plan.get().shopUrl() : GEORGIA_ACCESS;
         return "redirect:" + officialUrl;
+    }
+
+    @PostMapping("/enrollment/plan/{slug}/request")
+    public String saveRequest(@PathVariable String slug,
+                              @RequestParam(required = false)
+                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                              LocalDate desiredStart,
+                              HttpSession session) {
+        Integer customer = accountId(session);
+        if (customer == null) return "redirect:/login?reason=account";
+        boolean saved = enrollmentRequests.save(customer, slug, desiredStart);
+        return "redirect:/enrollment/requests?event=" + (saved ? "saved" : "invalid");
+    }
+
+    @GetMapping("/enrollment/requests")
+    public String myRequests(HttpSession session, Model model) {
+        Integer customer = accountId(session);
+        if (customer == null) return "redirect:/login?reason=account";
+        model.addAttribute("requests", enrollmentRequests.requests(customer));
+        return "enrollment-requests";
+    }
+
+    @PostMapping("/enrollment/requests/{id}/delete")
+    public String deleteRequest(@PathVariable long id, HttpSession session) {
+        Integer customer = accountId(session);
+        if (customer == null) return "redirect:/login?reason=account";
+        boolean deleted = enrollmentRequests.delete(customer, id);
+        return "redirect:/enrollment/requests?event=" +
+                (deleted ? "deleted" : "invalid");
     }
 
     private Integer accountId(HttpSession session) {

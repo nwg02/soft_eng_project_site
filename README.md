@@ -365,3 +365,38 @@ The standalone payroll calculator was an extra interpretation of requirement
 without deleting the feature or stored simulations. Direct `/payroll` access
 is retained for existing records, should the class decide to use it later.
 No actual insurance actions, payments or payroll activities are performed.
+
+
+## Completing class requirements #5, #6 and #12
+
+The existing account-only Billing page now has **Pay bill (sample)** next to each
+planned expense. It moves that one account-owned entry to recorded-payment
+history, saves a `GISU-SAMPLE-` reference, and creates an in-app confirmation.
+Repeated requests, another account's bill and already-paid bills cannot
+repeat that action. **No card data is requested and no payment processor is
+contacted.** Existing "Mark paid" and manual history functionality remains.
+
+The Notifications screen now contains policy-renewal dates. A member can save
+or remove a renewal date. A renewal notification appears in the account when
+the date is within 30 days; planned bill due dates generate a one-time alert
+when due within 7 days. Dashboard and Notifications visits refresh alerts.
+This is a deliberate **on-visit in-app system**, not an email/SMS scheduler;
+nothing is pushed to users while they're signed out. The
+`gisu_notification_receipts` table prevents repeated bill reminders. A
+policy-selection update is also issued when saving an enrollment request.
+
+From an official plan enrollment page, signed-in users can choose a preferred
+start date and **Save enrollment request**. Requests are private, visible at
+`/enrollment/requests` and on the dashboard, and can be removed. They remain
+at the "Ready to apply" stage with a link to the official insurer/marketplace.
+This never sends an application or asserts an active policy; external
+enrollment links and historical referral logging continue to work as before.
+The earlier separate payroll deduction calculator is preserved but intentionally
+kept out of the main navigation.
+
+`database/migrations/V8__enrollment_requests_and_reminders.sql` adds the
+request, renewal and reminder-dedupe tables to MySQL. The `local` H2 schema
+creates them automatically. **Do not apply V8 to Railway or deploy without
+explicit authorization.** The new `RequirementsFinishFlowTest` covers
+customer scoping, sample payment idempotence, payment-due and renewal
+notification deduplication, and the local enrollment-request workflow.
