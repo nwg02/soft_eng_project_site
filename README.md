@@ -1,47 +1,42 @@
-# GISU Sprint 2 Prototype
+# GISU — Georgia Insurance Search & Understanding
 
-This project is a Java Spring Boot application that uses MySQL to store user accounts and insurance assessment results. Users can register, log in, complete an insurance assessment, and view available insurance plans.
+GISU is evolving into a Georgia-focused health insurance discovery and comparison platform. It helps people understand plan options, compare verified information, and continue to the official insurer or Georgia Access enrollment experience.
 
-## Requirements
+## Product direction
 
-* Java 17 or newer
-* Maven
-* MySQL 8 or newer
+- Browse without creating an account.
+- Enter a Georgia ZIP code and household information.
+- Complete a guided insurance-needs assessment or browse manually.
+- Compare real plans and clearly labeled plan details.
+- See where plan information came from and when it was last updated.
+- Continue to the official insurer or Georgia Access site for quotes, eligibility, and enrollment.
 
-An internet connection is needed the first time Maven downloads the project's dependencies.
+GISU does not issue insurance, determine eligibility, bind coverage, collect premiums, or submit claims to insurers. Payment history, claim tracking, and enrollment status inside the prototype are informational records only unless a verified external integration is added.
 
-## 1. Set Up the Database
+## Official Georgia plan data
 
-Run `database/schema.sql` in MySQL. This creates the `gisu` database, the required tables, and sample insurance plans.
+The initial catalog source is the Georgia Access Public Use Files (PUFs):
+https://georgiaaccess.gov/public-use-files/
 
-## 2. Configure MySQL
+Georgia Access publishes Plan, Rate, Benefits and Cost Sharing, and Service Area files for plan years including 2027. Import related files together and retain source filenames, plan year, and source update dates. A premium must never be shown as a personalized quote unless it is calculated using the correct rating inputs and applicable eligibility rules.
 
-Open `src/main/resources/application.properties` and set the database username and password for your local MySQL installation.
+## Stack
 
-The default database name is `gisu`. Make sure the credentials match your MySQL setup.
+- Java / Spring Boot
+- Thymeleaf
+- MySQL
+- Maven
+- Railway deployment
 
-## 3. Run the Application
+## Database migration
 
-Open a terminal in the project folder and run:
+Apply `src/main/resources/db/migration/V2__georgia_marketplace_catalog.sql` to the existing `gisu` database after confirming the current application tables are present. This migration adds separate marketplace catalog and support tables; it does not delete or rename existing tables.
 
-```bash
-mvn spring-boot:run
-```
+## Data quality rules
 
-Once the application starts, open http://localhost:8080 in your browser.
-
-## Features
-
-* User registration and login/logout
-* Session-based login state
-* Dashboard
-* Insurance assessment results saved to MySQL
-* Insurance plans loaded from MySQL
-
-## Notes
-
-* This is a prototype for a class project.
-* Insurance recommendations use a basic budget and coverage filter, not AI.
-* The database includes a `payments` table, but payment processing is not implemented.
-* Passwords are hashed before being stored.
-* Use fictional or test information when trying the application.
+1. Do not seed fictional plans or prices as real listings.
+2. Preserve source plan identifiers and plan year.
+3. Store service areas by county/ZIP and filter before recommending.
+4. Display source and data-as-of dates on plan details.
+5. Distinguish a published rate from an actual user quote.
+6. Link to official enrollment resources and state clearly that eligibility and final pricing are confirmed there.

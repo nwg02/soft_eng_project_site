@@ -1,15 +1,62 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>GISU Insurance Services</title><link rel="stylesheet" th:href="@{/styles.css}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Explore and compare Georgia health insurance plans. Understand your options and continue to official enrollment resources.">
+    <title>GISU | Georgia Insurance Search & Understanding</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/styles.css}">
 </head>
 <body>
 <div th:replace="~{fragments :: header}"></div>
 <main>
-    <h1>Insurance Services United</h1>
-    <p>A simple portal to create an account, complete an insurance assessment, and review sample plan options.</p>
-    <p><a class="button" th:href="@{/register}">Create an account</a> <a class="button" th:href="@{/plans}">View plans</a></p>
+    <section class="hero">
+        <div class="hero-copy">
+            <span class="eyebrow">GEORGIA HEALTH COVERAGE, MADE CLEARER</span>
+            <h1>Find coverage that fits <span>your life.</span></h1>
+            <p class="hero-lead">Explore health insurance options available in Georgia, understand what each plan offers, and compare your choices in one place.</p>
+            <div class="hero-actions">
+                <a class="button button-primary" th:href="@{/plans}">Explore Georgia plans <span aria-hidden="true">→</span></a>
+                <a class="button button-secondary" th:href="@{/assessment}">Take the assessment</a>
+            </div>
+            <p class="hero-note">No account required to start exploring.</p>
+        </div>
+        <div class="hero-panel">
+            <div class="panel-top"><span class="panel-dot"></span> YOUR COVERAGE CHECKLIST</div>
+            <div class="check-row"><span class="check-icon">01</span><div><strong>Tell us what matters</strong><small>Budget, household, doctors and priorities</small></div></div>
+            <div class="check-row"><span class="check-icon">02</span><div><strong>Compare available plans</strong><small>Premiums, deductibles and coverage</small></div></div>
+            <div class="check-row"><span class="check-icon">03</span><div><strong>Continue with the provider</strong><small>Visit the official enrollment resource</small></div></div>
+            <div class="panel-foot">Clear information. More confident decisions.</div>
+        </div>
+    </section>
+
+    <section class="trust-strip">
+        <div><strong>Georgia-focused</strong><span>Plans and service areas for Georgia residents</span></div>
+        <div><strong>Source-aware</strong><span>Plan information labeled with its source and date</span></div>
+        <div><strong>Your choice</strong><span>Compare first, then continue to the provider</span></div>
+    </section>
+
+    <section class="section-block">
+        <div class="section-heading">
+            <div><span class="eyebrow">A SIMPLE PLACE TO START</span><h2>Health insurance, without the guesswork.</h2></div>
+            <a class="text-link" th:href="@{/plans}">Browse plans <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="feature-grid">
+            <article class="feature-card"><span class="feature-number">01</span><h3>Explore</h3><p>Browse health plan options and learn the basics of premiums, deductibles, networks and benefits.</p></article>
+            <article class="feature-card"><span class="feature-number">02</span><h3>Get matched</h3><p>Use a guided assessment or enter your details manually to find plans that align with your needs.</p></article>
+            <article class="feature-card"><span class="feature-number">03</span><h3>Compare</h3><p>Put plans side by side and see the details that can make a difference in your decision.</p></article>
+        </div>
+    </section>
+
+    <section class="assessment-banner">
+        <div><span class="eyebrow">PERSONALIZED PLAN DISCOVERY</span><h2>Not sure where to begin?</h2><p>Answer a few questions about your coverage needs and monthly budget to get a useful starting point.</p></div>
+        <a class="button button-light" th:href="@{/assessment}">Start your assessment <span aria-hidden="true">→</span></a>
+    </section>
+
+    <section class="disclaimer"><strong>Important:</strong> GISU is an independent educational comparison prototype, not an insurer, insurance agent, or government marketplace. Plan availability, premiums and eligibility must be confirmed with the insurer or Georgia Access. Recommendations are informational and do not guarantee coverage or enrollment.</section>
 </main>
 <div th:replace="~{fragments :: footer}"></div>
 </body>
