@@ -80,7 +80,7 @@
           <p>Monthly premium: <strong>Official quote required</strong></p>
           <div class="dashboard-saved-links">
             <a class="button button-primary" th:href="${p.documentUrl}" target="_blank" rel="noopener noreferrer">Official document ↗</a>
-            <a th:href="${p.shopUrl}" target="_blank" rel="noopener noreferrer">Check availability ↗</a>
+            <a th:href="@{/enrollment/plan/{slug}(slug=${p.slug})}">Enrollment options →</a>
           </div>
           <form th:action="@{/saved-plans/remove}" method="post" class="save-plan-form">
             <input type="hidden" name="planSlug" th:value="${p.slug}">
@@ -91,23 +91,33 @@
       </div>
     </section>
 
+    <section class="dashboard-referrals" aria-labelledby="referral-title">
+      <div class="dashboard-section-heading">
+        <div><span class="eyebrow">OFFICIAL ENROLLMENT WEBSITES</span>
+          <h2 id="referral-title">Links you've followed</h2></div>
+        <a class="button button-outline" th:href="@{/plans}">Find plans →</a>
+      </div>
+      <p class="assessment-muted">GISU records visits to official enrollment websites when you're signed in.
+        A visit does not mean you applied, qualified, or have insurance.</p>
+      <p th:if="${#lists.isEmpty(officialSiteVisits)}" class="dashboard-empty">
+        No official enrollment links recorded yet.</p>
+      <div class="dashboard-referral-list" th:if="${!#lists.isEmpty(officialSiteVisits)}">
+        <article class="dashboard-referral-item" th:each="r : ${officialSiteVisits}">
+          <div>
+            <strong th:text="${r.planName}">Plan</strong>
+            <small th:text="|${r.destination} · ${r.clickedAt}|">Destination and date</small>
+          </div>
+          <a th:href="@{/enrollment/plan/{slug}(slug=${r.slug})}">View options →</a>
+        </article>
+      </div>
+    </section>
+
     <section class="assessment-dashboard-cta">
         <h2>Explore your coverage options</h2>
         <p>Save your coverage priorities, review official 2027 Georgia plan documents, and return to previous assessment results.</p>
         <a class="button button-primary" th:href="@{/assessment}">Start a new assessment →</a>
         <a class="button button-outline" href="#assessment-history">View assessment history</a>
     </section>
-
-    <p th:if="${status == 'success'}">A demo enrollment record was saved. This does not create real insurance coverage.</p>
-    <p th:if="${status == 'exists'}">This demo plan record already exists.</p>
-    <p th:if="${status == 'cancelled'}">Your cancellation request was processed.</p>
-    <p th:if="${status == 'extension_requested'}">Your extension request was submitted and is pending review.</p>
-    <p th:if="${status == 'extension_pending'}">You already have a pending extension request for this enrollment.</p>
-    <p th:if="${status == 'extension_error'}">The extension request could not be submitted. Choose an active enrollment and a future date.</p>
-    <p th:if="${status == 'switched'}">Your demo plan record was changed. No insurer was contacted.</p>
-    <p th:if="${status == 'switch_error'}">The plan could not be changed. Your existing enrollment has not been intentionally replaced.</p>
-    <p th:if="${status == 'same_plan'}">Choose a different plan to switch providers.</p>
-    <p th:if="${status == 'switch_household_error'}">Family coverage requires a household size between 2 and 20.</p>
 
     <p class="error" th:if="${status == 'assessment_not_found'}">That assessment could not be found in your account.</p>
     <section>
@@ -133,106 +143,22 @@
 
 
     <details class="dashboard-legacy">
-      <summary>Older classroom demo records (not actual insurance policies)</summary>
-      <p class="assessment-notice">These original records are fictional. Their demo controls only change GISU records and do not contact insurance companies.</p>
-    <section>
-        <h2>Legacy classroom enrollment records</h2>
-        <p class="assessment-muted">These are old prototype records, not confirmed insurance coverage. Changes here do not notify insurers or change actual policies.</p>
-
-        <p th:if="${#lists.isEmpty(enrollments)}">
-            You have no legacy demo enrollment records.
-        </p>
-
-        <article th:each="e : ${enrollments}" class="plan">
-            <h3 th:text="${e.plan_name}">Plan name</h3>
-
-            <p>Provider: <span th:text="${e.provider_name}">Provider</span></p>
-            <p>Coverage: <span th:text="${e.coverage_type}">individual</span></p>
-            <p>Monthly premium: $<span th:text="${e.monthly_premium}">0.00</span></p>
-            <p>Deductible: $<span th:text="${e.deductible}">0.00</span></p>
-            <p>Household size: <span th:text="${e.household_size}">1</span></p>
-            <p>Status: <span th:text="${e.enrollment_status}">active</span></p>
-            <p>Start date: <span th:text="${e.start_date}">Date</span></p>
-
-            <p th:if="${e.end_date != null}">
-                End date: <span th:text="${e.end_date}">Date</span>
-            </p>
-
-            <form th:if="${e.enrollment_status == 'active'}"
-                  th:action="@{/cancel-enrollment}" method="post"
-                  onsubmit="return confirm('Are you sure you want to cancel this enrollment?');">
-                <input type="hidden" name="enrollmentId" th:value="${e.enrollment_id}">
-                <button type="submit">Cancel demo record</button>
-            </form>
-
-            <section th:if="${e.enrollment_status == 'active'}">
-                <h4>Request an Extension</h4>
-                <p>Submit a future requested end date for review.</p>
-
-                <form th:action="@{/request-extension}" method="post">
-                    <input type="hidden" name="enrollmentId" th:value="${e.enrollment_id}">
-
-                    <label>
-                        Requested end date:
-                        <input type="date" name="requestedEndDate"
-                               th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
-                               required>
-                    </label>
-
-                    <button type="submit">Submit Extension Request</button>
-                </form>
-            </section>
-
-            <section th:if="${e.enrollment_status == 'active'}">
-                <h4>Change Plan or Provider</h4>
-
-                <form th:action="@{/switch-plan}" method="post">
-                    <input type="hidden" name="enrollmentId" th:value="${e.enrollment_id}">
-
-                    <label>
-                        New plan:
-                        <select name="newPlanId" required>
-                            <option value="">Choose a plan</option>
-                            <option th:each="p : ${availablePlans}"
-                                    th:if="${p.plan_id != e.plan_id}"
-                                    th:value="${p.plan_id}"
-                                    th:text="${p.provider_name + ' — ' + p.plan_name + ' (' + p.coverage_type + ') — $' + p.monthly_premium}">
-                            </option>
-                        </select>
-                    </label>
-
-                    <label>
-                        Household size for family coverage:
-                        <input type="number" name="householdSize"
-                               min="2" max="20" value="2">
-                    </label>
-
-                    <button type="submit"
-                            onclick="return confirm('Switch from your current plan to the selected plan?');">
-                        Switch demo plan
-                    </button>
-                </form>
-            </section>
-        </article>
-
-        <p><a th:href="@{/plans}">Browse Insurance Plans</a></p>
-    </section>
-
-    <section>
-        <h2>Legacy demo extension requests</h2>
-
-        <p th:if="${#lists.isEmpty(extensionRequests)}">
-            You have not submitted any extension requests.
-        </p>
-
-        <article th:each="r : ${extensionRequests}" class="plan">
-            <p>Enrollment: <span th:text="${r.enrollment_id}">0</span></p>
-            <p>Requested end date: <span th:text="${r.requested_end_date}">Date</span></p>
-            <p>Status: <span th:text="${r.request_status}">pending</span></p>
-            <p>Submitted: <span th:text="${r.created_at}">Date</span></p>
-        </article>
-    </section>
-
+      <summary>Archived classroom enrollment data (not real coverage)</summary>
+      <p class="assessment-notice">These are records from GISU's former fictional-plan prototype.
+        The historical status of a record does not mean an insurer provided or changed coverage.
+        GISU no longer creates, cancels or switches these demo enrollments.</p>
+      <p th:if="${#lists.isEmpty(enrollments)}">There are no archived demo enrollment records.</p>
+      <article th:each="e : ${enrollments}" class="plan">
+        <h3 th:text="${e.plan_name}">Former sample plan</h3>
+        <p>Fictional issuer: <span th:text="${e.provider_name}">Issuer</span></p>
+        <p>Demo database status (not coverage): <span th:text="${e.enrollment_status}">active</span></p>
+        <p>Recorded date: <span th:text="${e.start_date}">Date</span></p>
+      </article>
+      <h3 th:if="${!#lists.isEmpty(extensionRequests)}">Archived demo extension requests</h3>
+      <p th:each="r : ${extensionRequests}">
+        Demo request: <span th:text="${r.request_status}">pending</span>
+        · Recorded <span th:text="${r.created_at}">Date</span>
+      </p>
     </details>
 
     <form th:action="@{/logout}" method="post">

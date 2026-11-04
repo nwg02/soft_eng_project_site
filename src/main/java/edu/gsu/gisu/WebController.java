@@ -7,11 +7,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -20,12 +18,15 @@ public class WebController {
     private final JdbcTemplate db;
     private final SavedPlanService savedPlanService;
     private final AccountActivityService accountActivityService;
+    private final EnrollmentReferralService enrollmentReferralService;
 
     public WebController(JdbcTemplate db, SavedPlanService savedPlanService,
-                         AccountActivityService accountActivityService) {
+                         AccountActivityService accountActivityService,
+                         EnrollmentReferralService enrollmentReferralService) {
         this.db = db;
         this.savedPlanService = savedPlanService;
         this.accountActivityService = accountActivityService;
+        this.enrollmentReferralService = enrollmentReferralService;
     }
 
     @GetMapping("/")
@@ -147,6 +148,10 @@ public class WebController {
         var savedPlans = savedPlanService.savedPlans(((Number) customerId).intValue());
         model.addAttribute("savedPlans", savedPlans);
         model.addAttribute("savedCount", savedPlans.size());
+        model.addAttribute("officialSiteVisits",
+                enrollmentReferralService.history(((Number) customerId).intValue()));
+        model.addAttribute("officialSiteVisitCount",
+                enrollmentReferralService.count(((Number) customerId).intValue()));
         int accountId = ((Number) customerId).intValue();
         model.addAttribute("unreadNotifications", accountActivityService.unreadCount(accountId));
         model.addAttribute("openReportCount", accountActivityService.openReportCount(accountId));
@@ -181,12 +186,6 @@ public class WebController {
                 customerId
         ));
 
-        model.addAttribute("availablePlans", db.queryForList(
-                "SELECT plan_id, provider_name, plan_name, coverage_type, " +
-                "monthly_premium, deductible FROM insurance_plans " +
-                "ORDER BY provider_name, plan_name"
-        ));
-
         model.addAttribute("status", status);
         model.addAttribute("bookmark", bookmark);
         return "dashboard";
@@ -205,209 +204,6 @@ public class WebController {
                 : savedPlanService.savedSlugs(((Number) user.get("customer_id")).intValue()));
         model.addAttribute("bookmark", bookmark);
         return "plans";
-    }
-
-    @PostMapping("/enroll")
-    public String enroll(@RequestParam int planId,
-                         @RequestParam(defaultValue = "1") int householdSize,
-                         HttpSession session) {
-        Map<String, Object> user = currentUser(session);
-
-        if (user == null) {
-            return "redirect:/login";
-        }
-
-        List<Map<String, Object>> plans = db.queryForList(
-                "SELECT plan_id, coverage_type FROM insurance_plans " +
-                "WHERE plan_id = ?",
-                planId
-        );
-
-        if (plans.isEmpty()) {
-            return "redirect:/plans?error=invalid";
-        }
-
-        String coverageType =
-                plans.get(0).get("coverage_type").toString();
-
-        if ("family".equalsIgnoreCase(coverageType)) {
-            if (householdSize < 2 || householdSize > 20) {
-                return "redirect:/plans?error=household";
-            }
-        } else {
-            householdSize = 1;
-        }
-
-        Integer existing = db.queryForObject(
-                "SELECT COUNT(*) FROM enrollments " +
-                "WHERE customer_id = ? AND plan_id = ? " +
-                "AND enrollment_status = 'active'",
-                Integer.class, user.get("customer_id"), planId
-        );
-
-        if (existing != null && existing > 0) {
-            return "redirect:/dashboard?status=exists";
-        }
-
-        db.update(
-                "INSERT INTO enrollments " +
-                "(customer_id, plan_id, enrollment_status, start_date, " +
-                "household_size) VALUES (?, ?, 'active', CURRENT_DATE, ?)",
-                user.get("customer_id"), planId, householdSize
-        );
-
-        return "redirect:/dashboard?status=success";
-    }
-
-    @PostMapping("/cancel-enrollment")
-    public String cancelEnrollment(@RequestParam int enrollmentId,
-                                   HttpSession session) {
-        Map<String, Object> user = currentUser(session);
-
-        if (user == null) {
-            return "redirect:/login";
-        }
-
-        db.update(
-                "UPDATE enrollments " +
-                "SET enrollment_status = 'cancelled', end_date = CURRENT_DATE " +
-                "WHERE enrollment_id = ? AND customer_id = ? " +
-                "AND enrollment_status = 'active'",
-                enrollmentId, user.get("customer_id")
-        );
-
-        return "redirect:/dashboard?status=cancelled";
-    }
-
-    @PostMapping("/request-extension")
-    public String requestExtension(
-            @RequestParam int enrollmentId,
-            @RequestParam LocalDate requestedEndDate,
-            HttpSession session) {
-        Map<String, Object> user = currentUser(session);
-
-        if (user == null) {
-            return "redirect:/login";
-        }
-
-        if (!requestedEndDate.isAfter(LocalDate.now())) {
-            return "redirect:/dashboard?status=extension_error";
-        }
-
-        Integer valid = db.queryForObject(
-                "SELECT COUNT(*) FROM enrollments " +
-                "WHERE enrollment_id = ? AND customer_id = ? " +
-                "AND enrollment_status = 'active'",
-                Integer.class, enrollmentId, user.get("customer_id")
-        );
-
-        if (valid == null || valid == 0) {
-            return "redirect:/dashboard?status=extension_error";
-        }
-
-        Integer pending = db.queryForObject(
-                "SELECT COUNT(*) FROM extension_requests " +
-                "WHERE enrollment_id = ? AND customer_id = ? " +
-                "AND request_status = 'pending'",
-                Integer.class, enrollmentId, user.get("customer_id")
-        );
-
-        if (pending != null && pending > 0) {
-            return "redirect:/dashboard?status=extension_pending";
-        }
-
-        db.update(
-                "INSERT INTO extension_requests " +
-                "(enrollment_id, customer_id, requested_end_date, request_status) " +
-                "VALUES (?, ?, ?, 'pending')",
-                enrollmentId, user.get("customer_id"), requestedEndDate
-        );
-
-        return "redirect:/dashboard?status=extension_requested";
-    }
-
-    @PostMapping("/switch-plan")
-    @Transactional
-    public String switchPlan(@RequestParam int enrollmentId,
-                             @RequestParam int newPlanId,
-                             @RequestParam(defaultValue = "1") int householdSize,
-                             HttpSession session) {
-        Map<String, Object> user = currentUser(session);
-
-        if (user == null) {
-            return "redirect:/login";
-        }
-
-        List<Map<String, Object>> current = db.queryForList(
-                "SELECT plan_id FROM enrollments " +
-                "WHERE enrollment_id = ? AND customer_id = ? " +
-                "AND enrollment_status = 'active'",
-                enrollmentId, user.get("customer_id")
-        );
-
-        if (current.isEmpty()) {
-            return "redirect:/dashboard?status=switch_error";
-        }
-
-        List<Map<String, Object>> target = db.queryForList(
-                "SELECT plan_id, coverage_type FROM insurance_plans " +
-                "WHERE plan_id = ?",
-                newPlanId
-        );
-
-        if (target.isEmpty()) {
-            return "redirect:/dashboard?status=switch_error";
-        }
-
-        int oldPlanId =
-                ((Number) current.get(0).get("plan_id")).intValue();
-
-        if (oldPlanId == newPlanId) {
-            return "redirect:/dashboard?status=same_plan";
-        }
-
-        String coverageType =
-                target.get(0).get("coverage_type").toString();
-
-        if ("family".equalsIgnoreCase(coverageType)) {
-            if (householdSize < 2 || householdSize > 20) {
-                return "redirect:/dashboard?status=switch_household_error";
-            }
-        } else {
-            householdSize = 1;
-        }
-
-        Integer alreadyEnrolled = db.queryForObject(
-                "SELECT COUNT(*) FROM enrollments " +
-                "WHERE customer_id = ? AND plan_id = ? " +
-                "AND enrollment_status = 'active'",
-                Integer.class, user.get("customer_id"), newPlanId
-        );
-
-        if (alreadyEnrolled != null && alreadyEnrolled > 0) {
-            return "redirect:/dashboard?status=exists";
-        }
-
-        int cancelled = db.update(
-                "UPDATE enrollments " +
-                "SET enrollment_status = 'cancelled', end_date = CURRENT_DATE " +
-                "WHERE enrollment_id = ? AND customer_id = ? " +
-                "AND enrollment_status = 'active'",
-                enrollmentId, user.get("customer_id")
-        );
-
-        if (cancelled != 1) {
-            return "redirect:/dashboard?status=switch_error";
-        }
-
-        db.update(
-                "INSERT INTO enrollments " +
-                "(customer_id, plan_id, enrollment_status, start_date, household_size) " +
-                "VALUES (?, ?, 'active', CURRENT_DATE, ?)",
-                user.get("customer_id"), newPlanId, householdSize
-        );
-
-        return "redirect:/dashboard?status=switched";
     }
 
     private Map<String, Object> currentUser(HttpSession session) {

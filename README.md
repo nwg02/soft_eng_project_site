@@ -156,3 +156,40 @@ Use `mvn test` to run the account-aware chat tests. For manual testing, sign int
 `http://localhost:8080`, create an issue note and notification, ask `What are my
 notifications?` with the checkbox unchecked, then compare the private answer with
 the opt-in Gemini version. Log out and confirm that no personal data can be retrieved.
+
+
+## Compact homepage and safe official enrollment handoff
+
+The homepage is now a focused, mobile-responsive entry screen: Georgia health insurance plans,
+a direct Browse Plans action, and short links to plan comparison, the assessment and dashboard.
+The redundant marketing sections and motivational headlines are removed. The header puts
+secondary logged-in features (saved plans, agent help, reports, notifications and logout) inside
+a small Account menu, rather than displaying every link in the main navigation.
+
+For all 12 curated 2027 issuer documents, `/enrollment/plan/{slug}` now displays a short,
+plain-language handoff page with two server-validated options:
+
+- Continue to the issuer's official shopping website.
+- Continue to `https://georgiaaccess.gov/`.
+
+The `POST /enrollment/referrals` endpoint validates the fixed catalog slug and the
+`issuer` or `georgia-access` destination, then redirects to the official URL selected by
+GISU itself. It does **not** accept external URLs supplied by users. Guests can follow
+official links without an account. Signed-in users also get a **click-through history** on
+the dashboard. A visit is never marked as applied/enrolled, and the website does not
+confirm coverage, save payment details or communicate with an insurer.
+
+The old fictional `/enroll`, `/cancel-enrollment`, `/request-extension`, and
+`/switch-plan` mutations have been removed. Existing demonstration records remain
+read-only in a collapsed archive on the dashboard, explicitly disclaimed as fictional.
+No historical rows are deleted.
+
+The local H2 schema adds `enrollment_referrals` automatically. For production MySQL,
+apply the additive `database/migrations/V5__official_enrollment_referrals.sql` **after V4**
+and review/back up all preceding migrations before deploying. GitHub feature-branch changes
+do not alter the live Railway website or its database.
+
+Verify with `mvn test`, then start the local profile and inspect the homepage on both
+desktop and mobile widths; open a plan, check official document and handoff links,
+test an official destination click while signed in, and verify the dashboard records only a
+visit. The original fictional enrollment routes should no longer accept POSTs.

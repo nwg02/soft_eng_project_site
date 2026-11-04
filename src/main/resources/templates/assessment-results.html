@@ -64,7 +64,7 @@
           <button type="submit" class="button button-outline save-plan-button saved-button">✓ Saved · Remove</button>
         </form>
         <a class="button button-primary" th:href="${p.documentUrl}" target="_blank" rel="noopener noreferrer">View official plan document ↗</a>
-        <a th:href="${p.shopUrl}" target="_blank" rel="noopener noreferrer">Check availability with insurer ↗</a>
+        <a th:href="@{/enrollment/plan/{slug}(slug=${p.slug})}">Official enrollment options →</a>
       </article>
     </div>
   </section>

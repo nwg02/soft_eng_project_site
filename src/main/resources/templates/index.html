@@ -2,45 +2,30 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Explore health coverage options in Georgia with GISU. Learn how to compare coverage and continue to official enrollment resources.">
-  <title>GISU | Find health coverage in Georgia</title>
+  <meta name="description" content="Browse, compare and save 2027 Georgia health insurance plan documents.">
+  <title>Georgia Health Insurance Plans | GISU</title>
   <link rel="stylesheet" th:href="@{/styles.css}" href="/styles.css">
 </head>
 <body>
 <div th:replace="~{fragments :: header}"></div>
-<main class="home-main">
-  <section class="hero">
-    <div class="hero-copy">
-      <span class="eyebrow">GEORGIA HEALTH COVERAGE GUIDE</span>
-      <h1>Health coverage, <em>made clearer.</em></h1>
-      <p class="hero-lead">Understand your options, compare what matters, and take the next step toward health insurance in Georgia.</p>
-      <div class="hero-actions">
-        <a class="button button-primary" th:href="@{/plans}">Explore coverage options <span aria-hidden="true">→</span></a>
-        <a class="button button-outline" th:href="@{/assessment}">Get started with an assessment</a>
-      </div>
-      <p class="hero-note">Independent educational prototype · Not an insurance carrier or enrollment service</p>
+<main class="home-main home-compact">
+  <section class="home-landing" aria-labelledby="home-heading">
+    <div class="home-intro">
+      <span class="eyebrow">GEORGIA · 2027</span>
+      <h1 id="home-heading">Georgia health insurance plans</h1>
+      <p>Browse 12 plan documents from Alliant and Kaiser Permanente. Compare options, take an assessment, or save plans for later.</p>
+      <a class="button button-primary home-main-cta" th:href="@{/plans}">Browse plans <span aria-hidden="true">→</span></a>
     </div>
-    <div class="hero-panel" aria-label="Coverage comparison overview">
-      <div class="panel-top"><span class="panel-dot"></span> YOUR COVERAGE CHECKLIST <span class="panel-tag">GEORGIA</span></div>
-      <h2>Find the right questions to ask.</h2>
-      <div class="checklist-row"><span class="check-icon">✓</span><div><strong>Monthly cost</strong><small>Look beyond the advertised premium</small></div></div>
-      <div class="checklist-row"><span class="check-icon">✓</span><div><strong>Deductibles &amp; out-of-pocket costs</strong><small>Understand what you could pay for care</small></div></div>
-      <div class="checklist-row"><span class="check-icon">✓</span><div><strong>Doctors &amp; prescriptions</strong><small>Confirm network and drug coverage</small></div></div>
-      <div class="panel-bottom">Coverage details depend on your location, household and plan year.</div>
+    <div class="home-quick-links" aria-label="Get started">
+      <a th:href="@{/plans}" class="home-quick-link"><span class="home-quick-number">01</span><span><strong>Compare plans</strong><small>Filter and compare documents</small></span><span aria-hidden="true">→</span></a>
+      <a th:href="@{/assessment}" class="home-quick-link"><span class="home-quick-number">02</span><span><strong>Take the assessment</strong><small>Explore by coverage priority</small></span><span aria-hidden="true">→</span></a>
+      <a th:href="@{/dashboard}" class="home-quick-link"><span class="home-quick-number">03</span><span><strong>My dashboard</strong><small>Saved plans, reports and updates</small></span><span aria-hidden="true">→</span></a>
     </div>
   </section>
-  <section class="trust-strip" aria-label="How GISU helps"><span>Built for Georgia shoppers</span><span>Compare coverage considerations</span><span>Continue with official resources</span></section>
-  <section class="section-block" id="how-it-works">
-    <div class="section-heading"><span class="eyebrow">A SIMPLER START</span><h2>Three steps toward a better-informed choice.</h2><p>We help you organize the search. Official insurers and marketplace partners handle applications and enrollment.</p></div>
-    <div class="step-grid">
-      <article class="step-card"><span class="step-number">01</span><h3>Tell us what you need</h3><p>Start with your household and coverage priorities through our guided assessment.</p><a th:href="@{/assessment}">Start assessment →</a></article>
-      <article class="step-card"><span class="step-number">02</span><h3>Explore your options</h3><p>Learn how premiums, deductibles, provider networks and coverage types compare.</p><a th:href="@{/plans}">Explore plans →</a></article>
-      <article class="step-card"><span class="step-number">03</span><h3>Verify and enroll officially</h3><p>Confirm current plan details, eligibility and pricing with Georgia Access or the insurer before applying.</p><a href="https://georgiaaccess.gov/" target="_blank" rel="noopener noreferrer">Visit Georgia Access ↗</a></article>
-    </div>
+  <section class="home-bottom" aria-label="Coverage information">
+    <p>GISU is an educational prototype, not an insurer or enrollment service. Plan availability and premiums require official verification.</p>
+    <a href="https://georgiaaccess.gov/" target="_blank" rel="noopener noreferrer">Georgia Access ↗</a>
   </section>
-  <section class="feature-band"><div><span class="eyebrow">KNOW BEFORE YOU CHOOSE</span><h2>Coverage is about more than a monthly price.</h2><p>Premiums are only one piece of the picture. Compare total costs, covered services, provider networks, and whether your preferred prescriptions are included.</p><a class="button button-light" th:href="@{/plans}">See coverage considerations →</a></div><div class="feature-metrics"><div><strong>Premium</strong><span>What you pay each month</span></div><div><strong>Deductible</strong><span>What you may pay before certain benefits apply</span></div><div><strong>Out-of-pocket max</strong><span>A limit on covered in-network cost sharing</span></div></div></section>
-  <section class="closing-section"><span class="eyebrow">READY TO BEGIN?</span><h2>Make your next coverage decision with more confidence.</h2><p>Start exploring Georgia health insurance information today.</p><a class="button button-primary" th:href="@{/register}">Create your free account →</a></section>
-  <p class="disclaimer">GISU is a student-built informational prototype. The Explore Plans page links to a curated subset of official 2027 Georgia insurer documents, not the complete statewide catalog. Assessment results are educational document suggestions, not eligibility decisions or personalized insurance quotes. Always verify availability, prices, benefits and enrollment eligibility through official sources.</p>
 </main>
 <div th:replace="~{fragments :: footer}"></div>
 </body>

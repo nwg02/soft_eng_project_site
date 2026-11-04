@@ -29,6 +29,7 @@
     <div class="plan-bookmark-feedback" th:if="${bookmark == 'saved'}" role="status">Plan saved to your dashboard.</div>
     <div class="plan-bookmark-feedback" th:if="${bookmark == 'removed'}" role="status">Plan removed from your saved list.</div>
     <p class="error" th:if="${bookmark == 'invalid'}" role="alert">This plan is not in the catalog.</p>
+    <p class="error" th:if="${param.enrollment != null and param.enrollment[0] == 'invalid'}" role="alert">That official enrollment destination was not available.</p>
     <div class="market-grid" id="market-grid">
       <article class="market-plan" th:each="p : ${catalogPlans}"
                th:id="${p.slug}"
@@ -60,7 +61,7 @@
         <a th:if="${!signedIn}" class="button button-outline save-plan-button"
            th:href="@{/login(reason='savedplan')}">♡ Sign in to save</a>
         <a class="button button-primary market-link" th:href="${p.documentUrl}" target="_blank" rel="noopener noreferrer">View this plan's details ↗</a>
-        <a class="market-shop-link" th:href="${p.shopUrl}" target="_blank" rel="noopener noreferrer">Shop with this insurer ↗</a>
+        <a class="market-shop-link" th:href="@{/enrollment/plan/{slug}(slug=${p.slug})}">Official enrollment options →</a>
       </article>
     </div>
     <p id="no-results" class="no-results" hidden>No plans match these filters. Try a different search.</p>

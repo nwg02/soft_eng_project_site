@@ -41,6 +41,17 @@ CREATE TABLE IF NOT EXISTS saved_curated_plans (
         REFERENCES customers(customer_id) ON DELETE CASCADE
 );
 
+-- Tracking visits to official enrollment pages; never coverage confirmation.
+CREATE TABLE IF NOT EXISTS enrollment_referrals (
+    referral_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL,
+    plan_slug VARCHAR(64) NOT NULL,
+    destination VARCHAR(24) NOT NULL,
+    clicked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_referral_customer FOREIGN KEY (customer_id)
+        REFERENCES customers(customer_id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS insurance_plans (
     plan_id INT AUTO_INCREMENT PRIMARY KEY,
     provider_name VARCHAR(120) NOT NULL,

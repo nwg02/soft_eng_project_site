@@ -4,23 +4,28 @@
 <header th:fragment="header" class="site-header">
   <div class="header-inner">
     <a class="brand" th:href="@{/}"><span class="brand-mark">G</span><span>GISU<span class="brand-subtitle">HEALTH COVERAGE</span></span></a>
-    <nav aria-label="Main navigation">
+    <nav class="main-nav" aria-label="Main navigation">
       <a th:href="@{/}">Home</a>
-      <a th:href="@{/plans}">Explore plans</a>
+      <a th:href="@{/plans}">Plans</a>
       <a th:href="@{/assessment}">Assessment</a>
-      <a th:href="@{/dashboard}">Dashboard</a>
-      <a th:if="${session.user != null}" th:href="@{/saved-plans}">Saved plans</a>
-      <a th:if="${session.user != null}" th:href="@{/agent-assistance}">Agent help</a>
-      <a th:if="${session.user != null}" th:href="@{/reports}">Reports</a>
-      <a th:if="${session.user != null}" th:href="@{/notifications}">Notifications</a>
+      <a th:if="${session.user != null}" th:href="@{/dashboard}">Dashboard</a>
+      <details th:if="${session.user != null}" class="nav-account">
+        <summary>Account <span aria-hidden="true">⌄</span></summary>
+        <div class="nav-account-menu">
+          <a th:href="@{/saved-plans}">Saved plans</a>
+          <a th:href="@{/agent-assistance}">Agent help</a>
+          <a th:href="@{/reports}">Reports</a>
+          <a th:href="@{/notifications}">Notifications</a>
+          <form th:action="@{/logout}" method="post"><button type="submit">Log out</button></form>
+        </div>
+      </details>
       <a th:if="${session.user == null}" th:href="@{/login}">Log in</a>
-      <a th:if="${session.user == null}" class="nav-cta" th:href="@{/register}">Get started</a>
-      <form th:if="${session.user != null}" th:action="@{/logout}" method="post" class="inline-form"><button type="submit" class="logout-link">Log out</button></form>
+      <a th:if="${session.user == null}" th:href="@{/register}" class="nav-cta">Create account</a>
     </nav>
   </div>
 </header>
 <footer th:fragment="footer" class="site-footer">
-  <div class="footer-inner"><div><strong>GISU</strong><p>Making health coverage easier to understand.</p></div><div><a th:href="@{/plans}">Explore plans</a><a th:href="@{/assessment}">Assessment</a><a href="https://georgiaaccess.gov/" target="_blank" rel="noopener noreferrer">Georgia Access</a></div></div>
+  <div class="footer-inner"><div><strong>GISU</strong><p>Georgia insurance plan research</p></div><div><a th:href="@{/plans}">Explore plans</a><a th:href="@{/assessment}">Assessment</a><a href="https://georgiaaccess.gov/" target="_blank" rel="noopener noreferrer">Georgia Access</a></div></div>
   <div class="footer-bottom">© GISU · Educational prototype. Not an insurer, broker, or enrollment platform.</div>
   <div class="chat-widget" id="gisu-chat-widget">
     <button type="button" id="chat-toggle" class="chat-toggle" aria-controls="chat-panel" aria-expanded="false" aria-label="Open insurance help chat">

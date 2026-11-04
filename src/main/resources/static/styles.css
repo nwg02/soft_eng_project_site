@@ -278,3 +278,31 @@
 .chat-account-optin small{display:block;font-size:10px;font-weight:400;line-height:1.45;color:#617797;margin-top:4px}
 .chat-panel{height:min(600px,calc(100vh - 115px))}
 @media(max-width:500px){.chat-panel{height:min(650px,calc(100vh - 92px))}}
+
+
+/* Official external enrollment handoff; informational, never policy issuance */
+.official-enrollment-main{max-width:1000px!important;padding:51px 24px 75px!important}
+.enrollment-back{font-size:12px;font-weight:700;text-decoration:none;color:#5377ab}
+.enrollment-intro{max-width:760px;margin:32px 0}
+.enrollment-intro h1{font-size:clamp(34px,4.6vw,52px);line-height:1.14;margin:14px 0}
+.enrollment-intro>p{font-size:15px;color:#5e728e;line-height:1.75}
+.enrollment-plan-summary{padding:27px 30px;border:1px solid #cfddf0;border-radius:13px;background:#f5f8ff;margin:25px 0}
+.enrollment-plan-summary h2{font-size:26px;margin:10px 0 13px}
+.enrollment-plan-summary>p{font-size:13px;color:#516987}
+.enrollment-plan-summary>a{font-size:13px;font-weight:750;text-decoration:none}
+.enrollment-issuer{font-size:12px!important;color:#577bab!important;font-weight:800}
+.enrollment-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:27px 0}
+.enrollment-choice{padding:26px;border:1px solid #d9e4f3;border-radius:13px;display:flex;align-items:flex-start;flex-direction:column}
+.enrollment-choice h3{font-size:20px;margin:0 0 10px}
+.enrollment-choice p{font-size:13px;color:#5b7492;line-height:1.75;margin:0 0 25px;flex-grow:1}
+.enrollment-choice form{margin:0}
+.enrollment-fineprint{font-size:12px;color:#697e9b;line-height:1.7}
+.dashboard-referrals{margin:35px 0 40px}
+.dashboard-referral-list{border:1px solid #d6e3f5;border-radius:12px;overflow:hidden;margin-top:20px}
+.dashboard-referral-item{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:17px 21px;border-bottom:1px solid #e4edf7}
+.dashboard-referral-item:last-child{border-bottom:0}
+.dashboard-referral-item strong,.dashboard-referral-item small{display:block}
+.dashboard-referral-item strong{font-size:13px}
+.dashboard-referral-item small{font-size:11px;color:#7489a2;margin-top:5px}
+.dashboard-referral-item>a{font-size:12px;font-weight:750;text-decoration:none;white-space:nowrap}
+@media(max-width:650px){.official-enrollment-main{padding:35px 18px!important}.enrollment-choices{grid-template-columns:1fr}.dashboard-referral-item{align-items:flex-start;flex-direction:column;gap:8px}.enrollment-plan-summary{padding:21px}}
