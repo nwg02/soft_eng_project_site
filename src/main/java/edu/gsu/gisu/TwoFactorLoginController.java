@@ -1,6 +1,7 @@
 package edu.gsu.gisu;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,8 @@ public class TwoFactorLoginController {
 
     @PostMapping("/login/verify")
     public String verify(@RequestParam(required = false) String code,
-                         HttpSession session, Model model) {
+                         HttpSession session, HttpServletRequest servletRequest,
+                         Model model) {
         Integer id = pendingCustomerId(session);
         if (id == null) return "redirect:/login";
         int failures = attempts(session);
@@ -46,7 +48,7 @@ public class TwoFactorLoginController {
         }
         Object principal = session.getAttribute("pending2faUser");
         if (!(principal instanceof Map<?, ?>)) return clearPending(session);
-        session.changeSessionId();
+        servletRequest.changeSessionId();
         session.removeAttribute("pending2faUser");
         session.removeAttribute("pending2faAttempts");
         session.setAttribute("user", principal);

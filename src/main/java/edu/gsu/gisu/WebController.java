@@ -2,6 +2,7 @@
 package edu.gsu.gisu;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -50,7 +51,7 @@ public class WebController {
                            @RequestParam String email,
                            @RequestParam String password,
                            Model model,
-                           HttpSession session) {
+                           HttpSession session, HttpServletRequest servletRequest) {
         if (password.length() < 8) {
             model.addAttribute("error",
                     "Password must be at least 8 characters.");
@@ -75,7 +76,7 @@ public class WebController {
                     normalizedEmail
             );
 
-            session.changeSessionId();
+            servletRequest.changeSessionId();
             session.setAttribute("user", user);
             return "redirect:/dashboard";
         } catch (DuplicateKeyException ex) {
@@ -103,7 +104,7 @@ public class WebController {
     public String login(@RequestParam String email,
                         @RequestParam String password,
                         Model model,
-                        HttpSession session) {
+                        HttpSession session, HttpServletRequest servletRequest) {
         List<Map<String, Object>> users;
         try {
             users = db.queryForList(
@@ -127,7 +128,7 @@ public class WebController {
 
         Map<String, Object> user = users.get(0);
         user.remove("password_hash");
-        session.changeSessionId();
+        servletRequest.changeSessionId();
         session.removeAttribute("user");
         session.removeAttribute("pending2faUser");
         session.removeAttribute("pending2faAttempts");
