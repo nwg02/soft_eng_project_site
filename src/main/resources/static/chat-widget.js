@@ -11,6 +11,7 @@
     const sendButton = document.getElementById("chat-send");
     const messages = document.getElementById("chat-messages");
     const mode = document.getElementById("chat-mode");
+    const accountConsent = document.getElementById("chat-account-consent");
     if (!toggle || !panel || !form || !messages) return;
 
     function appendMessage(text, cssClass) {
@@ -34,6 +35,8 @@
     function modeLabel(value, verified) {
       if (value === "gemini") return verified ? "Gemini AI connected" : "Gemini key detected · response not yet verified";
       if (value === "gemini-error") return "Gemini unavailable · built-in guide";
+      if (value === "account") return "Private GISU account summary";
+      if (value === "account-login") return "Account sign-in required";
       if (value === "openai" || value === "ai") return "AI responses enabled";
       return "Built-in insurance guide";
     }
@@ -48,6 +51,9 @@
     async function askQuestion(question) {
       const message = question.trim();
       if (!message) return;
+      // Consent is explicitly opted in for THIS question only, not stored.
+      const shareAccountWithGemini = Boolean(accountConsent && accountConsent.checked);
+      if (accountConsent) accountConsent.checked = false;
       appendMessage(message, "chat-user");
       input.value = "";
       input.disabled = true;
@@ -59,7 +65,10 @@
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "same-origin",
-          body: JSON.stringify({ message: message })
+          body: JSON.stringify({
+            message: message,
+            shareAccountWithGemini: shareAccountWithGemini
+          })
         });
         const result = await response.json();
         pending.textContent = result.answer || "I couldn't answer that right now.";

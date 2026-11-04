@@ -124,3 +124,35 @@ Three logged-in features now work with the existing account database:
 Existing H2 local databases create `agent_requests`, `insurance_claim_records` and `user_notifications` automatically from `local-schema.sql` on startup, without erasing saved accounts or documents. The production MySQL definitions for these three tables already exist in the **V2** migration. No new production migration is needed solely for these account tools, but V2, V3 and V4 must be reviewed and applied to Railway's database before deploying feature-branch code. Do not apply the H2-only schema to MySQL.
 
 To test locally, run `mvn test`, then `mvn spring-boot:run -Dspring-boot.run.profiles=local`. Sign in, record a demo assistance request, add an issue note, close and reopen it, and mark the resulting notifications read. No API keys or external services are required for these account features. The public production deployment and `main` are unchanged.
+
+
+## Read-only, account-aware chatbot summaries
+
+After signing in, users can ask the chatbot questions such as `What are my notifications?`,
+`Summarize my reports`, `What plans have I saved?`, `Compare my saved plans`,
+`Summarize my assessment`, `What assistance requests have I made?`, and
+`Summarize my dashboard`. General insurance questions still go through the existing Gemini API.
+
+- The API checks the authenticated GISU session and reads **only that account's records**.
+  Guests are prompted to sign in. There are **no account mutation tools** available to Gemini;
+  asking the chatbot to mark a notification read or edit a report cannot update it.
+- By default, personal account questions receive a **private, deterministic GISU server-side
+  summary**, without sending any database content to Google.
+- A checkbox in the chatbot explicitly opts in **for one question** to a Gemini account
+  summary. After submission it resets to unchecked. Only a **bounded, redacted snapshot**
+  is shared: up to five system-generated notification titles and read statuses; up to eight
+  saved insurer document names/tiers/plan types; issue report category/status (not the
+  description); the assessment coverage type/priority; assistance contact preference/time;
+  and aggregate counts. **No** account names, email addresses, ZIP codes, age, income,
+  household size, premium budget, medical information, report descriptions or free-text
+  assistance notes are retrieved for the outbound snapshot. The question itself is
+  also sent to Gemini when opted in, so users should not type sensitive information.
+- If Gemini fails, the chatbot returns its private summary. A request without a Gemini key
+  stays server-side even if the opt-in box is selected.
+- These summaries describe **classroom records only**, not eligibility, real coverage,
+  completed claims or contact with an insurance agent.
+
+Use `mvn test` to run the account-aware chat tests. For manual testing, sign into
+`http://localhost:8080`, create an issue note and notification, ask `What are my
+notifications?` with the checkbox unchecked, then compare the private answer with
+the opt-in Gemini version. Log out and confirm that no personal data can be retrieved.

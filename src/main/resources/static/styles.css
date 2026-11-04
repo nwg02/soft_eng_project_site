@@ -268,3 +268,13 @@
 .dashboard-notification-preview small{margin-left:auto;color:#7489a2;font-size:10px}
 @media(max-width:850px){.dashboard-tool-grid{grid-template-columns:1fr 1fr}.activity-field-grid{grid-template-columns:1fr}}
 @media(max-width:600px){.account-activity-main{padding:35px 18px 60px!important}.activity-panel{padding:23px 18px}.dashboard-tool-grid{grid-template-columns:1fr}.dashboard-notification-preview>p{align-items:flex-start;flex-direction:column}}
+
+
+/* Explicit per-question opt-in for account-aware Gemini summaries */
+.chat-account-optin{display:flex;gap:8px;align-items:flex-start;background:#f5f8ff;border-top:1px solid #dce7f7;padding:10px 13px;color:#28486e}
+.chat-account-optin input{accent-color:#0039a6;margin-top:3px;width:15px;height:15px;flex-shrink:0}
+.chat-account-optin span{display:block;min-width:0}
+.chat-account-optin strong{display:block;font-size:11px;line-height:1.45}
+.chat-account-optin small{display:block;font-size:10px;font-weight:400;line-height:1.45;color:#617797;margin-top:4px}
+.chat-panel{height:min(600px,calc(100vh - 115px))}
+@media(max-width:500px){.chat-panel{height:min(650px,calc(100vh - 92px))}}

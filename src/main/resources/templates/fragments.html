@@ -30,6 +30,14 @@
       <div class="chat-header"><div><strong>GISU Help Assistant</strong><span id="chat-mode">Checking mode…</span></div><button type="button" id="chat-close" class="chat-close" aria-label="Close chat">×</button></div>
       <div id="chat-messages" class="chat-messages" role="log" aria-live="polite" aria-relevant="additions text"><div class="chat-message chat-assistant">Hi! Ask me about premiums, deductibles, plan types, or how to compare Georgia health plans. Please don't share personal or sensitive information.</div></div>
       <div class="chat-suggestions"><button type="button" data-chat-question="What is a deductible?">Deductibles</button><button type="button" data-chat-question="Bronze vs Silver vs Gold plans">Metal levels</button><button type="button" data-chat-question="How do I enroll in Georgia?">Enrollment</button></div>
+      <label th:if="${session.user != null}" class="chat-account-optin">
+        <input type="checkbox" id="chat-account-consent">
+        <span><strong>Use Gemini to summarize my account for this question</strong>
+          <small>Optional. Shares limited account details with Google: notification titles,
+          plan names, report categories/statuses, or assessment priorities. It does not
+          send your ZIP code, age, income, premium budget or personal issue notes.
+          Unchecked uses GISU's private summary.</small></span>
+      </label>
       <form id="chat-form" class="chat-form"><label for="chat-input" class="sr-only">Your insurance question</label><input type="text" id="chat-input" maxlength="800" autocomplete="off" placeholder="Ask about coverage…" required><button type="submit" id="chat-send">Send</button></form>
       <p class="chat-disclosure">General educational information only. Not medical, legal, or enrollment advice.</p>
     </section>
