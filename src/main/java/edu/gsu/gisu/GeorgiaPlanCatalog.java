@@ -119,13 +119,13 @@ public final class GeorgiaPlanCatalog {
     public static String explanation(String priority) {
         return switch (priority) {
             case "lower_premium" ->
-                    "Bronze options appear first as a starting point for exploring typically lower-premium metal tiers. Actual premiums, savings, and total annual costs are unknown; Bronze is not guaranteed to cost less for you.";
+                    "Bronze options appear first because this tier typically has lower monthly premiums and higher out-of-pocket costs.";
             case "lower_deductible" ->
-                    "Options with smaller deductible figures in their marketing names appear first. Those figures are not verified household deductibles or a complete picture of cost sharing. Read each official document.";
+                    "Plans with smaller deductibles in their published names appear first, making it easier to compare up-front care costs.";
             case "provider_flexibility" ->
-                    "PPO examples appear first because PPO designs often allow more out-of-network flexibility. Whether a doctor participates, and the network restrictions in your county, must still be checked.";
+                    "PPO examples appear first because PPO designs often offer more provider-network flexibility.";
             case "balanced" ->
-                    "Silver options appear first as a general starting point for comparing monthly and out-of-pocket costs. This is not a calculation of value, affordability, eligibility, or cost-sharing reductions.";
+                    "Silver plans appear first as a starting point for balancing monthly premiums and out-of-pocket costs.";
             default -> throw new IllegalArgumentException("Unknown priority");
         };
     }

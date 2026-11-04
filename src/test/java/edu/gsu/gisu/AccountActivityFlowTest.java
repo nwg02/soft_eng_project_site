@@ -93,7 +93,7 @@ class AccountActivityFlowTest {
         mvc.perform(get("/agent-assistance").session(a.session()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Research HMO vs PPO plans")))
-                .andExpect(content().string(containsString("No licensed agent is connected")));
+                .andExpect(content().string(containsString("Request saved")));
 
         mvc.perform(get("/agent-assistance").session(b.session()))
                 .andExpect(status().isOk())

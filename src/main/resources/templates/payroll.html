@@ -11,17 +11,13 @@
 <main class="payroll-main">
   <a class="billing-back" th:href="@{/dashboard}">← Dashboard</a>
   <header class="payroll-intro">
-    <span class="eyebrow">CLASSROOM SIMULATION</span>
+    <span class="eyebrow">PAYCHECK ESTIMATOR</span>
     <h1>Payroll deductions</h1>
     <p>Estimate what a hypothetical insurance premium could deduct from each paycheck.</p>
-    <div class="payroll-disclaimer" role="note">
-      <strong>Demo only.</strong> These amounts are entered by you, not actual insurer quotes.
-      No employer is contacted, no paycheck is changed, and no money moves.
-    </div>
   </header>
 
   <p class="plan-bookmark-feedback" role="status" th:if="${param.event != null and param.event[0] == 'created'}">Simulation saved.</p>
-  <p class="plan-bookmark-feedback" role="status" th:if="${param.event != null and param.event[0] == 'simulated'}">Sample paycheck deduction recorded. This is not an actual payment.</p>
+  <p class="plan-bookmark-feedback" role="status" th:if="${param.event != null and param.event[0] == 'simulated'}">Sample paycheck saved.</p>
   <p class="plan-bookmark-feedback" role="status" th:if="${param.event != null and param.event[0] == 'deleted'}">Simulation and its sample paycheck entries removed.</p>
   <p class="error" role="alert" th:if="${param.event != null and param.event[0] == 'unavailable'}">This scenario or date was invalid, already recorded, or not found in your account.</p>
   <p class="error" role="alert" th:if="${error}" th:text="${error}">Error</p>
@@ -106,7 +102,7 @@
           <small>Simulated deduction</small></div>
       </article>
     </div>
-    <p class="payroll-muted">A sample deduction is not an insurer payment, billing record, enrollment, or payroll instruction. Rounded per-paycheck figures may vary slightly from the exact annual total.</p>
+    <p class="payroll-muted">Estimates are rounded to the nearest cent.</p>
     <a th:href="@{/billing}">View personal billing records →</a>
   </section>
 </main>

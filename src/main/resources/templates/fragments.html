@@ -16,7 +16,6 @@
           <a th:href="@{/agent-assistance}">Agent help</a>
           <a th:href="@{/reports}">Reports</a>
           <a th:href="@{/billing}">Billing &amp; payments</a>
-          <a th:href="@{/payroll}">Payroll simulation</a>
           <a th:href="@{/account/security}">Security &amp; 2FA</a>
           <a th:href="@{/notifications}">Notifications</a>
           <form th:action="@{/logout}" method="post"><button type="submit">Log out</button></form>
@@ -29,24 +28,20 @@
 </header>
 <footer th:fragment="footer" class="site-footer">
   <div class="footer-inner"><div><strong>GISU</strong><p>Georgia insurance plan research</p></div><div><a th:href="@{/plans}">Explore plans</a><a th:href="@{/assessment}">Assessment</a><a href="https://georgiaaccess.gov/" target="_blank" rel="noopener noreferrer">Georgia Access</a></div></div>
-  <div class="footer-bottom">© GISU · Educational prototype. Not an insurer, broker, or enrollment platform.</div>
+  <div class="footer-bottom">© GISU · Student project</div>
   <div class="chat-widget" id="gisu-chat-widget">
     <button type="button" id="chat-toggle" class="chat-toggle" aria-controls="chat-panel" aria-expanded="false" aria-label="Open insurance help chat">
       <span aria-hidden="true">✦</span> Ask GISU
     </button>
     <section id="chat-panel" class="chat-panel" aria-label="GISU insurance chat helper" hidden>
       <div class="chat-header"><div><strong>GISU Help Assistant</strong><span id="chat-mode">Checking mode…</span></div><button type="button" id="chat-close" class="chat-close" aria-label="Close chat">×</button></div>
-      <div id="chat-messages" class="chat-messages" role="log" aria-live="polite" aria-relevant="additions text"><div class="chat-message chat-assistant">Hi! Ask me about premiums, deductibles, plan types, or how to compare Georgia health plans. Please don't share personal or sensitive information.</div></div>
+      <div id="chat-messages" class="chat-messages" role="log" aria-live="polite" aria-relevant="additions text"><div class="chat-message chat-assistant">Ask about premiums, deductibles, plan types, and coverage options.</div></div>
       <div class="chat-suggestions"><button type="button" data-chat-question="What is a deductible?">Deductibles</button><button type="button" data-chat-question="Bronze vs Silver vs Gold plans">Metal levels</button><button type="button" data-chat-question="How do I enroll in Georgia?">Enrollment</button></div>
       <label th:if="${session.user != null}" class="chat-account-optin">
         <input type="checkbox" id="chat-account-consent">
-        <span><strong>Use Gemini to summarize my account for this question</strong>
-          <small>Optional. Sends this question and a limited account summary to Google.
-          No payment amounts, dates, private notes or account identifiers are included.
-          Unchecked uses GISU's private summary.</small></span>
+        <span><strong>Share this question and a brief account summary with Gemini</strong></span>
       </label>
       <form id="chat-form" class="chat-form"><label for="chat-input" class="sr-only">Your insurance question</label><input type="text" id="chat-input" maxlength="800" autocomplete="off" placeholder="Ask about coverage…" required><button type="submit" id="chat-send">Send</button></form>
-      <p class="chat-disclosure">General educational information only. Not medical, legal, or enrollment advice.</p>
     </section>
   </div>
   <script th:src="@{/chat-widget.js}" src="/chat-widget.js" defer></script>

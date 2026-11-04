@@ -11,13 +11,13 @@
   <section class="security-intro">
     <a th:href="@{/dashboard}" class="billing-back">← Dashboard</a>
     <h1>Account security</h1>
-    <p>Manage authenticator-app login protection and try the classroom identity-check simulation.</p>
+    <p>Manage two-factor authentication and identity verification.</p>
   </section>
 
   <p class="plan-bookmark-feedback" th:if="${param.event != null and param.event[0] == 'enabled'}" role="status">Authenticator 2FA is enabled. Save your one-time recovery codes below before leaving this page.</p>
   <p class="plan-bookmark-feedback" th:if="${param.event != null and param.event[0] == 'disabled'}" role="status">Authenticator 2FA was disabled for your account.</p>
-  <p class="plan-bookmark-feedback" th:if="${param.event != null and param.event[0] == 'demo'}" role="status">You completed the mock identity-check exercise. No real identity was verified.</p>
-  <p class="error" th:if="${param.event != null and param.event[0] == 'demo-invalid'}" role="alert">Enter the displayed classroom demo code and acknowledge that it is not identity verification.</p>
+  <p class="plan-bookmark-feedback" th:if="${param.event != null and param.event[0] == 'demo'}" role="status">Practice check completed.</p>
+  <p class="error" th:if="${param.event != null and param.event[0] == 'demo-invalid'}" role="alert">Enter the verification practice code and check the confirmation box.</p>
   <p class="error" th:if="${param.event != null and param.event[0] == 'wrong-password'}" role="alert">The current account password was incorrect.</p>
   <p class="error" th:if="${param.event != null and param.event[0] == 'wrong-code'}" role="alert">That authenticator code was incorrect or already used. Try a fresh code.</p>
   <p class="error" th:if="${param.event != null and param.event[0] == 'no-setup'}" role="alert">Begin authenticator setup before confirming a code.</p>
@@ -83,21 +83,21 @@
 
   <section class="security-card" aria-labelledby="identity-title">
     <div class="security-card-heading">
-      <div><span class="eyebrow">CLASSROOM EXERCISE</span><h2 id="identity-title">Mock identity verification</h2></div>
-      <span class="security-pill">Demo only</span>
+      <div><span class="eyebrow">ACCOUNT CHECK</span><h2 id="identity-title">Identity verification</h2></div>
+      <span class="security-pill">Practice</span>
     </div>
-    <p>Simulate a verification step without uploading an ID or providing sensitive information. Completing this does <strong>not</strong> establish or verify your real identity.</p>
+    <p>Try the practice ID check with the code below.</p>
     <form class="security-form" th:action="@{/account/security/demo}" method="post">
-      <label for="demo-code">Classroom test code: <strong>GISU26</strong></label>
+      <label for="demo-code">Practice code: <strong>GISU26</strong></label>
       <input id="demo-code" name="demoCode" maxlength="15" placeholder="Enter GISU26" required>
       <label class="security-checkbox"><input type="checkbox" name="acknowledge" value="true" required>
-        I understand this is a simulated check, not real identity verification.</label>
-      <button class="button button-primary" type="submit">Complete demo check</button>
+        This is a practice check.</label>
+      <button class="button button-primary" type="submit">Complete practice check</button>
     </form>
     <div class="security-demo-history" th:if="${!#lists.isEmpty(demoVerificationHistory)}">
-      <h3>Demo activity</h3>
+      <h3>Check history</h3>
       <p th:each="r : ${demoVerificationHistory}">
-        <strong>Simulation completed</strong> · <span th:text="${r.created_at}">Date</span>
+        <strong>Practice check completed</strong> · <span th:text="${r.created_at}">Date</span>
       </p>
     </div>
   </section>

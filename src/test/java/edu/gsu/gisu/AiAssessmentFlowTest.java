@@ -106,7 +106,7 @@ class AiAssessmentFlowTest {
         mvc.perform(get("/assessment/results/" + id).session(a.session()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("AI assessment")))
-                .andExpect(content().string(containsString("standard rule-based suggestions")))
+                .andExpect(content().string(containsString("Get an AI analysis of your coverage priorities")))
                 .andExpect(content().string(containsString("Four plans to compare further")));
 
         mvc.perform(post("/assessment/results/" + id + "/ai").session(a.session()))

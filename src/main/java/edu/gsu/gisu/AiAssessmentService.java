@@ -135,10 +135,10 @@ public class AiAssessmentService {
                 ". Monthly budget band: " + budgetBand +
                 " (NO verified premiums are available). Priority: " + priority + ".\n" +
                 "These 12 documents are the ENTIRE available document catalog:\n" + catalog + "\n" +
-                "Return JSON only: {\"summary\":\"80-180 words of useful, concise guidance " +
-                "about this user's comparison priority and tradeoffs; explain that real " +
-                "prices, provider networks, subsidy eligibility and county availability " +
-                "must be verified; no invented coverage facts\", " +
+                "Return JSON only: {\"summary\":\"50-110 words of specific, concise guidance " +
+                "about the selected comparison priority, document types, and tradeoffs. " +
+                "Avoid repetitive boilerplate, warnings, and filler. " +
+                "Never invent coverage facts or insurer prices\", " +
                 "\"planSlugs\":[\"gisu-plan-01\",\"gisu-plan-02\"]}. " +
                 "Choose 2 to 4 DISTINCT actual plan slugs from the list, fitting " +
                 "the user's stated priority as a RESEARCH shortlist, not a suitability " +

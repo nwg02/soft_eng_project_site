@@ -72,7 +72,7 @@ class BillingFlowTest {
         mvc.perform(get("/billing").session(a.session))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Billing &amp; payment history")))
-                .andExpect(content().string(containsString("Personal tracking only")))
+                .andExpect(content().string(containsString("Track planned expenses and payments")))
                 .andExpect(content().string(containsString("No planned payments yet")));
 
         mvc.perform(get("/dashboard").session(a.session))

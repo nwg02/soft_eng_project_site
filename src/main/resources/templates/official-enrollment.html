@@ -13,7 +13,7 @@
   <section class="enrollment-intro">
     <span class="eyebrow">2027 GEORGIA · OFFICIAL WEBSITE LINKS</span>
     <h1>Continue to official enrollment</h1>
-    <p>GISU doesn't process applications or confirm coverage. Choose where you want to verify availability, final costs, and enrollment eligibility.</p>
+    <p>Select an official website to continue.</p>
   </section>
   <section class="enrollment-plan-summary" aria-label="Selected plan document">
     <span class="level-pill" th:classappend="${#strings.toLowerCase(plan.metal)}" th:text="${#strings.toUpperCase(plan.metal)}">SILVER</span>
@@ -26,7 +26,7 @@
   <section class="enrollment-choices" aria-label="Official enrollment destinations">
     <article class="enrollment-choice">
       <h3>Insurance company</h3>
-      <p th:text="|Go to ${plan.issuer}'s official shopping site to confirm whether this plan is offered to you.|">Check insurer availability.</p>
+      <p th:text="|Review plans and apply on the insurer's website.|">Check insurer availability.</p>
       <form th:action="@{/enrollment/referrals}" method="post" target="_blank">
         <input type="hidden" name="planSlug" th:value="${plan.slug}">
         <input type="hidden" name="destination" value="issuer">
@@ -43,9 +43,6 @@
       </form>
     </article>
   </section>
-  <p class="enrollment-fineprint" th:if="${signedIn}">GISU will save the official website you visit in your account history. This records a link click, not an insurance application or enrollment.</p>
-  <p class="enrollment-fineprint" th:if="${!signedIn}">You can continue without a GISU account. GISU won't store your website visits.</p>
-  <p class="enrollment-fineprint"><strong>Important:</strong> This page lists a curated plan document, not a verified offer in your ZIP code. Use the official website to confirm actual benefits, pricing and eligibility. Opening a site does not create coverage.</p>
 </main>
 <div th:replace="~{fragments :: footer}"></div>
 </body>

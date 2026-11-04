@@ -9,21 +9,19 @@
     <span class="eyebrow">GISU ACCOUNT TOOLS</span>
     <h1>Agent assistance requests</h1>
     <p>Organize a question about Georgia health insurance and save your preferred contact method in your account.</p>
-    <div class="assessment-notice" role="note"><strong>Classroom demonstration:</strong> This form records a request in GISU only. No licensed agent is connected, no email or phone call is sent, and no appointment is scheduled.</div>
   </section>
-  <p class="plan-bookmark-feedback" th:if="${param.event != null and param.event[0] == 'recorded'}" role="status">Your assistance preference was saved. This is a demo record, not a request sent to an agent.</p>
+  <p class="plan-bookmark-feedback" th:if="${param.event != null and param.event[0] == 'recorded'}" role="status">Request saved.</p>
   <p class="error" th:if="${error}" th:text="${error}" role="alert"></p>
 
   <section class="activity-panel">
-    <div class="activity-heading"><h2>Record a new request</h2><p>Don't enter medical history, Social Security numbers, account passwords, or payment information.</p></div>
+    <div class="activity-heading"><h2>New request</h2></div>
     <form class="activity-form" th:action="@{/agent-assistance}" method="post">
       <div class="activity-field-grid">
-        <label>Preferred contact method (demo only)
+        <label>Preferred contact method
           <select name="contactMethod" required>
             <option value="email">Email</option>
             <option value="phone">Phone</option>
           </select>
-          <small>No actual outreach is initiated. We only store the preference.</small>
         </label>
         <label>Preferred time
           <select name="preferredTime" required>
@@ -45,20 +43,19 @@
       <label>Additional notes <span class="optional-label">(optional)</span>
         <textarea name="notes" maxlength="350" rows="3" placeholder="Example: I want to understand the difference between HMO and PPO plan documents."></textarea>
       </label>
-      <button class="button button-primary" type="submit">Save request in GISU</button>
+      <button class="button button-primary" type="submit">Save request</button>
     </form>
   </section>
 
   <section class="activity-history">
     <div class="activity-heading"><h2>Your request history</h2><p>Only you can see these account records.</p></div>
-    <div class="dashboard-empty" th:if="${#lists.isEmpty(agentRequests)}"><h3>No assistance requests yet</h3><p>Your saved demo requests will show up here.</p></div>
+    <div class="dashboard-empty" th:if="${#lists.isEmpty(agentRequests)}"><h3>No assistance requests yet</h3><p>Your saved requests will appear here.</p></div>
     <article class="activity-item" th:each="r : ${agentRequests}">
-      <div class="activity-item-head"><strong>Request recorded (demo only)</strong><span th:text="${r.created_at}">Date</span></div>
+      <div class="activity-item-head"><strong>Request saved</strong><span th:text="${r.created_at}">Date</span></div>
       <p th:text="${r.topic}">Question</p>
       <p class="activity-meta">Preferred contact: <span th:text="${r.contact_method}">email</span> · Preferred time: <span th:text="${r.preferred_time}">any</span></p>
     </article>
   </section>
-  <p class="activity-footnote">For actual help enrolling, contact a licensed agent or official marketplace partner through <a href="https://georgiaaccess.gov/" target="_blank" rel="noopener noreferrer">Georgia Access</a>.</p>
 </main>
 <div th:replace="~{fragments :: footer}"></div>
 </body></html>

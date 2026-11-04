@@ -345,3 +345,23 @@ have saved your recovery codes.
   persistence, user isolation, payroll frequency calculations, duplicate
   paycheck prevention, fake history, deleting a scenario, and that billing
   remains unchanged. No code in this branch changes live Railway automatically.
+
+
+## Concise demo presentation (November 2026)
+
+Normal pages use concise, professional labels and actions without repeating
+classroom disclaimers or lengthy warnings. The homepage, plans, assessment,
+AI results, support, issue tracker, billing, identity-check practice,
+enrollment handoff and dashboard have been cleaned up. The footer has a
+single unobtrusive "Student project" label.
+
+Gemini analysis remains **explicitly opt-in**; the brief checkbox clearly
+states that general preferences are shared with Google Gemini. Server-side
+redaction, account isolation and non-fabrication rules are unchanged. The AI
+prompt now emphasizes focused comparisons rather than boilerplate warnings.
+
+The standalone payroll calculator was an extra interpretation of requirement
+12; its links have been removed from main navigation, dashboard and billing
+without deleting the feature or stored simulations. Direct `/payroll` access
+is retained for existing records, should the class decide to use it later.
+No actual insurance actions, payments or payroll activities are performed.

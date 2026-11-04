@@ -9,16 +9,15 @@
     <span class="eyebrow">GISU ACCOUNT TOOLS</span>
     <h1>Insurance issue tracker</h1>
     <p>Keep personal notes about questions or issues while you research health insurance.</p>
-    <div class="assessment-notice" role="note"><strong>This is not a claims portal.</strong> Reports are private GISU notes. Nothing is filed with an insurer, a medical provider, or a government agency. Closing a note does not resolve a real insurance claim.</div>
   </section>
-  <p class="plan-bookmark-feedback" th:if="${param.event != null and param.event[0] == 'created'}" role="status">Your issue note was saved to GISU. It has not been filed with an insurer.</p>
+  <p class="plan-bookmark-feedback" th:if="${param.event != null and param.event[0] == 'created'}" role="status">Issue saved.</p>
   <p class="plan-bookmark-feedback" th:if="${param.event != null and param.event[0] == 'closed'}" role="status">You marked this GISU note closed.</p>
   <p class="plan-bookmark-feedback" th:if="${param.event != null and param.event[0] == 'reopened'}" role="status">You reopened this GISU note.</p>
   <p class="error" th:if="${param.event != null and param.event[0] == 'unavailable'}" role="alert">That note wasn't available to update in your account.</p>
   <p class="error" th:if="${error}" th:text="${error}" role="alert"></p>
 
   <section class="activity-panel">
-    <div class="activity-heading"><h2>Record an issue</h2><p>Keep descriptions general. Don't enter diagnoses, personal health details, Social Security numbers, or financial account information.</p></div>
+    <div class="activity-heading"><h2>Record an issue</h2></div>
     <form class="activity-form" th:action="@{/reports}" method="post">
       <label>Issue category
         <select name="category" required>
@@ -31,14 +30,14 @@
       </label>
       <label>Your note
         <textarea name="description" minlength="5" maxlength="800" rows="4" placeholder="Example: Compare how two plans describe out-of-network visits before deciding." required></textarea>
-        <small>5–800 characters. This is saved privately as an account note.</small>
+        <small>5–800 characters.</small>
       </label>
       <button class="button button-primary" type="submit">Save issue note</button>
     </form>
   </section>
 
   <section class="activity-history">
-    <div class="activity-heading"><h2>Your tracked issues</h2><p>You can close or reopen your own notes. This only changes your GISU account record.</p></div>
+    <div class="activity-heading"><h2>Your tracked issues</h2></div>
     <div class="dashboard-empty" th:if="${#lists.isEmpty(reports)}"><h3>No issue notes yet</h3><p>Any notes you add will be listed here.</p></div>
     <article class="activity-item" th:each="r : ${reports}">
       <div class="activity-item-head">
@@ -58,7 +57,6 @@
       </div>
     </article>
   </section>
-  <p class="activity-footnote">To file an actual insurance claim or appeal, contact your insurer using its official website or member services.</p>
 </main>
 <div th:replace="~{fragments :: footer}"></div>
 </body></html>

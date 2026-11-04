@@ -155,4 +155,33 @@ class OfficialEnrollmentFlowTest {
                 .andExpect(content().string(not(containsString("action=\"/cancel-enrollment\""))))
                 .andExpect(content().string(not(containsString("action=\"/switch-plan\""))));
     }
+
+    @Test
+    void siteUsesConciseCopyAndKeepsGeminiConsentVisible() throws Exception {
+        mvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(not(containsString("educational prototype"))))
+                .andExpect(content().string(containsString("Student project")));
+
+        MockHttpSession signedIn = register();
+        mvc.perform(get("/assessment").session(signedIn))
+                .andExpect(status().isOk())
+                .andExpect(content().string(not(containsString("Important:"))))
+                .andExpect(content().string(not(containsString("cannot yet confirm"))));
+
+        mvc.perform(get("/agent-assistance").session(signedIn))
+                .andExpect(status().isOk())
+                .andExpect(content().string(not(containsString("Classroom demonstration"))));
+        mvc.perform(get("/reports").session(signedIn))
+                .andExpect(status().isOk())
+                .andExpect(content().string(not(containsString("This is not a claims portal"))));
+        mvc.perform(get("/dashboard").session(signedIn))
+                .andExpect(status().isOk())
+                .andExpect(content().string(not(containsString("Payroll demo"))))
+                .andExpect(content().string(not(containsString("Archived classroom enrollment data"))));
+        mvc.perform(get("/account/security").session(signedIn))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Practice code")))
+                .andExpect(content().string(not(containsString("Demo only"))));
+    }
 }

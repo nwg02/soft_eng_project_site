@@ -95,8 +95,8 @@ class TwoFactorFlowTest {
                 .andExpect(redirectedUrl("/login?reason=account"));
         mvc.perform(get("/account/security").session(a.session()))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Mock identity verification")))
-                .andExpect(content().string(containsString("not real identity verification")));
+                .andExpect(content().string(containsString("Identity verification")))
+                .andExpect(content().string(containsString("Practice code")));
 
         mvc.perform(post("/account/security/demo").session(a.session())
                         .param("demoCode", "WRONG")

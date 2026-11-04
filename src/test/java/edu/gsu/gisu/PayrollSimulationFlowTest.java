@@ -80,7 +80,7 @@ class PayrollSimulationFlowTest {
         mvc.perform(get("/payroll").session(a.session()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Payroll deductions")))
-                .andExpect(content().string(containsString("No employer is contacted")));
+                .andExpect(content().string(containsString("Create a simulation")));
 
         mvc.perform(post("/payroll").session(a.session())
                 .param("planSlug", "gisu-plan-01")

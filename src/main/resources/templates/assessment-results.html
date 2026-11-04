@@ -29,7 +29,6 @@
       <div><dt>Household size</dt><dd th:text="${assessment.household_size}">1</dd></div>
       <div><dt>Monthly premium budget</dt><dd th:text="|$${assessment.monthly_budget}|">$300.00</dd></div>
     </dl>
-    <p class="assessment-muted">Your budget, ZIP code, age, household size and optional income range did not determine plan eligibility, prices, or subsidy amounts. Your selected coverage priority determines the document ordering below.</p>
   </section>
 
 
@@ -42,25 +41,16 @@
 
     <div th:if="${aiReview != null}">
       <p class="assessment-ai-text" th:text="${aiReview.summary}">AI-generated educational comparison.</p>
-      <p class="assessment-muted">Gemini selected the document shortlist below from GISU's verified catalog.
-        These suggestions do not verify local availability, premiums, benefits, or insurance eligibility.</p>
     </div>
 
     <div th:if="${aiReview == null}">
-      <p>Generate an AI explanation and an alternative document shortlist using your comparison priority.
-        Without AI, the standard rule-based suggestions below remain available.</p>
-      <p class="assessment-muted">Only these details would be sent to Google Gemini:
-        individual/family coverage, a broad household-size group, a broad monthly-budget range,
-        your comparison priority, and published catalog plan names and characteristics.
-        GISU does <strong>not</strong> send your ZIP code, age, income, exact budget,
-        name, email, or account identifier in the assessment request.</p>
+      <p>Get an AI analysis of your coverage priorities and plan options.</p>
       <form th:action="@{/assessment/results/{id}/ai(id=${assessment.assessment_id})}" method="post" class="assessment-ai-form">
         <label><input type="checkbox" name="shareRedactedPreferences" value="true" required>
-          I agree to share these limited assessment preferences with Google Gemini for this analysis.</label>
+          Share my general coverage preferences with Google Gemini.</label>
         <button type="submit" class="button button-primary" th:disabled="${!aiAvailable}">Generate AI analysis</button>
       </form>
-      <p class="assessment-muted" th:if="${!aiAvailable}">Gemini isn't configured on this server.
-        Your saved assessment and standard document suggestions still work.</p>
+      <p class="assessment-muted" th:if="${!aiAvailable}">AI analysis is currently unavailable.</p>
     </div>
     <p class="plan-bookmark-feedback" th:if="${param.ai != null and (param.ai[0] == 'generated' or param.ai[0] == 'existing')}" role="status">AI analysis saved to this assessment.</p>
     <p class="error" th:if="${param.ai != null and param.ai[0] == 'consent-required'}" role="alert">Consent is required before sending any assessment information to Gemini.</p>
@@ -76,7 +66,7 @@
       <h2 th:if="${aiReview == null}">Four plans to compare further</h2>
       <h2 th:if="${aiReview != null}">AI-selected documents to compare</h2>
       <p th:if="${aiReview == null}" th:text="${priorityExplanation}">Explanation of the standard sorting logic.</p>
-      <p th:if="${aiReview != null}">These documents were selected from the same 12-plan catalog and must be verified with official sources before making a decision.</p></div>
+      <p th:if="${aiReview != null}">Explore these plans side by side.</p></div>
     <div class="assessment-results-grid">
       <article class="assessment-plan" th:each="p, iter : ${suggestions}">
         <div class="assessment-plan-top"><span class="level-pill" th:classappend="${#strings.toLowerCase(p.metal)}" th:text="${#strings.toUpperCase(p.metal)}">SILVER</span><span class="assessment-card-counter" th:text="|Document ${iter.count} of ${#lists.size(suggestions)}|">Document 1 of 4</span></div>
@@ -110,13 +100,13 @@
   </section>
 
   <section class="assessment-next-steps">
-    <h2>Before making a coverage decision</h2>
-    <p>Verify that a plan is offered in your county and ZIP code, check its current doctor and prescription network, and request an official quote that considers your household and potential financial assistance. Your budget isn't a filter here because GISU does not have verified rate data.</p>
+    <h2>Compare your options</h2>
+    <p>Review the full plan documents, networks, and current prices.</p>
     <div class="assessment-result-actions">
       <a class="button button-primary" th:href="@{/plans}">Compare all 12 plan documents →</a>
       <a class="button button-outline" href="https://georgiaaccess.gov/" target="_blank" rel="noopener noreferrer">Visit Georgia Access ↗</a>
     </div>
-    <p class="market-footnote">*Deductible figures are read from the published plan names, not verified family deductibles or all cost-sharing terms. A document appearing here does not mean the plan is available to you. GISU is an educational prototype and does not provide insurance advice or enrollment.</p>
+    <p class="market-footnote">*Deductible figures shown are from published plan names.</p>
   </section>
 </main>
 <div th:replace="~{fragments :: footer}"></div>

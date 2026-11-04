@@ -14,7 +14,6 @@
     <span class="eyebrow">YOUR GEORGIA COVERAGE GUIDE</span>
     <h1>Insurance needs assessment</h1>
     <p>Save your preferences, compare plan documents, and optionally generate a Gemini analysis on the results page.</p>
-    <div class="assessment-notice" role="note"><strong>Important:</strong> This is not an insurance quote or eligibility check. GISU cannot yet confirm which plans serve your ZIP code, calculate your premium or subsidy, or determine what coverage is best for you.</div>
   </section>
 
   <p class="error" th:if="${error}" th:text="${error}" role="alert"></p>
@@ -24,11 +23,9 @@
       <div class="assessment-fields">
         <label>Georgia ZIP code
           <input type="text" name="zipCode" inputmode="numeric" pattern="[0-9]{5}" minlength="5" maxlength="5" placeholder="30303" autocomplete="postal-code" required>
-          <small>Used for your assessment record, not to verify a plan's service area.</small>
         </label>
         <label>Your age
           <input type="number" name="age" min="18" max="110" placeholder="25" required>
-          <small>Age is not used to generate insurance prices here.</small>
         </label>
         <label>Coverage you're researching
           <select name="coverageType" required>
@@ -48,7 +45,6 @@
       <div class="assessment-fields">
         <label>Monthly premium budget ($)
           <input type="number" name="monthlyBudget" min="0" max="10000" step="0.01" placeholder="300" required>
-          <small>We save your budget but cannot filter by price until verified ZIP/age-specific rates are available.</small>
         </label>
         <label>Annual household income range <span class="optional-label">(optional)</span>
           <select name="incomeRange">
@@ -58,7 +54,6 @@
             <option value="60000_100000">$60,000–$99,999</option>
             <option value="over_100000">$100,000 or more</option>
           </select>
-          <small>This optional range is not used to estimate tax credits or eligibility.</small>
         </label>
       </div>
       <label class="priority-label" for="priority">What's most important when comparing plans?</label>
@@ -71,7 +66,6 @@
     </fieldset>
     <div class="assessment-submit">
       <button type="submit" class="button button-primary">See plan documents to review →</button>
-      <p>We never ask for Social Security numbers, medical history, or payment details.</p>
     </div>
   </form>
 </main>

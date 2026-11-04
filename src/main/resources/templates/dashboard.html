@@ -24,7 +24,6 @@
         <a th:href="@{/agent-assistance}">Agent help</a>
         <a th:href="@{/reports}">Reports</a>
         <a th:href="@{/billing}">Billing</a>
-        <a th:href="@{/payroll}">Payroll demo</a>
         <a th:href="@{/account/security}">Security &amp; 2FA</a>
         <a th:href="@{/notifications}">Notifications</a>
       </nav>
@@ -46,19 +45,19 @@
         <article class="dashboard-tool-card">
           <span class="dashboard-tool-number" th:text="${agentRequestCount}">0</span>
           <h3>Agent assistance</h3>
-          <p>Record help requests and contact preferences. Demo only; no agent is contacted.</p>
+          <p>Save questions and contact preferences.</p>
           <a class="button button-outline" th:href="@{/agent-assistance}">View assistance requests →</a>
         </article>
         <article class="dashboard-tool-card">
           <span class="dashboard-tool-number" th:text="${openReportCount}">0</span>
           <h3>Open issue notes</h3>
-          <p>Track insurance research questions privately. Notes are not submitted as claims.</p>
+          <p>Record and organize insurance questions.</p>
           <a class="button button-outline" th:href="@{/reports}">Manage reports →</a>
         </article>
         <article class="dashboard-tool-card">
           <span class="dashboard-tool-number" th:text="${unreadNotifications}">0</span>
           <h3>Unread notifications</h3>
-          <p>See updates about your GISU account activity. In-app only; no external messages.</p>
+          <p>View your latest account updates.</p>
           <a class="button button-outline" th:href="@{/notifications}">View notifications →</a>
         </article>
       </div>
@@ -79,11 +78,10 @@
         <p>Planned: <strong th:text="${billingOverview.plannedLabel}">$0.00</strong>
           <span aria-hidden="true"> · </span>
           Recorded as paid: <strong th:text="${billingOverview.paidLabel}">$0.00</strong></p>
-        <small>Personal tracking only. These are not insurer bills or verified transactions.</small>
+        <small>Your saved payment entries and planned expenses.</small>
       </div>
       <div class="dashboard-finance-actions">
         <a class="button button-outline" th:href="@{/billing}">Payment history →</a>
-        <a class="button button-outline" th:href="@{/payroll}">Payroll demo →</a>
       </div>
     </section>
 
@@ -95,7 +93,6 @@
         <div><span class="eyebrow">YOUR SHORTLIST</span><h2>Saved insurance plan documents</h2></div>
         <a class="button button-outline" th:href="@{/plans}">Explore plans →</a>
       </div>
-      <p class="assessment-muted">Bookmarks are for research only. Verify availability, premiums, and eligibility with the insurer.</p>
       <div class="dashboard-empty" th:if="${#lists.isEmpty(savedPlans)}">
         <h3>No saved plans yet</h3>
         <p>Save documents from Explore Plans or assessment results to build your shortlist.</p>
@@ -130,8 +127,6 @@
           <h2 id="referral-title">Links you've followed</h2></div>
         <a class="button button-outline" th:href="@{/plans}">Find plans →</a>
       </div>
-      <p class="assessment-muted">GISU records visits to official enrollment websites when you're signed in.
-        A visit does not mean you applied, qualified, or have insurance.</p>
       <p th:if="${#lists.isEmpty(officialSiteVisits)}" class="dashboard-empty">
         No official enrollment links recorded yet.</p>
       <div class="dashboard-referral-list" th:if="${!#lists.isEmpty(officialSiteVisits)}">
@@ -173,26 +168,6 @@
 
         <p><a th:href="@{/assessment}">Complete an Assessment</a></p>
     </section>
-
-
-    <details class="dashboard-legacy">
-      <summary>Archived classroom enrollment data (not real coverage)</summary>
-      <p class="assessment-notice">These are records from GISU's former fictional-plan prototype.
-        The historical status of a record does not mean an insurer provided or changed coverage.
-        GISU no longer creates, cancels or switches these demo enrollments.</p>
-      <p th:if="${#lists.isEmpty(enrollments)}">There are no archived demo enrollment records.</p>
-      <article th:each="e : ${enrollments}" class="plan">
-        <h3 th:text="${e.plan_name}">Former sample plan</h3>
-        <p>Fictional issuer: <span th:text="${e.provider_name}">Issuer</span></p>
-        <p>Demo database status (not coverage): <span th:text="${e.enrollment_status}">active</span></p>
-        <p>Recorded date: <span th:text="${e.start_date}">Date</span></p>
-      </article>
-      <h3 th:if="${!#lists.isEmpty(extensionRequests)}">Archived demo extension requests</h3>
-      <p th:each="r : ${extensionRequests}">
-        Demo request: <span th:text="${r.request_status}">pending</span>
-        · Recorded <span th:text="${r.created_at}">Date</span>
-      </p>
-    </details>
 
     <form th:action="@{/logout}" method="post">
         <button type="submit">Log Out</button>
