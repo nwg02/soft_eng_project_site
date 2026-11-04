@@ -38,10 +38,7 @@
       <label th:if="${session.user != null}" class="chat-account-optin">
         <input type="checkbox" id="chat-account-consent">
         <span><strong>Use Gemini to summarize my account for this question</strong>
-          <small>Optional. Shares limited account details with Google: notification titles,
-          plan names, report categories/statuses, or assessment priorities. It does not
-          automatically add your ZIP code, age, income, premium budget or
-          personal issue notes. Your question text is also sent to Google.
+          <small>Optional! This shares the question text to Google.
           Unchecked uses GISU's private summary.</small></span>
       </label>
       <form id="chat-form" class="chat-form"><label for="chat-input" class="sr-only">Your insurance question</label><input type="text" id="chat-input" maxlength="800" autocomplete="off" placeholder="Ask about coverage…" required><button type="submit" id="chat-send">Send</button></form>
