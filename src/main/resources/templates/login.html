@@ -12,6 +12,10 @@
       <strong>Dashboard unavailable</strong>
       <p>You must sign in to access your dashboard.</p>
     </div>
+    <div class="access-notice" th:if="${savedPlanLoginRequired}" role="status">
+      <strong>Sign in to save plans</strong>
+      <p>Create or use a GISU account to keep official plan documents on your dashboard.</p>
+    </div>
     <p class="error" th:if="${error}" th:text="${error}" role="alert"></p>
     <form class="form" th:action="@{/login}" method="post">
       <label>Email address<input type="email" name="email" autocomplete="email" required></label>

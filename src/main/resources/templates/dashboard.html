@@ -11,12 +11,52 @@
 <div th:replace="~{fragments :: header}"></div>
 
 <main>
-    <h1>Dashboard</h1>
+    <section class="dashboard-welcome">
+      <span class="eyebrow">YOUR GISU ACCOUNT</span>
+      <h1>Welcome back, <span th:text="${user.first_name}">Customer</span>.</h1>
+      <p>Your saved plan documents and assessments are collected here. Saving a document doesn't create insurance coverage.</p>
+      <div class="dashboard-stats">
+        <div><strong th:text="${savedCount}">0</strong><span>Saved plan documents</span></div>
+        <div><strong th:text="${#lists.size(assessments)}">0</strong><span>Completed assessments</span></div>
+      </div>
+    </section>
+    <p class="plan-bookmark-feedback" th:if="${bookmark == 'saved'}" role="status">Plan saved to your account.</p>
+    <p class="plan-bookmark-feedback" th:if="${bookmark == 'removed'}" role="status">Plan removed from your account.</p>
+    <p class="error" th:if="${bookmark == 'invalid'}" role="alert">This plan wasn't found in the catalog.</p>
+    <section id="saved-plans" class="dashboard-saved-section">
+      <div class="dashboard-section-heading">
+        <div><span class="eyebrow">YOUR SHORTLIST</span><h2>Saved insurance plan documents</h2></div>
+        <a class="button button-outline" th:href="@{/plans}">Explore plans →</a>
+      </div>
+      <p class="assessment-muted">Bookmarks are for research only. Verify availability, premiums, and eligibility with the insurer.</p>
+      <div class="dashboard-empty" th:if="${#lists.isEmpty(savedPlans)}">
+        <h3>No saved plans yet</h3>
+        <p>Save documents from Explore Plans or assessment results to build your shortlist.</p>
+        <a class="button button-primary" th:href="@{/plans}">Browse plan documents →</a>
+      </div>
+      <div class="dashboard-saved-grid" th:if="${!#lists.isEmpty(savedPlans)}">
+        <article class="dashboard-saved-card" th:each="p : ${savedPlans}">
+          <div class="dashboard-saved-top">
+            <span class="level-pill" th:classappend="${#strings.toLowerCase(p.metal)}" th:text="${#strings.toUpperCase(p.metal)}">SILVER</span>
+            <span th:text="${p.type}">HMO</span>
+          </div>
+          <p class="dashboard-plan-issuer" th:text="${p.issuer}">Company</p>
+          <h3 th:text="${p.name}">Plan name</h3>
+          <p>Deductible in plan name*: <strong th:text="${p.deductibleLabel}">$0</strong></p>
+          <p>Monthly premium: <strong>Official quote required</strong></p>
+          <div class="dashboard-saved-links">
+            <a class="button button-primary" th:href="${p.documentUrl}" target="_blank" rel="noopener noreferrer">Official document ↗</a>
+            <a th:href="${p.shopUrl}" target="_blank" rel="noopener noreferrer">Check availability ↗</a>
+          </div>
+          <form th:action="@{/saved-plans/remove}" method="post" class="save-plan-form">
+            <input type="hidden" name="planSlug" th:value="${p.slug}">
+            <input type="hidden" name="returnTo" value="dashboard">
+            <button class="button button-outline" type="submit">Remove saved plan</button>
+          </form>
+        </article>
+      </div>
+    </section>
 
-    <p>
-        Welcome,
-        <span th:text="${user.first_name}">Customer</span>!
-    </p>
     <section class="assessment-dashboard-cta">
         <h2>Explore your coverage options</h2>
         <p>Save your coverage priorities, review official 2027 Georgia plan documents, and return to previous assessment results.</p>
@@ -35,6 +75,32 @@
     <p th:if="${status == 'same_plan'}">Choose a different plan to switch providers.</p>
     <p th:if="${status == 'switch_household_error'}">Family coverage requires a household size between 2 and 20.</p>
 
+    <p class="error" th:if="${status == 'assessment_not_found'}">That assessment could not be found in your account.</p>
+    <section>
+        <h2 id="assessment-history">My Assessment History</h2>
+
+        <p th:if="${#lists.isEmpty(assessments)}">
+            You have not completed an assessment yet.
+        </p>
+
+        <article th:each="a : ${assessments}" class="plan">
+            <h3>Assessment</h3>
+            <p>ZIP code: <span th:text="${a.zip_code ?: 'Not recorded'}">30303</span></p>
+            <p>Age: <span th:text="${a.age}">0</span></p>
+            <p>Coverage: <span th:text="${a.coverage_type}">individual</span></p>
+            <p>Monthly budget: $<span th:text="${a.monthly_budget}">0.00</span></p>
+            <p>Household size: <span th:text="${a.household_size}">1</span></p>
+            <p>Submitted: <span th:text="${a.created_at}">Date</span></p>
+            <p><a th:href="@{/assessment/results/{id}(id=${a.assessment_id})}">Review results and official plan documents →</a></p>
+        </article>
+
+        <p><a th:href="@{/assessment}">Complete an Assessment</a></p>
+    </section>
+
+
+    <details class="dashboard-legacy">
+      <summary>Older classroom demo records (not actual insurance policies)</summary>
+      <p class="assessment-notice">These original records are fictional. Their demo controls only change GISU records and do not contact insurance companies.</p>
     <section>
         <h2>Legacy classroom enrollment records</h2>
         <p class="assessment-muted">These are old prototype records, not confirmed insurance coverage. Changes here do not notify insurers or change actual policies.</p>
@@ -133,27 +199,7 @@
         </article>
     </section>
 
-    <p class="error" th:if="${status == 'assessment_not_found'}">That assessment could not be found in your account.</p>
-    <section>
-        <h2 id="assessment-history">My Assessment History</h2>
-
-        <p th:if="${#lists.isEmpty(assessments)}">
-            You have not completed an assessment yet.
-        </p>
-
-        <article th:each="a : ${assessments}" class="plan">
-            <h3>Assessment</h3>
-            <p>ZIP code: <span th:text="${a.zip_code ?: 'Not recorded'}">30303</span></p>
-            <p>Age: <span th:text="${a.age}">0</span></p>
-            <p>Coverage: <span th:text="${a.coverage_type}">individual</span></p>
-            <p>Monthly budget: $<span th:text="${a.monthly_budget}">0.00</span></p>
-            <p>Household size: <span th:text="${a.household_size}">1</span></p>
-            <p>Submitted: <span th:text="${a.created_at}">Date</span></p>
-            <p><a th:href="@{/assessment/results/{id}(id=${a.assessment_id})}">Review results and official plan documents →</a></p>
-        </article>
-
-        <p><a th:href="@{/assessment}">Complete an Assessment</a></p>
-    </section>
+    </details>
 
     <form th:action="@{/logout}" method="post">
         <button type="submit">Log Out</button>

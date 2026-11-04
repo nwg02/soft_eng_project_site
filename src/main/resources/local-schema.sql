@@ -30,6 +30,17 @@ ALTER TABLE insurance_assessments ADD COLUMN IF NOT EXISTS zip_code VARCHAR(5);
 ALTER TABLE insurance_assessments ADD COLUMN IF NOT EXISTS income_range VARCHAR(40) DEFAULT 'prefer_not' NOT NULL;
 ALTER TABLE insurance_assessments ADD COLUMN IF NOT EXISTS priority VARCHAR(40) DEFAULT 'balanced' NOT NULL;
 
+-- Saving a curated insurer document never represents real coverage.
+CREATE TABLE IF NOT EXISTS saved_curated_plans (
+    saved_plan_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL,
+    plan_slug VARCHAR(64) NOT NULL,
+    saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_saved_curated_customer_slug UNIQUE (customer_id, plan_slug),
+    CONSTRAINT fk_saved_curated_customer FOREIGN KEY (customer_id)
+        REFERENCES customers(customer_id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS insurance_plans (
     plan_id INT AUTO_INCREMENT PRIMARY KEY,
     provider_name VARCHAR(120) NOT NULL,

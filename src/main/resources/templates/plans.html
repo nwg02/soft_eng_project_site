@@ -26,6 +26,9 @@
         <button type="button" id="clear-selected" class="button button-outline">Clear selection</button>
       </div>
     </div>
+    <div class="plan-bookmark-feedback" th:if="${bookmark == 'saved'}" role="status">Plan saved to your dashboard.</div>
+    <div class="plan-bookmark-feedback" th:if="${bookmark == 'removed'}" role="status">Plan removed from your saved list.</div>
+    <p class="error" th:if="${bookmark == 'invalid'}" role="alert">This plan is not in the catalog.</p>
     <div class="market-grid" id="market-grid">
       <article class="market-plan" th:each="p : ${catalogPlans}"
                th:id="${p.slug}"
@@ -42,6 +45,20 @@
         </dl>
         <p class="market-document" th:text="|${p.documentLabel} · Official insurer document|">Official plan document</p>
         <label class="market-compare"><input type="checkbox" class="compare-plan"> Add to comparison</label>
+        <form th:if="${signedIn and !savedSlugs.contains(p.slug)}"
+              th:action="@{/saved-plans}" method="post" class="save-plan-form">
+          <input type="hidden" name="planSlug" th:value="${p.slug}">
+          <input type="hidden" name="returnTo" value="plans">
+          <button type="submit" class="button button-outline save-plan-button">♡ Save to my plans</button>
+        </form>
+        <form th:if="${signedIn and savedSlugs.contains(p.slug)}"
+              th:action="@{/saved-plans/remove}" method="post" class="save-plan-form">
+          <input type="hidden" name="planSlug" th:value="${p.slug}">
+          <input type="hidden" name="returnTo" value="plans">
+          <button type="submit" class="button button-outline save-plan-button saved-button">✓ Saved · Remove</button>
+        </form>
+        <a th:if="${!signedIn}" class="button button-outline save-plan-button"
+           th:href="@{/login(reason='savedplan')}">♡ Sign in to save</a>
         <a class="button button-primary market-link" th:href="${p.documentUrl}" target="_blank" rel="noopener noreferrer">View this plan's details ↗</a>
         <a class="market-shop-link" th:href="${p.shopUrl}" target="_blank" rel="noopener noreferrer">Shop with this insurer ↗</a>
       </article>

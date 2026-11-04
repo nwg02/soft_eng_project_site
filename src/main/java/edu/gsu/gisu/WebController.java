@@ -18,9 +18,11 @@ import java.util.Map;
 @Controller
 public class WebController {
     private final JdbcTemplate db;
+    private final SavedPlanService savedPlanService;
 
-    public WebController(JdbcTemplate db) {
+    public WebController(JdbcTemplate db, SavedPlanService savedPlanService) {
         this.db = db;
+        this.savedPlanService = savedPlanService;
     }
 
     @GetMapping("/")
@@ -81,6 +83,7 @@ public class WebController {
     public String loginPage(@RequestParam(required = false) String reason,
                             Model model) {
         model.addAttribute("dashboardLoginRequired", "dashboard".equals(reason));
+        model.addAttribute("savedPlanLoginRequired", "savedplan".equals(reason));
         return "login";
     }
 
@@ -125,6 +128,7 @@ public class WebController {
 
     @GetMapping("/dashboard")
     public String dashboard(@RequestParam(required = false) String status,
+                            @RequestParam(required = false) String bookmark,
                             HttpSession session,
                             Model model) {
         Map<String, Object> user = currentUser(session);
@@ -136,6 +140,9 @@ public class WebController {
         Object customerId = user.get("customer_id");
 
         model.addAttribute("user", user);
+        var savedPlans = savedPlanService.savedPlans(((Number) customerId).intValue());
+        model.addAttribute("savedPlans", savedPlans);
+        model.addAttribute("savedCount", savedPlans.size());
 
         model.addAttribute("assessments", db.queryForList(
                 "SELECT assessment_id, age, coverage_type, monthly_budget, " +
@@ -171,14 +178,22 @@ public class WebController {
         ));
 
         model.addAttribute("status", status);
+        model.addAttribute("bookmark", bookmark);
         return "dashboard";
     }
 
     // Plan education is available without a database connection.
     // Do not expose legacy fictional insurance_plans as real Georgia offerings.
     @GetMapping("/plans")
-    public String plans(Model model) {
+    public String plans(@RequestParam(required = false) String bookmark,
+                        HttpSession session, Model model) {
+        Map<String, Object> user = currentUser(session);
         model.addAttribute("catalogPlans", GeorgiaPlanCatalog.all());
+        model.addAttribute("signedIn", user != null);
+        model.addAttribute("savedSlugs", user == null
+                ? java.util.Set.of()
+                : savedPlanService.savedSlugs(((Number) user.get("customer_id")).intValue()));
+        model.addAttribute("bookmark", bookmark);
         return "plans";
     }
 

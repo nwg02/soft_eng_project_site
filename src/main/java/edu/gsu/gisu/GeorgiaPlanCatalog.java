@@ -3,6 +3,7 @@ package edu.gsu.gisu;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Shared curated 2027 issuer-document examples. Not an exhaustive inventory
@@ -70,6 +71,11 @@ public final class GeorgiaPlanCatalog {
 
     public static List<Plan> all() {
         return PLANS;
+    }
+
+    public static Optional<Plan> findBySlug(String slug) {
+        if (slug == null || slug.length() > 64) return Optional.empty();
+        return PLANS.stream().filter(p -> p.slug().equals(slug)).findFirst();
     }
 
     public static boolean validPriority(String priority) {

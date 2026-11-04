@@ -100,3 +100,13 @@ Anonymous visits to `/dashboard` redirect to `/login?reason=dashboard`, where an
 ### Local verification
 
 Use `mvn test` to run the automated H2-backed assessment flow tests in memory (without touching the regular local database or Railway). The feature branch also has a GitHub Actions workflow that runs these checks. After pulling the feature branch and restarting Spring Boot with `local` profile, create a test account and complete an assessment, review the document suggestions, then revisit them from Dashboard. Do not commit test accounts or API keys.
+
+## Dashboard and saved curated plan documents
+
+Signed-in users can bookmark and remove any of the 12 curated 2027 insurer plan documents on Explore Plans and from their assessment results. Their shortlist appears on the dashboard, with official document and insurer shopping links. Public visitors can still browse/compare plans without an account, and are invited to sign in to save.
+
+Account-level bookmarks are stored as stable catalog slugs in `saved_curated_plans`, with a unique customer/slug index. No coverage or enrollment is created. The legacy fictional plan demo is labeled and collapsed on the dashboard.
+
+The local H2 schema creates the bookmarks table automatically for existing databases. The production MySQL schema requires applying `database/migrations/V4__saved_curated_plan_bookmarks.sql` once **after V2 and V3**. Back up the database and verify migrations before deploying; nothing was applied to Railway.
+
+Run `mvn test` to verify the feature, then run `mvn spring-boot:run -Dspring-boot.run.profiles=local` and test save, dashboard shortlist, removal, and account isolation.

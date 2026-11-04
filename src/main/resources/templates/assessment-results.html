@@ -32,7 +32,10 @@
     <p class="assessment-muted">Your budget, ZIP code, age, household size and optional income range did not determine plan eligibility, prices, or subsidy amounts. Your selected coverage priority determines the document ordering below.</p>
   </section>
 
-  <section class="assessment-recommendations">
+  <p class="plan-bookmark-feedback" th:if="${bookmark == 'saved'}" role="status">Plan saved to your dashboard.</p>
+  <p class="plan-bookmark-feedback" th:if="${bookmark == 'removed'}" role="status">Plan removed from your saved list.</p>
+  <p class="error" th:if="${bookmark == 'invalid'}" role="alert">This plan is not in the catalog.</p>
+  <section class="assessment-recommendations" id="suggested-plans">
     <div class="assessment-heading"><span class="eyebrow">START WITH THESE DOCUMENTS</span><h2>Four plans to compare further</h2><p th:text="${priorityExplanation}">Explanation of selection logic.</p></div>
     <div class="assessment-results-grid">
       <article class="assessment-plan" th:each="p, iter : ${suggestions}">
@@ -46,6 +49,20 @@
           <div><dt>Service area</dt><dd>Not verified</dd></div>
         </dl>
         <p class="assessment-plan-doc" th:text="${p.documentLabel}">Official issuer document</p>
+        <form class="save-plan-form" th:if="${!savedSlugs.contains(p.slug)}"
+              th:action="@{/saved-plans}" method="post">
+          <input type="hidden" name="planSlug" th:value="${p.slug}">
+          <input type="hidden" name="returnTo" value="results">
+          <input type="hidden" name="assessmentId" th:value="${assessment.assessment_id}">
+          <button type="submit" class="button button-outline save-plan-button">♡ Save to my plans</button>
+        </form>
+        <form class="save-plan-form" th:if="${savedSlugs.contains(p.slug)}"
+              th:action="@{/saved-plans/remove}" method="post">
+          <input type="hidden" name="planSlug" th:value="${p.slug}">
+          <input type="hidden" name="returnTo" value="results">
+          <input type="hidden" name="assessmentId" th:value="${assessment.assessment_id}">
+          <button type="submit" class="button button-outline save-plan-button saved-button">✓ Saved · Remove</button>
+        </form>
         <a class="button button-primary" th:href="${p.documentUrl}" target="_blank" rel="noopener noreferrer">View official plan document ↗</a>
         <a th:href="${p.shopUrl}" target="_blank" rel="noopener noreferrer">Check availability with insurer ↗</a>
       </article>

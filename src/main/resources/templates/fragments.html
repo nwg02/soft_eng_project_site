@@ -9,9 +9,10 @@
       <a th:href="@{/plans}">Explore plans</a>
       <a th:href="@{/assessment}">Assessment</a>
       <a th:href="@{/dashboard}">Dashboard</a>
-      <a th:href="@{/login}">Log in</a>
-      <a class="nav-cta" th:href="@{/register}">Get started</a>
-      <form th:action="@{/logout}" method="post" class="inline-form"><button type="submit" class="logout-link">Log out</button></form>
+      <a th:if="${session.user != null}" th:href="@{/saved-plans}">Saved plans</a>
+      <a th:if="${session.user == null}" th:href="@{/login}">Log in</a>
+      <a th:if="${session.user == null}" class="nav-cta" th:href="@{/register}">Get started</a>
+      <form th:if="${session.user != null}" th:action="@{/logout}" method="post" class="inline-form"><button type="submit" class="logout-link">Log out</button></form>
     </nav>
   </div>
 </header>

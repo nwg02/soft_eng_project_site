@@ -29,9 +29,11 @@ public class AssessmentController {
             "60000_100000", "over_100000"
     );
     private final JdbcTemplate db;
+    private final SavedPlanService savedPlanService;
 
-    public AssessmentController(JdbcTemplate db) {
+    public AssessmentController(JdbcTemplate db, SavedPlanService savedPlanService) {
         this.db = db;
+        this.savedPlanService = savedPlanService;
     }
 
     @GetMapping("/assessment")
@@ -94,7 +96,9 @@ public class AssessmentController {
     }
 
     @GetMapping("/assessment/results/{id}")
-    public String results(@PathVariable long id, HttpSession session, Model model) {
+    public String results(@PathVariable long id,
+                          @RequestParam(required = false) String bookmark,
+                          HttpSession session, Model model) {
         Integer customerId = currentCustomerId(session);
         if (customerId == null) return "redirect:/login";
 
@@ -112,6 +116,8 @@ public class AssessmentController {
         model.addAttribute("priority", priority);
         model.addAttribute("priorityExplanation", GeorgiaPlanCatalog.explanation(priority));
         model.addAttribute("suggestions", GeorgiaPlanCatalog.suggestions(priority));
+        model.addAttribute("savedSlugs", savedPlanService.savedSlugs(customerId));
+        model.addAttribute("bookmark", bookmark);
         return "assessment-results";
     }
 
