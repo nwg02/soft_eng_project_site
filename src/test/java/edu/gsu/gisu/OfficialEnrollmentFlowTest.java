@@ -55,6 +55,28 @@ class OfficialEnrollmentFlowTest {
     }
 
     @Test
+    void compactHomepageAndDropdownStylesAreActuallyServed() throws Exception {
+        mvc.perform(get("/styles.css"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString(".home-compact .home-landing{")))
+                .andExpect(content().string(containsString(".home-compact .home-quick-link{")))
+                .andExpect(content().string(containsString(".site-header .nav-account-menu{")))
+                .andExpect(content().string(containsString(".dashboard-quick-actions{")));
+
+        MockHttpSession signedIn = register();
+        mvc.perform(get("/dashboard").session(signedIn))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("dashboard-quick-actions")))
+                .andExpect(content().string(containsString("Agent help")))
+                .andExpect(content().string(containsString("Reports")));
+
+        mvc.perform(get("/").session(signedIn))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("nav-account-menu")))
+                .andExpect(content().string(containsString("Agent help")));
+    }
+
+    @Test
     void officialPlanHandoffWorksWithoutAccountAndValidatesDestination() throws Exception {
         mvc.perform(get("/enrollment/plan/gisu-plan-01"))
                 .andExpect(status().isOk())

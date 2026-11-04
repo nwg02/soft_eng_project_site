@@ -14,11 +14,17 @@
     <section class="dashboard-welcome">
       <span class="eyebrow">YOUR GISU ACCOUNT</span>
       <h1>Welcome back, <span th:text="${user.first_name}">Customer</span>.</h1>
-      <p>Your saved plan documents and assessments are collected here. Saving a document doesn't create insurance coverage.</p>
+      <p>Saved plans, assessments, and account activity in one place.</p>
       <div class="dashboard-stats">
         <div><strong th:text="${savedCount}">0</strong><span>Saved plan documents</span></div>
         <div><strong th:text="${#lists.size(assessments)}">0</strong><span>Completed assessments</span></div>
       </div>
+      <nav class="dashboard-quick-actions" aria-label="Account shortcuts">
+        <a th:href="@{/saved-plans}">Saved plans</a>
+        <a th:href="@{/agent-assistance}">Agent help</a>
+        <a th:href="@{/reports}">Reports</a>
+        <a th:href="@{/notifications}">Notifications</a>
+      </nav>
     </section>
     <section class="dashboard-tool-section" aria-label="Account tools">
       <div class="dashboard-section-heading">

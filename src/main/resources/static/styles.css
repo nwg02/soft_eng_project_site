@@ -306,3 +306,244 @@
 .dashboard-referral-item small{font-size:11px;color:#7489a2;margin-top:5px}
 .dashboard-referral-item>a{font-size:12px;font-weight:750;text-decoration:none;white-space:nowrap}
 @media(max-width:650px){.official-enrollment-main{padding:35px 18px!important}.enrollment-choices{grid-template-columns:1fr}.dashboard-referral-item{align-items:flex-start;flex-direction:column;gap:8px}.enrollment-plan-summary{padding:21px}}
+
+
+/* Homepage layout correction: restore the missing compact page rules.
+   These belong at the end to override the older site-wide hero styles. */
+.home-main.home-compact{
+  max-width:none;
+  width:100%;
+  padding:0;
+  min-height:calc(100vh - 215px);
+}
+.home-compact .home-landing{
+  max-width:1180px;
+  margin:0 auto;
+  padding:76px 24px 68px;
+  display:grid;
+  grid-template-columns:minmax(0,1.08fr) minmax(320px,.92fr);
+  gap:64px;
+  align-items:center;
+}
+.home-compact .home-intro{min-width:0}
+.home-compact .home-intro h1{
+  font-size:clamp(36px,4.2vw,57px);
+  letter-spacing:-1.6px;
+  line-height:1.09;
+  max-width:570px;
+  margin:15px 0 17px;
+}
+.home-compact .home-intro>p{
+  color:#596e8c;
+  font-size:15px;
+  line-height:1.75;
+  max-width:515px;
+  margin:0 0 26px;
+}
+.home-compact .home-main-cta{min-width:164px}
+.home-compact .home-quick-links{
+  min-width:0;
+  display:grid;
+  grid-template-columns:1fr;
+  border:1px solid #d7e3f4;
+  border-radius:14px;
+  background:#fff;
+  box-shadow:0 14px 38px rgba(24,56,111,.07);
+  overflow:hidden;
+}
+.home-compact .home-quick-link{
+  display:grid;
+  grid-template-columns:27px minmax(0,1fr) 20px;
+  align-items:center;
+  gap:15px;
+  padding:22px 24px;
+  border-bottom:1px solid #e4ebf5;
+  color:#142b50;
+  text-decoration:none;
+  transition:background-color .15s;
+}
+.home-compact .home-quick-link:last-child{border-bottom:0}
+.home-compact .home-quick-link:hover,
+.home-compact .home-quick-link:focus-visible{background:#f0f5ff}
+.home-compact .home-quick-number{font-size:11px;font-weight:800;color:#6f87a8}
+.home-compact .home-quick-link strong,
+.home-compact .home-quick-link small{display:block}
+.home-compact .home-quick-link strong{font-size:15px;line-height:1.4}
+.home-compact .home-quick-link small{
+  font-size:12px;
+  line-height:1.5;
+  font-weight:400;
+  color:#6a7e9b;
+  margin-top:4px;
+}
+.home-compact .home-quick-link>span:last-child{color:#0039a6;font-size:20px}
+.home-compact .home-bottom{
+  max-width:1180px;
+  margin:0 auto;
+  padding:21px 24px 40px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:22px;
+  border-top:1px solid #e4ebf5;
+}
+.home-compact .home-bottom p{
+  font-size:11px;
+  line-height:1.65;
+  color:#667e9d;
+  margin:0;
+  max-width:775px;
+}
+.home-compact .home-bottom a{
+  white-space:nowrap;
+  font-size:12px;
+  font-weight:750;
+  text-decoration:none;
+}
+
+/* The Account <details> dropdown had no rules after the stylesheet overwrite.
+   Keep logged-in secondary destinations grouped, readable, and keyboard-accessible. */
+.site-header .main-nav{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  flex-wrap:nowrap;
+  gap:clamp(12px,1.8vw,24px);
+}
+.site-header .main-nav>a{
+  font-size:13px;
+  text-decoration:none;
+  font-weight:650;
+  color:#304363;
+  white-space:nowrap;
+}
+.site-header .main-nav>a:hover{color:#0039a6}
+.site-header .main-nav>a.nav-cta{color:#fff}
+.site-header .nav-account{
+  display:block;
+  position:relative;
+  flex:0 0 auto;
+  z-index:40;
+  min-width:0;
+}
+.site-header .nav-account>summary{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  cursor:pointer;
+  list-style:none;
+  list-style-type:none;
+  user-select:none;
+  font-size:13px;
+  color:#304363;
+  font-weight:650;
+  white-space:nowrap;
+  padding:10px 0;
+}
+.site-header .nav-account>summary::marker{content:""}
+.site-header .nav-account>summary::-webkit-details-marker{display:none}
+.site-header .nav-account>summary:hover{color:#0039a6}
+.site-header .nav-account>summary span{color:#6382ad}
+.site-header .nav-account-menu{
+  position:absolute;
+  top:calc(100% + 6px);
+  right:0;
+  z-index:60;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  width:216px;
+  padding:8px;
+  border:1px solid #d7e3f3;
+  background:#fff;
+  border-radius:11px;
+  box-shadow:0 16px 35px rgba(18,40,77,.17);
+}
+.site-header .nav-account:not([open]) .nav-account-menu{display:none}
+.site-header .nav-account-menu>a,
+.site-header .nav-account-menu form>button{
+  display:block;
+  width:100%;
+  box-sizing:border-box;
+  text-align:left;
+  padding:10px 12px;
+  border:0;
+  border-radius:6px;
+  background:transparent;
+  color:#263d60;
+  text-decoration:none;
+  white-space:nowrap;
+  font-size:13px;
+  font-weight:600;
+  line-height:1.35;
+  box-shadow:none;
+  cursor:pointer;
+}
+.site-header .nav-account-menu>a:hover,
+.site-header .nav-account-menu form>button:hover,
+.site-header .nav-account-menu>a:focus-visible,
+.site-header .nav-account-menu form>button:focus-visible{
+  background:#eef4ff;
+  color:#0039a6;
+}
+.site-header .nav-account-menu form{display:block;margin:0}
+
+/* Make the key account features visible without scrolling past a tall welcome card. */
+.dashboard-welcome{padding:25px 30px}
+.dashboard-welcome h1{font-size:clamp(29px,3.2vw,42px);margin:10px 0 8px}
+.dashboard-welcome>p{margin:0;font-size:13px}
+.dashboard-stats{gap:10px;margin-top:18px}
+.dashboard-stats div{padding:11px 15px;min-width:145px}
+.dashboard-stats strong{font-size:24px}
+.dashboard-quick-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:center;
+  margin-top:20px;
+}
+.dashboard-quick-actions a{
+  display:inline-flex;
+  align-items:center;
+  padding:9px 14px;
+  border:1px solid #b4c9ea;
+  border-radius:7px;
+  background:#fff;
+  color:#0039a6;
+  text-decoration:none;
+  font-size:12px;
+  font-weight:750;
+}
+.dashboard-quick-actions a:hover{background:#eaf2ff}
+.dashboard-tool-section{margin:28px 0 35px}
+.dashboard-tool-grid{gap:13px;margin-top:15px}
+.dashboard-tool-card{padding:19px}
+.dashboard-tool-card h3{margin:10px 0 7px}
+.dashboard-tool-card p{margin-bottom:14px}
+
+@media(max-width:900px){
+  .home-compact .home-landing{
+    grid-template-columns:1fr;
+    gap:32px;
+    padding:56px 24px 50px;
+  }
+  .home-compact .home-quick-links{max-width:660px;width:100%}
+  .site-header .main-nav{flex-wrap:wrap;gap:12px 18px}
+}
+@media(max-width:600px){
+  .home-compact .home-landing{padding:42px 20px 38px;gap:27px}
+  .home-compact .home-intro h1{font-size:clamp(35px,9vw,45px)}
+  .home-compact .home-quick-link{padding:18px 16px;gap:12px}
+  .home-compact .home-bottom{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:12px;
+    padding:19px 20px 33px;
+  }
+  .site-header .header-inner{align-items:flex-start;flex-direction:column;gap:14px}
+  .site-header .main-nav{justify-content:flex-start;gap:10px 16px;width:100%}
+  .site-header .main-nav>a,
+  .site-header .nav-account>summary{font-size:12px}
+  .dashboard-welcome{padding:20px}
+  .dashboard-quick-actions a{flex:1 1 calc(50% - 12px);justify-content:center}
+}
