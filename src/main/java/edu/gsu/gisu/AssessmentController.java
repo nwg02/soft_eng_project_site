@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -75,7 +74,7 @@ public class AssessmentController {
                     "INSERT INTO insurance_assessments " +
                     "(customer_id, age, coverage_type, monthly_budget, household_size, " +
                     "zip_code, income_range, priority) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                    Statement.RETURN_GENERATED_KEYS);
+                    new String[] {"assessment_id"});
             statement.setInt(1, customerId);
             statement.setInt(2, age);
             statement.setString(3, coverageType);
