@@ -19,10 +19,13 @@ import java.util.Map;
 public class WebController {
     private final JdbcTemplate db;
     private final SavedPlanService savedPlanService;
+    private final AccountActivityService accountActivityService;
 
-    public WebController(JdbcTemplate db, SavedPlanService savedPlanService) {
+    public WebController(JdbcTemplate db, SavedPlanService savedPlanService,
+                         AccountActivityService accountActivityService) {
         this.db = db;
         this.savedPlanService = savedPlanService;
+        this.accountActivityService = accountActivityService;
     }
 
     @GetMapping("/")
@@ -84,6 +87,7 @@ public class WebController {
                             Model model) {
         model.addAttribute("dashboardLoginRequired", "dashboard".equals(reason));
         model.addAttribute("savedPlanLoginRequired", "savedplan".equals(reason));
+        model.addAttribute("accountLoginRequired", "account".equals(reason));
         return "login";
     }
 
@@ -143,6 +147,12 @@ public class WebController {
         var savedPlans = savedPlanService.savedPlans(((Number) customerId).intValue());
         model.addAttribute("savedPlans", savedPlans);
         model.addAttribute("savedCount", savedPlans.size());
+        int accountId = ((Number) customerId).intValue();
+        model.addAttribute("unreadNotifications", accountActivityService.unreadCount(accountId));
+        model.addAttribute("openReportCount", accountActivityService.openReportCount(accountId));
+        model.addAttribute("agentRequestCount", accountActivityService.agentRequestCount(accountId));
+        model.addAttribute("recentNotifications",
+                accountActivityService.notifications(accountId).stream().limit(3).toList());
 
         model.addAttribute("assessments", db.queryForList(
                 "SELECT assessment_id, age, coverage_type, monthly_budget, " +

@@ -20,6 +20,40 @@
         <div><strong th:text="${#lists.size(assessments)}">0</strong><span>Completed assessments</span></div>
       </div>
     </section>
+    <section class="dashboard-tool-section" aria-label="Account tools">
+      <div class="dashboard-section-heading">
+        <div><span class="eyebrow">MORE ACCOUNT TOOLS</span><h2>Manage your research</h2></div>
+      </div>
+      <div class="dashboard-tool-grid">
+        <article class="dashboard-tool-card">
+          <span class="dashboard-tool-number" th:text="${agentRequestCount}">0</span>
+          <h3>Agent assistance</h3>
+          <p>Record help requests and contact preferences. Demo only; no agent is contacted.</p>
+          <a class="button button-outline" th:href="@{/agent-assistance}">View assistance requests →</a>
+        </article>
+        <article class="dashboard-tool-card">
+          <span class="dashboard-tool-number" th:text="${openReportCount}">0</span>
+          <h3>Open issue notes</h3>
+          <p>Track insurance research questions privately. Notes are not submitted as claims.</p>
+          <a class="button button-outline" th:href="@{/reports}">Manage reports →</a>
+        </article>
+        <article class="dashboard-tool-card">
+          <span class="dashboard-tool-number" th:text="${unreadNotifications}">0</span>
+          <h3>Unread notifications</h3>
+          <p>See updates about your GISU account activity. In-app only; no external messages.</p>
+          <a class="button button-outline" th:href="@{/notifications}">View notifications →</a>
+        </article>
+      </div>
+      <div class="dashboard-notification-preview" th:if="${!#lists.isEmpty(recentNotifications)}">
+        <div class="activity-item-head"><strong>Recent account updates</strong><a th:href="@{/notifications}">See all</a></div>
+        <p th:each="n : ${recentNotifications}">
+          <span class="activity-unread-dot" th:if="${n.read_at == null}" aria-label="Unread">●</span>
+          <span th:text="${n.title}">Notification</span>
+          <small th:text="${n.created_at}">Date</small>
+        </p>
+      </div>
+    </section>
+
     <p class="plan-bookmark-feedback" th:if="${bookmark == 'saved'}" role="status">Plan saved to your account.</p>
     <p class="plan-bookmark-feedback" th:if="${bookmark == 'removed'}" role="status">Plan removed from your account.</p>
     <p class="error" th:if="${bookmark == 'invalid'}" role="alert">This plan wasn't found in the catalog.</p>

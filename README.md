@@ -110,3 +110,17 @@ Account-level bookmarks are stored as stable catalog slugs in `saved_curated_pla
 The local H2 schema creates the bookmarks table automatically for existing databases. The production MySQL schema requires applying `database/migrations/V4__saved_curated_plan_bookmarks.sql` once **after V2 and V3**. Back up the database and verify migrations before deploying; nothing was applied to Railway.
 
 Run `mvn test` to verify the feature, then run `mvn spring-boot:run -Dspring-boot.run.profiles=local` and test save, dashboard shortlist, removal, and account isolation.
+
+
+## Account assistance, notifications and issue notes (classroom prototype)
+
+Three logged-in features now work with the existing account database:
+
+- `/agent-assistance`: Save an insurance-help topic, preferred contact method, and preferred time. The status is `demo_recorded`. **No licensed agent or other recipient gets the request, and no appointment, email or call is scheduled.** The account can revisit its saved requests.
+- `/reports`: Create private, non-sensitive issue notes by category and mark them closed or reopened. This is **not an insurer claim submission, official claims status, or appeal**. Only the account owner can update a record. Do not enter medical records, SSNs, passwords, or payment details.
+- `/notifications`: Receive in-app activity notifications when a demo assistance request or issue note is created or a note's status changes. Each user can mark individual or all of their own notifications read. Notifications do not send emails, texts, or live insurer updates.
+- The dashboard displays counts for demo requests, open issue notes, unread notifications and recent account updates, and links to the feature pages.
+
+Existing H2 local databases create `agent_requests`, `insurance_claim_records` and `user_notifications` automatically from `local-schema.sql` on startup, without erasing saved accounts or documents. The production MySQL definitions for these three tables already exist in the **V2** migration. No new production migration is needed solely for these account tools, but V2, V3 and V4 must be reviewed and applied to Railway's database before deploying feature-branch code. Do not apply the H2-only schema to MySQL.
+
+To test locally, run `mvn test`, then `mvn spring-boot:run -Dspring-boot.run.profiles=local`. Sign in, record a demo assistance request, add an issue note, close and reopen it, and mark the resulting notifications read. No API keys or external services are required for these account features. The public production deployment and `main` are unchanged.

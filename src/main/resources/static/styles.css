@@ -220,3 +220,51 @@
 .dashboard-legacy .plan{max-width:100%}
 #suggested-plans{scroll-margin-top:24px}
 @media(max-width:650px){.dashboard-welcome{padding:23px}.dashboard-saved-grid{grid-template-columns:1fr}.dashboard-section-heading{align-items:flex-start;flex-direction:column}}
+
+
+/* Educational account workflows: assistance, issue notes, in-app notifications */
+.account-activity-main{max-width:1060px!important;padding:50px 24px 85px!important}
+.activity-hero{max-width:830px;margin-bottom:30px}
+.activity-hero h1{font-size:clamp(35px,4.6vw,53px);margin:15px 0 17px}
+.activity-hero>p{font-size:17px;color:#59718e;line-height:1.75}
+.account-activity-main .assessment-notice{margin:22px 0 0}
+.activity-panel{max-width:840px;background:#fff;border:1px solid #d6e3f5;border-radius:15px;padding:27px 30px;margin:30px 0 50px;box-shadow:0 7px 25px #002d7208}
+.activity-heading{margin:0 0 22px}
+.activity-heading h2{font-size:26px;margin:0 0 9px}
+.activity-heading p{color:#627694;font-size:13px;margin:0;line-height:1.65}
+.activity-form{display:grid;gap:19px}
+.activity-form label{display:grid;gap:8px;color:#25476e;font-size:13px;font-weight:750}
+.activity-form label small{font-size:11px;font-weight:400;color:#7386a2}
+.activity-form :is(input,select,textarea){width:100%;border:1px solid #b5c7e4;border-radius:9px;padding:12px 13px;background:#fff;color:var(--ink);font:inherit;font-size:14px;resize:vertical}
+.activity-form :is(input,select,textarea):focus{outline:2px solid #83aaec;outline-offset:1px}
+.activity-form button{justify-self:start}
+.activity-field-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.activity-history{margin:30px 0}
+.activity-item{background:#fff;border:1px solid #d7e3f2;border-radius:11px;padding:20px 23px;margin:13px 0}
+.activity-item-head{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.activity-item-head strong{font-size:15px}
+.activity-item-head>span{font-size:11px;color:#637d9c}
+.activity-item>p{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;color:#3c567a;margin:12px 0;line-height:1.7}
+.activity-item .activity-meta{font-size:11px;color:#687f9e;margin-bottom:0}
+.activity-actions{margin-top:18px;display:flex;gap:10px}
+.activity-actions .button,.activity-notification .button{font-size:12px;padding:8px 14px}
+.activity-pill{font-size:10px!important;font-weight:800!important;border:1px solid #c5d7f0;border-radius:999px;background:#eff5ff;color:#184b99!important;padding:5px 9px}
+.activity-pill-closed,.activity-muted-pill{color:#586b7d!important;background:#eef2f5;border-color:#dee4eb}
+.activity-notification{border-left:4px solid #cbd8ec}
+.activity-unread{border-left-color:#0039a6;background:#f8faff}
+.activity-notification-heading{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.activity-footnote{font-size:12px;color:#697b96;margin-top:28px}
+.activity-unread-dot{color:#0039a6;margin-right:8px;font-size:11px}
+.dashboard-tool-section{margin:42px 0}
+.dashboard-tool-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:22px 0}
+.dashboard-tool-card{background:#fff;border:1px solid #d6e2f3;border-radius:12px;padding:23px;display:flex;flex-direction:column;align-items:flex-start}
+.dashboard-tool-number{font-size:30px;color:#0039a6;font-weight:800;line-height:1.3}
+.dashboard-tool-card h3{font-size:18px;margin:13px 0 8px}
+.dashboard-tool-card p{font-size:12px;color:#637793;margin:0 0 17px}
+.dashboard-tool-card a{margin-top:auto;font-size:12px;padding:9px 12px}
+.dashboard-notification-preview{padding:18px 23px;border:1px solid #d9e5f5;background:#f7faff;border-radius:11px}
+.dashboard-notification-preview>p{display:flex;gap:6px;align-items:center;font-size:12px;color:#2a4871;border-bottom:1px solid #e2e9f4;padding-bottom:10px}
+.dashboard-notification-preview>p:last-child{border:0;margin-bottom:0;padding-bottom:0}
+.dashboard-notification-preview small{margin-left:auto;color:#7489a2;font-size:10px}
+@media(max-width:850px){.dashboard-tool-grid{grid-template-columns:1fr 1fr}.activity-field-grid{grid-template-columns:1fr}}
+@media(max-width:600px){.account-activity-main{padding:35px 18px 60px!important}.activity-panel{padding:23px 18px}.dashboard-tool-grid{grid-template-columns:1fr}.dashboard-notification-preview>p{align-items:flex-start;flex-direction:column}}

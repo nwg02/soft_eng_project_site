@@ -86,3 +86,44 @@ CREATE TABLE IF NOT EXISTS extension_requests (
     FOREIGN KEY (enrollment_id) REFERENCES enrollments(enrollment_id),
     FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
 );
+
+
+-- In-app classroom assistance requests. No external agent receives these records.
+CREATE TABLE IF NOT EXISTS agent_requests (
+    agent_request_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL,
+    contact_method VARCHAR(40) NOT NULL,
+    preferred_time VARCHAR(120),
+    topic VARCHAR(500),
+    request_status VARCHAR(40) NOT NULL DEFAULT 'demo_recorded',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_agent_request_customer FOREIGN KEY (customer_id)
+        REFERENCES customers(customer_id) ON DELETE CASCADE
+);
+
+-- Private, in-app alerts only. No email, SMS, or scheduled delivery.
+CREATE TABLE IF NOT EXISTS user_notifications (
+    notification_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL,
+    notification_type VARCHAR(60) NOT NULL,
+    title VARCHAR(200) NOT NULL,
+    message VARCHAR(1000) NOT NULL,
+    read_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_user_notification_customer FOREIGN KEY (customer_id)
+        REFERENCES customers(customer_id) ON DELETE CASCADE
+);
+
+-- Reports are user-authored issue notes, NOT claims sent to an insurer.
+CREATE TABLE IF NOT EXISTS insurance_claim_records (
+    claim_record_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL,
+    external_claim_reference VARCHAR(160),
+    claim_category VARCHAR(100),
+    description CLOB,
+    claim_status VARCHAR(40) NOT NULL DEFAULT 'open',
+    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_local_claim_customer FOREIGN KEY (customer_id)
+        REFERENCES customers(customer_id) ON DELETE CASCADE
+);

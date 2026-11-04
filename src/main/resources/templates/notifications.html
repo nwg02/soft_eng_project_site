@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Account Notifications | GISU</title><link rel="stylesheet" th:href="@{/styles.css}"></head>
+<body>
+<div th:replace="~{fragments :: header}"></div>
+<main class="account-activity-main">
+  <section class="activity-hero">
+    <span class="eyebrow">YOUR GISU ACCOUNT</span>
+    <h1>Notifications</h1>
+    <p>Updates about activity inside your GISU account. These appear on the site only; GISU does not send email, SMS, or insurer notifications.</p>
+  </section>
+  <p class="plan-bookmark-feedback" th:if="${param.event != null and (param.event[0] == 'read' or param.event[0] == 'all-read')}" role="status">Your notification preferences have been updated.</p>
+  <p class="error" th:if="${param.event != null and param.event[0] == 'unavailable'}" role="alert">That notification wasn't available to update in your account.</p>
+
+  <section class="activity-history">
+    <div class="activity-heading activity-notification-heading">
+      <div><h2>Your account updates</h2><p><strong th:text="${unreadCount}">0</strong> unread notifications</p></div>
+      <form th:if="${unreadCount > 0}" th:action="@{/notifications/read-all}" method="post">
+        <button class="button button-outline" type="submit">Mark all as read</button>
+      </form>
+    </div>
+    <div class="dashboard-empty" th:if="${#lists.isEmpty(notifications)}"><h3>No notifications yet</h3><p>You'll see updates here after recording an assistance request or saving an issue note.</p></div>
+    <article th:each="n : ${notifications}" class="activity-item activity-notification" th:classappend="${n.read_at == null} ? ' activity-unread' : ''">
+      <div class="activity-item-head">
+        <strong th:text="${n.title}">Notification</strong>
+        <span class="activity-pill" th:if="${n.read_at == null}">Unread</span>
+        <span class="activity-muted-pill" th:if="${n.read_at != null}">Read</span>
+      </div>
+      <p th:text="${n.message}">Account update</p>
+      <div class="activity-item-head activity-meta">
+        <span th:text="${n.created_at}">Date</span>
+        <form th:if="${n.read_at == null}" th:action="@{/notifications/{id}/read(id=${n.notification_id})}" method="post">
+          <button type="submit" class="button button-outline">Mark as read</button>
+        </form>
+      </div>
+    </article>
+  </section>
+</main>
+<div th:replace="~{fragments :: footer}"></div>
+</body></html>
