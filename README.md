@@ -1,47 +1,54 @@
-# GISU Sprint 2 Prototype
+# GISU — Georgia Health Insurance Discovery
 
-This project is a Java Spring Boot application that uses MySQL to store user accounts and insurance assessment results. Users can register, log in, complete an insurance assessment, and view available insurance plans.
+GISU is a Georgia-focused health insurance discovery and comparison project built with Java 17, Spring Boot, Thymeleaf, JDBC, and MySQL.
 
-## Requirements
+## Product scope
 
-* Java 17 or newer
-* Maven
-* MySQL 8 or newer
+GISU helps people explore health insurance plan information, understand plan terminology, compare available options, and continue to an official insurer or Georgia Access website for quotes and enrollment. GISU is not an insurer, does not determine eligibility, and does not confirm coverage.
 
-An internet connection is needed the first time Maven downloads the project's dependencies.
+## Data quality rules
 
-## 1. Set Up the Database
+- Publish only plan records imported from a verified official source.
+- Use Georgia Access / CMS public-use data and preserve source file, plan year, and source update date.
+- Rates must be tied to the appropriate ZIP code, age, and other source dimensions. Do not show a rate as a personalized quote.
+- Do not invent plan names, benefits, premiums, deductibles, provider networks, or enrollment URLs.
+- Distinguish saved plans and enrollment-intent tracking from an active insurance policy.
+- Label rules-based recommendations accurately. Do not describe them as AI unless a real AI service is integrated.
 
-Run `database/schema.sql` in MySQL. This creates the `gisu` database, the required tables, and sample insurance plans.
+## Technology
 
-## 2. Configure MySQL
+- Java 17 and Spring Boot 3.5
+- Thymeleaf templates and static CSS
+- Spring JDBC
+- MySQL 8+
+- Maven
 
-Open `src/main/resources/application.properties` and set the database username and password for your local MySQL installation.
+## Local setup
 
-The default database name is `gisu`. Make sure the credentials match your MySQL setup.
+1. Create a MySQL database named `gisu`.
+2. Run `database/schema.sql` for the original prototype schema.
+3. Configure `src/main/resources/application.properties` or environment variables for your local MySQL connection.
+4. Run `mvn spring-boot:run`.
+5. Open http://localhost:8080.
 
-## 3. Run the Application
+## Database changes
 
-Open a terminal in the project folder and run:
+Additive changes for the Georgia marketplace are kept in `database/migrations/`. Apply each migration once, in version order, to the existing database before running application code that depends on its new tables. Back up the database first. These SQL files are not automatically executed by Spring Boot in the current project.
 
-```bash
-mvn spring-boot:run
-```
+The first marketplace migration adds official plan catalog, service-area and rate tables, saved-plan records, enrollment-intent tracking, payment history, agent requests, notifications, mock verification, claim records, support messages, and the missing legacy extension-request structure. It does not delete legacy tables or rewrite existing customer records.
 
-Once the application starts, open http://localhost:8080 in your browser.
+## Git workflow
 
-## Features
+- Stable application: `main`
+- Current redesign work: `feature/georgia-health-marketplace-redesign`
+- Make and review changes on the feature branch.
+- Use descriptive commits so each milestone is easy to inspect.
+- Do not merge into `main` or deploy to Railway until the team has reviewed and approved the pull request.
 
-* User registration and login/logout
-* Session-based login state
-* Dashboard
-* Insurance assessment results saved to MySQL
-* Insurance plans loaded from MySQL
+## Prototype limitations
 
-## Notes
-
-* This is a prototype for a class project.
-* Insurance recommendations use a basic budget and coverage filter, not AI.
-* The database includes a `payments` table, but payment processing is not implemented.
-* Passwords are hashed before being stored.
-* Use fictional or test information when trying the application.
+- Payment history is informational; GISU does not process premiums.
+- Identity verification is a mock workflow, not a real identity proofing service.
+- Claim records are tracking notes, not claims submitted to an insurer.
+- Agent requests are contact requests, not a promise of licensed-agent availability.
+- Recommendations are informational and do not replace official plan documents or professional advice.
