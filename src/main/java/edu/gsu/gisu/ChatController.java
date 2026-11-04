@@ -19,6 +19,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -52,6 +53,8 @@ public class ChatController {
     private final HttpClient http;
     private final String apiKey;
     private final String model;
+    private final String geminiApiKey;
+    private final String geminiModel;
 
     public ChatController(ObjectMapper mapper,
                           @Value("${OPENAI_API_KEY:}") String apiKey,
@@ -59,6 +62,9 @@ public class ChatController {
         this.mapper = mapper;
         this.apiKey = apiKey.trim();
         this.model = model.trim();
+        this.geminiApiKey = System.getenv().getOrDefault("GEMINI_API_KEY", "").trim();
+        String requestedModel = System.getenv().getOrDefault("GEMINI_MODEL", "gemini-2.5-flash-lite").trim();
+        this.geminiModel = requestedModel.matches("[A-Za-z0-9._-]+") ? requestedModel : "gemini-2.5-flash-lite";
         this.http = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(6))
                 .build();
@@ -69,7 +75,7 @@ public class ChatController {
 
     @GetMapping("/status")
     public Map<String, String> status() {
-        return Map.of("mode", apiKey.isBlank() ? "guide" : "ai");
+        return Map.of("mode", !geminiApiKey.isBlank() ? "gemini" : apiKey.isBlank() ? "guide" : "openai");
     }
 
     @PostMapping
@@ -100,12 +106,15 @@ public class ChatController {
             session.setAttribute("chatWindowCount", used == null ? 1 : used + 1);
         }
 
-        if (apiKey.isBlank()) {
+        if (apiKey.isBlank() && geminiApiKey.isBlank()) {
             return ResponseEntity.ok(new ChatReply(guideAnswer(message), "guide"));
         }
 
         try {
-            return ResponseEntity.ok(new ChatReply(askAI(message), "ai"));
+            if (!geminiApiKey.isBlank()) {
+                return ResponseEntity.ok(new ChatReply(askGemini(message), "gemini"));
+            }
+            return ResponseEntity.ok(new ChatReply(askAI(message), "openai"));
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
             log.warn("GISU AI request interrupted");
@@ -116,6 +125,64 @@ public class ChatController {
 
         return ResponseEntity.ok(new ChatReply(
                 "AI is temporarily unavailable. " + guideAnswer(message), "guide"));
+    }
+
+
+    // Uses Google's generateContent REST API with a server-only header key.
+    // The key is never placed in the browser, a URL, a repository file, or logs.
+    private String askGemini(String message) throws IOException, InterruptedException {
+        String payload = mapper.writeValueAsString(Map.of(
+                "systemInstruction", Map.of(
+                        "parts", List.of(Map.of("text", INSTRUCTIONS))
+                ),
+                "contents", List.of(Map.of(
+                        "role", "user",
+                        "parts", List.of(Map.of("text", message))
+                )),
+                "generationConfig", Map.of(
+                        "maxOutputTokens", 700,
+                        "temperature", 0.3
+                )
+        ));
+
+        URI endpoint = URI.create(
+                "https://generativelanguage.googleapis.com/v1beta/models/"
+                        + geminiModel + ":generateContent"
+        );
+
+        HttpRequest request = HttpRequest.newBuilder(endpoint)
+                .timeout(Duration.ofSeconds(25))
+                .header("x-goog-api-key", geminiApiKey)
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(payload))
+                .build();
+
+        HttpResponse<String> response = http.send(
+                request, HttpResponse.BodyHandlers.ofString()
+        );
+        if (response.statusCode() < 200 || response.statusCode() >= 300) {
+            log.warn("Gemini API returned HTTP {} (response body omitted)", response.statusCode());
+            throw new IOException("Gemini API error");
+        }
+
+        JsonNode root = mapper.readTree(response.body());
+        StringBuilder answer = new StringBuilder();
+        for (JsonNode candidate : root.path("candidates")) {
+            for (JsonNode part : candidate.path("content").path("parts")) {
+                String text = part.path("text").asText("");
+                if (!text.isBlank()) {
+                    if (answer.length() > 0) answer.append("\n");
+                    answer.append(text);
+                }
+            }
+            if (answer.length() > 0) break;
+        }
+
+        if (answer.length() == 0) {
+            throw new IOException("Gemini returned no generated text");
+        }
+        return answer.toString();
     }
 
     private String askAI(String message) throws IOException, InterruptedException {

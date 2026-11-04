@@ -31,10 +31,16 @@
     toggle.addEventListener("click", function () { setOpen(panel.hidden); });
     close.addEventListener("click", function () { setOpen(false); });
 
+    function modeLabel(value) {
+      if (value === "gemini") return "Gemini AI enabled";
+      if (value === "openai" || value === "ai") return "AI answers enabled";
+      return "Built-in insurance guide";
+    }
+
     fetch("/api/chat/status", { credentials: "same-origin" })
       .then(function (response) { if (!response.ok) throw new Error("status"); return response.json(); })
       .then(function (result) {
-        mode.textContent = result.mode === "ai" ? "AI answers enabled" : "Built-in guide mode · AI not configured";
+        mode.textContent = modeLabel(result.mode);
       })
       .catch(function () { mode.textContent = "Built-in insurance guide"; });
 
@@ -56,7 +62,7 @@
         });
         const result = await response.json();
         pending.textContent = result.answer || "I couldn't answer that right now.";
-        mode.textContent = result.mode === "ai" ? "AI answers enabled" : "Built-in guide mode · AI not configured";
+        mode.textContent = modeLabel(result.mode);
       } catch (err) {
         pending.textContent = "The chat service is unavailable right now. Please try again.";
       } finally {

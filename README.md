@@ -38,14 +38,18 @@ The default application without the `local` profile still connects to the config
 
 ### AI chat helper
 
-The floating “Ask GISU” button appears across the site. Without an AI API key, it transparently runs in **built-in guide mode** with fixed, educational answers. To enable *actual generated AI replies*, supply your own OpenAI API key **as a server environment variable** before starting Spring Boot:
+The “Ask GISU” button works in **built-in guide mode** without an API key. For genuine Gemini AI replies, provide `GEMINI_API_KEY` as an environment variable in the **same terminal** that runs Spring Boot. The default model is `gemini-2.5-flash-lite`. You can optionally override it with `GEMINI_MODEL`.
 
 ```bash
-export OPENAI_API_KEY="your-own-key-here"
+cd ~/Desktop/sprint2_site
+git pull origin feature/georgia-health-marketplace-redesign
+test -n "$GEMINI_API_KEY" && echo "Gemini key loaded"
 mvn spring-boot:run -Dspring-boot.run.profiles=local
 ```
 
-Optionally set `OPENAI_MODEL` to an API model you have access to; the default is `gpt-4.1-mini`. Calls are made server-side through the OpenAI Responses API. **Never put the key into JavaScript, an HTML template, a committed properties file, or a public repository.** AI API usage is separately billed. The project limits message size and requests per session; a public production rollout would also require stronger rate limits and spending controls. The assistant handles only general educational questions; it does not see logged-in account data, fetch live insurance rates, or determine eligibility.
+Visit `http://localhost:8080/api/chat/status` to check for `{"mode":"gemini"}`, then ask the chatbot a question. The status only confirms the server detected the key, not whether Google accepted it. A working chat response confirms Gemini API access. If Gemini is unavailable or rate-limited, the helper falls back to clearly labeled fixed guidance.
+
+The Gemini key is read server-side and sent to Google via an `x-goog-api-key` HTTP header; it is never embedded in HTML or JavaScript. **Never commit keys or paste them into chat.** The API free tier has usage limits and Google may use free-tier content to improve its products; avoid transmitting sensitive health, financial, or identity information. Existing `OPENAI_API_KEY` support remains available if `GEMINI_API_KEY` is absent. This classroom prototype's per-session limits should be strengthened before a public Railway deployment.
 
 ## Database changes
 
