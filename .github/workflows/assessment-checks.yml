@@ -80,3 +80,11 @@ jobs:
             fi
           done
           echo "All versioned migrations applied and required schema markers verified."
+          mysql --host=127.0.0.1 --user=root --batch gisu < database/production_schema_audit.sql > /tmp/gisu_schema_audit.txt
+          found_versions=$(grep -c "all markers found" /tmp/gisu_schema_audit.txt || true)
+          if [[ "$found_versions" != "7" ]]; then
+            echo "The read-only schema audit did not confirm all seven migration versions." >&2
+            cat /tmp/gisu_schema_audit.txt
+            exit 1
+          fi
+          echo "Read-only audit query validated on disposable MySQL."
