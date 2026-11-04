@@ -222,15 +222,10 @@ public class WebController {
         return "assessment";
     }
 
+    // Plan education is available without a database connection.
+    // Do not expose legacy fictional insurance_plans as real Georgia offerings.
     @GetMapping("/plans")
-    public String plans(@RequestParam(required = false) String error,
-                        Model model) {
-        model.addAttribute("plans", db.queryForList(
-                "SELECT plan_id, provider_name, plan_name, coverage_type, " +
-                "monthly_premium, deductible, description " +
-                "FROM insurance_plans ORDER BY coverage_type, monthly_premium"
-        ));
-        model.addAttribute("error", error);
+    public String plans() {
         return "plans";
     }
 

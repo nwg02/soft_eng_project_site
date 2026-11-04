@@ -1,218 +1,57 @@
-
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Insurance Plans</title>
-    <link rel="stylesheet" th:href="@{/styles.css}">
-    <style>
-        .compare-controls {
-            margin: 1.5rem 0;
-            padding: 1rem;
-            border: 1px solid #ccc;
-        }
-
-        .compare-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-        }
-
-        .compare-table th,
-        .compare-table td {
-            border: 1px solid #ccc;
-            padding: 0.75rem;
-            text-align: left;
-        }
-
-        .compare-table th {
-            background: #edf1f4;
-        }
-
-        .plan-select {
-            display: block;
-            margin: 1rem 0;
-        }
-
-        #comparison {
-            overflow-x: auto;
-            margin: 1.5rem 0;
-        }
-
-        .family-size {
-            margin: 1rem 0;
-        }
-    </style>
+    <meta name="description" content="Learn how to compare health insurance plans in Georgia and browse verified plans through Georgia Access.">
+    <title>Explore Health Plans in Georgia | GISU</title>
+    <link rel="stylesheet" th:href="@{/styles.css}" href="/styles.css">
 </head>
 <body>
 <div th:replace="~{fragments :: header}"></div>
+<main class="plans-main">
+    <div class="plans-intro">
+        <span class="eyebrow">PLAN EXPLORER · GEORGIA</span>
+        <h1>Explore coverage with clarity.</h1>
+        <p class="plans-lead">Understanding the differences between health plans can help you make a more confident decision. Here's what to look for before you choose.</p>
+        <div class="hero-actions">
+            <a class="button button-primary" href="https://enroll.georgiaaccess.gov/" target="_blank" rel="noopener noreferrer">Browse available Georgia plans ↗</a>
+            <a class="button button-outline" th:href="@{/assessment}">Start your assessment →</a>
+        </div>
+        <div class="plans-status" role="note"><strong>About these listings:</strong> GISU is building a verified plan catalog. We are not displaying the original fictional classroom plans as real insurance products. For current plan availability, pricing and enrollment, use Georgia Access.</div>
+    </div>
 
-<main>
-    <h1>Sample Insurance Plans</h1>
-    <p>Review plans, compare their features, and enroll in a plan.</p>
-
-    <p th:if="${error == 'invalid'}">
-        The selected plan could not be found. Please choose another plan.
-    </p>
-
-    <p th:if="${error == 'household'}">
-        Family coverage requires a household size between 2 and 20.
-    </p>
-
-    <section class="compare-controls">
-        <h2>Compare Policies</h2>
-        <p>Select at least two plans to compare their coverage and costs.</p>
-        <button type="button" id="compareButton">Compare Selected Plans</button>
-        <button type="button" id="clearButton">Clear Selection</button>
-        <p id="compareMessage" role="status" aria-live="polite"></p>
+    <section class="plan-guide-section" aria-labelledby="plan-levels">
+        <span class="eyebrow">UNDERSTAND YOUR OPTIONS</span>
+        <h2 id="plan-levels">What do the metal levels mean?</h2>
+        <p class="section-help">Metal levels generally indicate how costs are shared when you use covered services, not the quality of care. Your actual costs depend on the specific plan and your circumstances.</p>
+        <div class="level-grid">
+            <article class="level-card"><span class="level-pill bronze">BRONZE</span><h3>Lower monthly premiums</h3><p>Bronze plans often have lower premiums and higher out-of-pocket costs when you need care.</p><span class="level-footnote">Consider if monthly affordability is a major priority.</span></article>
+            <article class="level-card"><span class="level-pill silver">SILVER</span><h3>A middle ground</h3><p>Silver plans balance premiums with out-of-pocket costs. Eligible shoppers can get extra cost-sharing savings through Silver marketplace plans.</p><span class="level-footnote">Compare carefully if you may qualify for savings.</span></article>
+            <article class="level-card"><span class="level-pill gold">GOLD</span><h3>More costs covered when you get care</h3><p>Gold plans often have higher monthly premiums but lower costs when you use covered care.</p><span class="level-footnote">Consider if you expect more frequent care.</span></article>
+        </div>
     </section>
 
-    <section id="comparison" hidden aria-live="polite">
-        <h2>Policy Comparison</h2>
-        <table class="compare-table">
-            <thead id="comparisonHead"></thead>
-            <tbody id="comparisonBody"></tbody>
-        </table>
+    <section class="cost-guide-section" aria-labelledby="compare-heading">
+        <div>
+            <span class="eyebrow">CHECK THE FULL PICTURE</span>
+            <h2 id="compare-heading">Look beyond the monthly premium.</h2>
+            <p>A plan with a low monthly price isn't always the least expensive overall. Check the details before enrolling.</p>
+        </div>
+        <div class="cost-grid">
+            <article><span class="cost-number">01</span><h3>Monthly premium</h3><p>The amount you pay each month to maintain coverage, before any applicable assistance.</p></article>
+            <article><span class="cost-number">02</span><h3>Deductible</h3><p>How much you may need to pay for certain covered services before the plan begins sharing those costs.</p></article>
+            <article><span class="cost-number">03</span><h3>Provider network</h3><p>Check whether your doctors, hospitals, and other preferred providers are in-network.</p></article>
+            <article><span class="cost-number">04</span><h3>Medication coverage</h3><p>Check the formulary, pharmacy network and what you may pay for prescriptions.</p></article>
+        </div>
     </section>
 
-    <section id="plans">
-        <article class="plan"
-                 th:each="p : ${plans}"
-                 th:attr="data-plan-id=${p.plan_id},
-                          data-plan-name=${p.plan_name},
-                          data-provider=${p.provider_name},
-                          data-coverage=${p.coverage_type},
-                          data-premium=${p.monthly_premium},
-                          data-deductible=${p.deductible},
-                          data-description=${p.description}">
-
-            <h2 th:text="${p.plan_name}">Plan name</h2>
-            <p th:text="${p.provider_name}">Provider</p>
-
-            <p>Coverage: <span th:text="${p.coverage_type}">individual</span></p>
-            <p>Monthly premium: $<span th:text="${p.monthly_premium}">0.00</span></p>
-            <p>Deductible: $<span th:text="${p.deductible}">0.00</span></p>
-            <p th:text="${p.description}">Plan description</p>
-
-            <label class="plan-select">
-                <input type="checkbox" class="compare-checkbox">
-                Select for comparison
-            </label>
-
-            <form th:action="@{/enroll}" method="post">
-                <input type="hidden" name="planId" th:value="${p.plan_id}">
-
-                <div class="family-size" th:if="${p.coverage_type == 'family'}">
-                    <label>
-                        Household size (2–20):
-                        <input type="number" name="householdSize"
-                               min="2" max="20" value="2" required>
-                    </label>
-                </div>
-
-                <input th:if="${p.coverage_type != 'family'}"
-                       type="hidden" name="householdSize" value="1">
-
-                <button type="submit">Enroll in This Plan</button>
-            </form>
-        </article>
+    <section class="plans-cta">
+        <div><span class="eyebrow">READY TO SHOP?</span><h2>See plans available where you live.</h2><p>Georgia Access is Georgia's official marketplace. You can view actual plan offerings, check assistance eligibility, and continue to enrollment there.</p></div>
+        <a class="button button-light" href="https://enroll.georgiaaccess.gov/" target="_blank" rel="noopener noreferrer">Continue to Georgia Access ↗</a>
     </section>
-
-    <p><a th:href="@{/dashboard}">Return to Dashboard</a></p>
+    <p class="plans-fineprint">This page provides general educational information, not personalized recommendations, insurance quotes, or a guarantee of coverage. Plan availability and prices vary by location, household, age, eligibility and plan year. GISU does not issue policies or process enrollments.</p>
 </main>
-
 <div th:replace="~{fragments :: footer}"></div>
-
-<script>
-(() => {
-    const checkboxes = [...document.querySelectorAll(".compare-checkbox")];
-    const compareButton = document.getElementById("compareButton");
-    const clearButton = document.getElementById("clearButton");
-    const message = document.getElementById("compareMessage");
-    const comparison = document.getElementById("comparison");
-    const head = document.getElementById("comparisonHead");
-    const body = document.getElementById("comparisonBody");
-
-    function selectedPlans() {
-        return checkboxes
-            .filter(box => box.checked)
-            .map(box => box.closest(".plan"));
-    }
-
-    compareButton.addEventListener("click", () => {
-        const selected = selectedPlans();
-
-        if (selected.length < 2) {
-            message.textContent = "Select at least two plans to compare.";
-            comparison.hidden = true;
-            return;
-        }
-
-        const fields = [
-            ["Provider", "provider"],
-            ["Coverage", "coverage"],
-            ["Monthly premium", "premium"],
-            ["Deductible", "deductible"],
-            ["Description", "description"]
-        ];
-
-        const headerRow = document.createElement("tr");
-        const featureHeader = document.createElement("th");
-        featureHeader.scope = "col";
-        featureHeader.textContent = "Feature";
-        headerRow.appendChild(featureHeader);
-
-        selected.forEach(plan => {
-            const th = document.createElement("th");
-            th.scope = "col";
-            th.textContent = plan.dataset.planName;
-            headerRow.appendChild(th);
-        });
-
-        head.replaceChildren(headerRow);
-        body.replaceChildren();
-
-        fields.forEach(([title, key]) => {
-            const tr = document.createElement("tr");
-            const th = document.createElement("th");
-            th.scope = "row";
-            th.textContent = title;
-            tr.appendChild(th);
-
-            selected.forEach(plan => {
-                const td = document.createElement("td");
-                const value = plan.dataset[key] || "Not provided";
-
-                if (key === "premium" || key === "deductible") {
-                    const amount = Number(value);
-                    td.textContent = Number.isFinite(amount)
-                        ? "$" + amount.toFixed(2)
-                        : value;
-                } else {
-                    td.textContent = value;
-                }
-
-                tr.appendChild(td);
-            });
-
-            body.appendChild(tr);
-        });
-
-        comparison.hidden = false;
-        message.textContent =
-            selected.length + " plans selected for comparison.";
-        comparison.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-
-    clearButton.addEventListener("click", () => {
-        checkboxes.forEach(box => box.checked = false);
-        comparison.hidden = true;
-        head.replaceChildren();
-        body.replaceChildren();
-        message.textContent = "Comparison cleared.";
-    });
-})();
-</script>
 </body>
 </html>
