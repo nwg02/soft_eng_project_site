@@ -287,3 +287,61 @@ authenticator setup, save recovery codes, log out and sign in with a fresh
 code or recovery code, and verify the account remains inaccessible before
 completing the second step. Do not enable 2FA on an account unless you
 have saved your recovery codes.
+
+
+## Sprint 4: opt-in Gemini assessment and simulated payroll deductions
+
+### AI assessment
+- Complete an ordinary signed-in `/assessment` first. The rule-based
+  four-document shortlist remains functional and is the default.
+- On `/assessment/results/{id}`, users can **explicitly opt in** and press
+  **Generate AI analysis**. GISU calls Google Gemini with the saved comparison
+  priority, coverage type, broad household-size category, broad monthly budget
+  range and the **12 approved 2027 catalog document characteristics**.
+- GISU never includes the user's exact ZIP code, age, income, exact monthly
+  budget, name, email, account ID, or user-written notes in this request.
+  Gemini does receive the limited categories described on the results page.
+- Gemini returns an educational summary and 2–4 plan **slugs** selected from
+  the published catalog. Server-side validation rejects invented plan IDs,
+  duplicates, malformed JSON and insufficient selections. Accepted reviews
+  are saved to `assessment_ai_reviews` for this account and assessment and
+  appear when the user revisits the results; document links remain the same
+  official links already present in the catalog.
+- AI suggestions do **not** certify availability by ZIP, live premiums,
+  financial assistance, eligibility, doctor networks or actual suitability.
+  When Gemini is not configured or fails, GISU clearly says so and retains
+  the rule-based shortlist. It never calls a fallback result "AI generated".
+- Server-only `GEMINI_API_KEY` and optional `GEMINI_MODEL` settings are
+  shared with the chatbot; keys are never stored in the browser or committed.
+
+### Mock payroll deductions
+- `/payroll` is reachable from the signed-in Account dropdown, Dashboard
+  and Billing. Create up to 30 independently saved simulations using a general
+  hypothetical example or one catalog document, a **manually supplied**
+  monthly premium, hypothetical monthly employer contribution and pay frequency.
+- The displayed estimated deduction per paycheck is:
+  `(monthly premium - employer monthly contribution) × 12 / annual pay periods`,
+  rounded to cents. Supported schedules: weekly (52), every two weeks (26),
+  twice monthly (24) and monthly (12). Estimated annual employee share uses
+  the exact unrounded monthly difference × 12.
+- **Simulate paycheck** adds a dated sample deduction to this user's
+  `payroll_demo_deductions` and creates an in-app demo notification.
+  Duplicate scenario/payday combinations are rejected. Sample history holds
+  up to the latest 100 entries. Removing a scenario also removes its simulated
+  history entries.
+- No employee paycheck or salary data, employer identifiers, payment card
+  information, real payroll integrations, enrollment or insurer transactions
+  are collected or affected. Simulated deductions never change the separate
+  `payment_history` ledger. This is classroom functionality only.
+
+### Database and testing
+- Local H2 adds the `assessment_ai_reviews`, `payroll_simulations`, and
+  `payroll_demo_deductions` tables automatically without deleting existing
+  records. The additive **`database/migrations/V7__ai_assessment_and_payroll_demo.sql`**
+  is the matching MySQL migration; **apply after V6**, only when explicitly
+  preparing a reviewed, backed-up production deployment.
+- Run `mvn test` and the usual `local` Spring Boot profile. Verify a
+  new assessment, AI consent off/on, behavior with no Gemini key, saved review
+  persistence, user isolation, payroll frequency calculations, duplicate
+  paycheck prevention, fake history, deleting a scenario, and that billing
+  remains unchanged. No code in this branch changes live Railway automatically.

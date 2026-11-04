@@ -30,10 +30,13 @@ public class AssessmentController {
     );
     private final JdbcTemplate db;
     private final SavedPlanService savedPlanService;
+    private final AiAssessmentService aiAssessments;
 
-    public AssessmentController(JdbcTemplate db, SavedPlanService savedPlanService) {
+    public AssessmentController(JdbcTemplate db, SavedPlanService savedPlanService,
+                                AiAssessmentService aiAssessments) {
         this.db = db;
         this.savedPlanService = savedPlanService;
+        this.aiAssessments = aiAssessments;
     }
 
     @GetMapping("/assessment")
@@ -115,10 +118,39 @@ public class AssessmentController {
         model.addAttribute("assessment", assessment);
         model.addAttribute("priority", priority);
         model.addAttribute("priorityExplanation", GeorgiaPlanCatalog.explanation(priority));
-        model.addAttribute("suggestions", GeorgiaPlanCatalog.suggestions(priority));
+        AiAssessmentService.Review aiReview = aiAssessments.storedReview(customerId, id);
+        model.addAttribute("aiReview", aiReview);
+        model.addAttribute("aiAvailable", aiAssessments.available());
+        model.addAttribute("suggestions", aiReview == null
+                ? GeorgiaPlanCatalog.suggestions(priority) : aiReview.plans());
         model.addAttribute("savedSlugs", savedPlanService.savedSlugs(customerId));
         model.addAttribute("bookmark", bookmark);
         return "assessment-results";
+    }
+
+    @PostMapping("/assessment/results/{id}/ai")
+    public String generateAiReview(@PathVariable long id,
+                                   @RequestParam(defaultValue = "false")
+                                   boolean shareRedactedPreferences,
+                                   HttpSession session) {
+        Integer customerId = currentCustomerId(session);
+        if (customerId == null) return "redirect:/login";
+        Integer owned = db.queryForObject(
+                "SELECT COUNT(*) FROM insurance_assessments " +
+                "WHERE assessment_id = ? AND customer_id = ?",
+                Integer.class, id, customerId);
+        if (owned == null || owned == 0)
+            return "redirect:/dashboard?status=assessment_not_found";
+        if (!shareRedactedPreferences)
+            return "redirect:/assessment/results/" + id + "?ai=consent-required";
+        AiAssessmentService.Result outcome = aiAssessments.generate(customerId, id);
+        String status = switch (outcome) {
+            case GENERATED -> "generated";
+            case EXISTING -> "existing";
+            case NOT_CONFIGURED -> "not-configured";
+            case UNAVAILABLE -> "unavailable";
+        };
+        return "redirect:/assessment/results/" + id + "?ai=" + status;
     }
 
     private Integer currentCustomerId(HttpSession session) {

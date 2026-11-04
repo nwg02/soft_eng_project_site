@@ -653,3 +653,93 @@
 .security-secret code{font-size:14px;letter-spacing:1px}
 .dashboard-security-summary{flex-direction:column;align-items:flex-start}
 }
+
+
+/* AI-assisted assessment: explicit opt-in and uncluttered analysis panel */
+.assessment-ai-section{
+  border:1px solid #d2e0f3;border-radius:13px;background:#f8fbff;
+  padding:25px 28px;margin:29px 0 35px
+}
+.assessment-ai-header{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:11px}
+.assessment-ai-header h2{font-size:25px;margin:7px 0 0}
+.assessment-ai-pill{border-radius:99px;padding:5px 10px;font-size:11px;font-weight:750;background:#e3f1e9;color:#2d7049;white-space:nowrap}
+.assessment-ai-pill-neutral{color:#5c708c;background:#e9eef6}
+.assessment-ai-section>div>p{font-size:13px;line-height:1.75;color:#546e8e;margin:10px 0}
+.assessment-ai-text{
+  white-space:pre-wrap;overflow-wrap:anywhere;background:#fff;border:1px solid #dce6f5;
+  border-radius:9px;padding:17px 20px;color:#243e61!important;font-size:14px!important;
+  line-height:1.8!important
+}
+.assessment-ai-form{display:grid;gap:16px;justify-items:start;margin:21px 0 12px}
+.assessment-ai-form label{font-size:12px;color:#344f71;display:flex;gap:10px;align-items:flex-start;line-height:1.65;max-width:730px}
+.assessment-ai-form label input{width:17px;height:17px;margin-top:2px;flex-shrink:0;accent-color:#0039a6}
+.assessment-ai-form button:disabled{opacity:.55;cursor:not-allowed}
+.assessment-ai-section .assessment-muted{font-size:12px;line-height:1.7}
+
+/* Private payroll simulator; intentionally separate from real billing records */
+.payroll-main{max-width:1020px!important;padding:40px 24px 78px!important}
+.payroll-intro{margin:20px 0 27px;max-width:850px}
+.payroll-intro h1{font-size:clamp(32px,4vw,47px);margin:12px 0}
+.payroll-intro>p{color:#5a718f;font-size:15px;margin:8px 0 22px}
+.payroll-disclaimer{background:#eff5ff;border:1px solid #ccdef6;border-radius:9px;padding:15px 18px;font-size:12px;line-height:1.7;color:#536f95}
+.payroll-disclaimer strong{color:#274a7b}
+.payroll-create{display:grid;grid-template-columns:minmax(220px,.7fr) minmax(0,1.3fr);gap:35px;border:1px solid #d8e5f4;border-radius:12px;padding:27px 29px;background:#f8fbff}
+.payroll-create h2{margin:0 0 11px;font-size:24px}
+.payroll-create>div>p{margin:0;color:#5e7696;font-size:13px;line-height:1.7}
+.payroll-form{display:grid;gap:10px}
+.payroll-form label{font-size:12px;font-weight:750;color:#2d4a6c}
+.payroll-form input,.payroll-form select{
+  width:100%;min-width:0;border:1px solid #bcd0eb;border-radius:8px;padding:11px 12px;
+  background:#fff;color:#1b3458;font:inherit;font-size:13px
+}
+.payroll-form input:focus,.payroll-form select:focus{outline:2px solid #99bdf0;outline-offset:1px}
+.payroll-form button{justify-self:start;margin-top:10px}
+.payroll-fields{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.payroll-fields>div{display:grid;gap:7px}
+.payroll-scenarios,.payroll-history{scroll-margin-top:26px;margin:40px 0}
+.payroll-section-head{display:flex;justify-content:space-between;align-items:baseline;gap:15px;margin-bottom:20px}
+.payroll-section-head h2{font-size:28px;margin:0}
+.payroll-section-head span{font-size:11px;color:#6480a1;font-weight:750}
+.payroll-scenario{background:#fff;border:1px solid #d7e4f4;border-radius:12px;padding:24px;margin:14px 0}
+.payroll-scenario-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px}
+.payroll-scenario-head h3{font-size:20px;letter-spacing:-.4px;margin:10px 0 5px}
+.payroll-scenario-head>strong{font-size:27px;color:#0039a6;white-space:nowrap}
+.payroll-percheck{font-size:12px;color:#5b7495;margin:0 0 17px}
+.payroll-metrics{display:grid;grid-template-columns:1fr 1fr;gap:15px;border-top:1px solid #e4ebf5;padding:18px 0;margin:0}
+.payroll-metrics div{display:grid;gap:3px}
+.payroll-metrics dt{font-size:11px;color:#637b9b}
+.payroll-metrics dd{font-size:14px;font-weight:750;margin:0;color:#1d3c69}
+.payroll-scenario-actions{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid #e4ebf5;padding-top:17px}
+.payroll-scenario-actions form{margin:0}
+.payroll-paycheck-form{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.payroll-paycheck-form label{display:grid;gap:6px;font-size:11px;color:#59749a;font-weight:700}
+.payroll-paycheck-form input{padding:9px 11px;border:1px solid #b7c9e3;border-radius:7px;font:inherit;font-size:12px;color:#233b60}
+.payroll-scenario-actions button{font-size:12px;padding:9px 13px}
+.payroll-history-list{border:1px solid #d9e5f4;border-radius:11px;overflow:hidden}
+.payroll-history-item{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:15px 19px;border-bottom:1px solid #e4edf8}
+.payroll-history-item:last-child{border-bottom:0}
+.payroll-history-item>div:last-child{text-align:right}
+.payroll-history-item strong,.payroll-history-item small{display:block}
+.payroll-history-item strong{font-size:13px;color:#1d3d69}
+.payroll-history-item small{font-size:11px;color:#6a829f;margin-top:5px}
+.payroll-muted{font-size:11px;color:#6b819e;line-height:1.7}
+.dashboard-finance-actions{display:flex;flex-direction:column;gap:8px;flex-shrink:0}
+.dashboard-finance-actions .button{font-size:12px}
+.billing-payroll-link{padding:13px 17px;background:#f4f8fe;border:1px solid #d5e4f6;border-radius:9px;color:#546b8a;font-size:12px}
+.billing-payroll-link a{font-weight:750}
+@media(max-width:800px){
+  .payroll-create{grid-template-columns:1fr;gap:19px}
+}
+@media(max-width:650px){
+  .assessment-ai-section{padding:19px 17px}
+  .assessment-ai-header{align-items:flex-start;flex-direction:column}
+  .payroll-main{padding:30px 18px 60px!important}
+  .payroll-create{padding:20px 18px}
+  .payroll-fields,.payroll-metrics{grid-template-columns:1fr}
+  .payroll-scenario{padding:20px 17px}
+  .payroll-scenario-head{flex-direction:column}
+  .payroll-scenario-head>strong{font-size:25px}
+  .payroll-history-item{align-items:flex-start;flex-direction:column}
+  .payroll-history-item>div:last-child{text-align:left}
+  .dashboard-finance-actions{width:100%}
+}

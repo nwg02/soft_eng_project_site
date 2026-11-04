@@ -39,6 +39,8 @@
   <p class="error" th:if="${param.event != null and param.event[0] == 'unavailable'}" role="alert">That entry could not be updated or does not belong to your account.</p>
   <p class="error" th:if="${error}" th:text="${error}" role="alert"></p>
 
+  <p class="billing-payroll-link">Need to estimate deductions from a hypothetical paycheck?
+    <a th:href="@{/payroll}">Open payroll simulation →</a></p>
   <section class="billing-create" aria-labelledby="billing-create-title">
     <div class="billing-create-heading">
       <h2 id="billing-create-title">Add an expense</h2>

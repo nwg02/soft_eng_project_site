@@ -24,6 +24,7 @@
         <a th:href="@{/agent-assistance}">Agent help</a>
         <a th:href="@{/reports}">Reports</a>
         <a th:href="@{/billing}">Billing</a>
+        <a th:href="@{/payroll}">Payroll demo</a>
         <a th:href="@{/account/security}">Security &amp; 2FA</a>
         <a th:href="@{/notifications}">Notifications</a>
       </nav>
@@ -80,7 +81,10 @@
           Recorded as paid: <strong th:text="${billingOverview.paidLabel}">$0.00</strong></p>
         <small>Personal tracking only. These are not insurer bills or verified transactions.</small>
       </div>
-      <a class="button button-outline" th:href="@{/billing}">View payment history →</a>
+      <div class="dashboard-finance-actions">
+        <a class="button button-outline" th:href="@{/billing}">Payment history →</a>
+        <a class="button button-outline" th:href="@{/payroll}">Payroll demo →</a>
+      </div>
     </section>
 
     <p class="plan-bookmark-feedback" th:if="${bookmark == 'saved'}" role="status">Plan saved to your account.</p>
