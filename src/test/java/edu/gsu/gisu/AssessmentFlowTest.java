@@ -87,6 +87,19 @@ class AssessmentFlowTest {
         mvc.perform(get(resultUrl))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login"));
+
+        MvcResult otherRegistration = mvc.perform(post("/register")
+                        .param("firstName", "Different")
+                        .param("lastName", "User")
+                        .param("email", "other-" + UUID.randomUUID() + "@example.test")
+                        .param("password", "TestPassword123!"))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
+        MockHttpSession otherSession = (MockHttpSession) otherRegistration.getRequest().getSession(false);
+        mvc.perform(get(resultUrl).session(otherSession))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/dashboard?status=assessment_not_found"));
+
     }
 
     @Test

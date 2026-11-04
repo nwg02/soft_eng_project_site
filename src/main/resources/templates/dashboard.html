@@ -17,23 +17,30 @@
         Welcome,
         <span th:text="${user.first_name}">Customer</span>!
     </p>
+    <section class="assessment-dashboard-cta">
+        <h2>Explore your coverage options</h2>
+        <p>Save your coverage priorities, review official 2027 Georgia plan documents, and return to previous assessment results.</p>
+        <a class="button button-primary" th:href="@{/assessment}">Start a new assessment →</a>
+        <a class="button button-outline" href="#assessment-history">View assessment history</a>
+    </section>
 
-    <p th:if="${status == 'success'}">Your enrollment was saved successfully.</p>
-    <p th:if="${status == 'exists'}">You are already actively enrolled in that plan.</p>
+    <p th:if="${status == 'success'}">A demo enrollment record was saved. This does not create real insurance coverage.</p>
+    <p th:if="${status == 'exists'}">This demo plan record already exists.</p>
     <p th:if="${status == 'cancelled'}">Your cancellation request was processed.</p>
     <p th:if="${status == 'extension_requested'}">Your extension request was submitted and is pending review.</p>
     <p th:if="${status == 'extension_pending'}">You already have a pending extension request for this enrollment.</p>
     <p th:if="${status == 'extension_error'}">The extension request could not be submitted. Choose an active enrollment and a future date.</p>
-    <p th:if="${status == 'switched'}">Your provider/plan was changed successfully. Your previous enrollment remains in your history.</p>
+    <p th:if="${status == 'switched'}">Your demo plan record was changed. No insurer was contacted.</p>
     <p th:if="${status == 'switch_error'}">The plan could not be changed. Your existing enrollment has not been intentionally replaced.</p>
     <p th:if="${status == 'same_plan'}">Choose a different plan to switch providers.</p>
     <p th:if="${status == 'switch_household_error'}">Family coverage requires a household size between 2 and 20.</p>
 
     <section>
-        <h2>My Enrollments</h2>
+        <h2>Legacy classroom enrollment records</h2>
+        <p class="assessment-muted">These are old prototype records, not confirmed insurance coverage. Changes here do not notify insurers or change actual policies.</p>
 
         <p th:if="${#lists.isEmpty(enrollments)}">
-            You do not have any enrollments yet.
+            You have no legacy demo enrollment records.
         </p>
 
         <article th:each="e : ${enrollments}" class="plan">
@@ -55,7 +62,7 @@
                   th:action="@{/cancel-enrollment}" method="post"
                   onsubmit="return confirm('Are you sure you want to cancel this enrollment?');">
                 <input type="hidden" name="enrollmentId" th:value="${e.enrollment_id}">
-                <button type="submit">Cancel Enrollment</button>
+                <button type="submit">Cancel demo record</button>
             </form>
 
             <section th:if="${e.enrollment_status == 'active'}">
@@ -102,7 +109,7 @@
 
                     <button type="submit"
                             onclick="return confirm('Switch from your current plan to the selected plan?');">
-                        Switch Plan
+                        Switch demo plan
                     </button>
                 </form>
             </section>
@@ -112,7 +119,7 @@
     </section>
 
     <section>
-        <h2>My Extension Requests</h2>
+        <h2>Legacy demo extension requests</h2>
 
         <p th:if="${#lists.isEmpty(extensionRequests)}">
             You have not submitted any extension requests.
@@ -128,7 +135,7 @@
 
     <p class="error" th:if="${status == 'assessment_not_found'}">That assessment could not be found in your account.</p>
     <section>
-        <h2>My Assessment History</h2>
+        <h2 id="assessment-history">My Assessment History</h2>
 
         <p th:if="${#lists.isEmpty(assessments)}">
             You have not completed an assessment yet.
