@@ -1,4 +1,4 @@
-name: GISU assessment checks
+name: GISU build and integration checks
 on:
   push:
     branches:
@@ -17,5 +17,5 @@ jobs:
           distribution: temurin
           java-version: '17'
           cache: maven
-      - name: Verify Spring Boot assessment and plan explorer
-        run: mvn -B -ntp test
+      - name: Test and package Spring Boot application
+        run: mvn -B -ntp verify

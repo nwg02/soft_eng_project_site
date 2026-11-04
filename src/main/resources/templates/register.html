@@ -1,12 +1,40 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Register</title><link rel="stylesheet" th:href="@{/styles.css}"></head>
-<body><div th:replace="~{fragments :: header}"></div><main>
-<h1>Create an account</h1><p class="error" th:if="${error}" th:text="${error}"></p>
-<form class="form" th:action="@{/register}" method="post">
-<label>First name<input name="firstName" required maxlength="80"></label>
-<label>Last name<input name="lastName" required maxlength="80"></label>
-<label>Email<input type="email" name="email" required maxlength="160"></label>
-<label>Password (at least 8 characters)<input type="password" name="password" required minlength="8"></label>
-<button type="submit">Register</button></form>
-</main><div th:replace="~{fragments :: footer}"></div></body></html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Create your GISU account to save plans and assessments.">
+  <title>Create Account | GISU</title>
+  <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<div th:replace="~{fragments :: header}"></div>
+<main class="auth-main">
+  <section class="auth-card" aria-labelledby="register-heading">
+    <span class="eyebrow">YOUR GISU ACCOUNT</span>
+    <h1 id="register-heading">Create an account</h1>
+    <p>Save plans, assessments, and account activity in one place.</p>
+    <p class="error" th:if="${error}" th:text="${error}" role="alert"></p>
+    <form class="form" th:action="@{/register}" method="post">
+      <label for="first-name">First name
+        <input id="first-name" name="firstName" autocomplete="given-name" required maxlength="80">
+      </label>
+      <label for="last-name">Last name
+        <input id="last-name" name="lastName" autocomplete="family-name" required maxlength="80">
+      </label>
+      <label for="register-email">Email address
+        <input id="register-email" type="email" name="email" autocomplete="email" required maxlength="160">
+      </label>
+      <label for="register-password">Password
+        <input id="register-password" type="password" name="password"
+               autocomplete="new-password" minlength="8" maxlength="128" required>
+        <small>At least 8 characters</small>
+      </label>
+      <button class="button button-primary" type="submit">Create account</button>
+    </form>
+    <p class="auth-bottom">Already have an account? <a th:href="@{/login}">Sign in</a></p>
+  </section>
+</main>
+<div th:replace="~{fragments :: footer}"></div>
+</body>
+</html>

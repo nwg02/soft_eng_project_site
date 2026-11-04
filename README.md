@@ -400,3 +400,16 @@ creates them automatically. **Do not apply V8 to Railway or deploy without
 explicit authorization.** The new `RequirementsFinishFlowTest` covers
 customer scoping, sample payment idempotence, payment-due and renewal
 notification deduplication, and the local enrollment-request workflow.
+
+## Final UI and deployment preparation
+
+See [DEPLOYMENT_READINESS.md](DEPLOYMENT_READINESS.md) for the cross-page
+responsive/keyboard test matrix, environment checklist, production migration
+inspection order, and security gates. GitHub Actions now runs
+`mvn -B -ntp verify` (test + package) rather than only `mvn test`.
+The Create Account page uses the same card layout as Sign In.
+
+The application uses secure HTTP-only, SameSite=Lax session cookies in the
+default server profile and explicitly permits HTTP cookies in the `local`
+profile. **No production environment variables, database migrations, Railway
+service, or `main` branch were changed by this preparation.**

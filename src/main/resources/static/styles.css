@@ -782,3 +782,35 @@
   .enrollment-request-actions{width:100%}
   .renewal-reminder-card,.enrollment-request-create{padding:19px 17px}
 }
+
+
+/* Final responsive and keyboard-accessibility refinements */
+.auth-card .form label small{font-size:11px;color:#6b829e;line-height:1.5}
+.auth-card .form input{width:100%;min-width:0}
+.auth-card .form button{width:100%;margin-top:5px}
+.site-header .nav-account-menu{max-width:calc(100vw - 32px)}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,
+textarea:focus-visible,summary:focus-visible{
+  outline:2px solid #2563eb;
+  outline-offset:3px;
+}
+.footer-inner>div:last-child{align-content:flex-start}
+@media(max-width:650px){
+  .auth-main{padding:36px 16px 54px!important}
+  .auth-card{width:100%;max-width:490px;padding:25px 20px}
+  .auth-card h1{font-size:clamp(29px,8vw,37px)}
+  .footer-inner{flex-direction:column;gap:13px;padding:28px 20px}
+  .footer-inner>div:last-child{gap:12px 20px}
+  .footer-bottom{padding:14px 20px}
+  .assessment-summary dl{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .assessment-summary dl>div:last-child{grid-column:1/-1}
+}
+@media(max-width:380px){
+  .site-header .header-inner{padding:15px 16px}
+  .site-header .main-nav{gap:10px 12px}
+  .dashboard-quick-actions a{flex:1 1 100%}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
