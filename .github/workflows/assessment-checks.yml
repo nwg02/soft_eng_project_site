@@ -88,3 +88,24 @@ jobs:
             exit 1
           fi
           echo "Read-only audit query validated on disposable MySQL."
+
+      - name: Validate upgrade from partially applied V2 on temporary MySQL
+        env:
+          MYSQL_PWD: gisu-ci-only-password
+        run: |
+          set -euo pipefail
+          mysql --host=127.0.0.1 --user=root -e 'DROP DATABASE gisu'
+          mysql --host=127.0.0.1 --user=root < database/schema.sql
+          mysql --host=127.0.0.1 --user=root gisu -e 'ALTER TABLE enrollments ADD COLUMN household_size INT NOT NULL DEFAULT 1'
+          sed -n '/^CREATE TABLE IF NOT EXISTS extension_requests (/ , /^);$/p' database/migrations/V2__georgia_marketplace_schema.sql |
+            mysql --host=127.0.0.1 --user=root gisu
+          mysql --host=127.0.0.1 --user=root gisu -e "INSERT INTO customers(first_name,last_name,email,password_hash) VALUES('CI','Migration','migration-check@example.invalid','example-hash')"
+          before=$(mysql --host=127.0.0.1 --user=root --batch --skip-column-names gisu -e 'SHOW TABLES' | wc -l)
+          test "$before" -eq 6
+          bash scripts/build-railway-partial-v2-migrations.sh |
+            mysql --host=127.0.0.1 --user=root gisu
+          mysql --host=127.0.0.1 --user=root --batch gisu < database/production_schema_audit.sql > /tmp/gisu_partial_upgrade_audit.txt
+          grep -c 'all markers found' /tmp/gisu_partial_upgrade_audit.txt | grep -qx '7'
+          preserved=$(mysql --host=127.0.0.1 --user=root --batch --skip-column-names gisu -e "SELECT COUNT(*) FROM customers WHERE email='migration-check@example.invalid'")
+          test "$preserved" -eq 1
+          echo "Partial V2 upgrade passed, all V2-V8 schema markers present, existing account retained."

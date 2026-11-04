@@ -190,3 +190,35 @@ deciding which migrations (if any) may safely run. Do not run V2 or V3
 This is the next read-only step for an authorized Railway database connection.
 No deployment, backup, secret inspection, database writes, or migration
 execution is implied by preparing this check.
+
+## 8. Railway database found with a partially applied V2
+
+On 2026-11-04, the project owner inspected the `gisu` MySQL database: it
+contained six legacy/partial-V2 tables (`customers`, `enrollments`,
+`extension_requests`, `insurance_assessments`, `insurance_plans`,
+`payments`). The `enrollments.household_size` column already exists,
+while the three V3 assessment columns have not been added. A local
+`mysqldump` export was completed and has six CREATE TABLE statements and
+a completed-dump footer. This is the observed state, **not a version ledger**.
+
+For **this exact partial state**, the script
+`scripts/build-railway-partial-v2-migrations.sh` emits the remaining V2
+CREATE TABLE statements (including the no-op `extension_requests` statement
+with IF NOT EXISTS) and then V3–V8, in order. It skips only the previously
+applied `ALTER TABLE enrollments ADD COLUMN household_size` at the top of V2.
+It does not connect to a database or perform writes unless its generated
+SQL is explicitly piped into a MySQL client.
+
+After reviewing the local backup and the selected Railway database, an
+authorized operator can run from the repository root:
+
+```bash
+bash scripts/build-railway-partial-v2-migrations.sh | \
+  /usr/local/mysql/bin/mysql -h PUBLIC_MYSQL_HOST -P PUBLIC_MYSQL_PORT -u root -p gisu
+```
+
+The command prompts for the password without including it in shell history.
+Do not run on a different/unknown schema, or rerun after a partial failure:
+MySQL DDL is not a single all-or-nothing transaction. Stop and inspect the
+schema if an error occurs. The GitHub Actions MySQL job also tests this exact
+partial-upgrade path and verifies that a pre-existing customer is preserved.
