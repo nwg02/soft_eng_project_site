@@ -15,8 +15,11 @@ migration, or Railway deployment. Work remains in
   and AI response validation.
 - These automated checks **do not open a real browser** and therefore cannot
   prove every mobile alignment, scrollbar, dropdown, or focus interaction.
-- CI uses H2, **not production MySQL**. Passing CI does not prove that every
-  MySQL migration has been applied.
+- Integration tests use H2. Separately, GitHub Actions starts a disposable
+  MySQL 8 service, applies `database/schema.sql` followed by V2–V8 in order,
+  then checks required tables and columns. **This verifies new-install SQL
+  syntax and sequencing only**; it does not inspect or modify Railway and does
+  not prove its existing schema is up to date.
 
 ## 2. Manual layout check before merge
 
@@ -168,3 +171,22 @@ After pulling the branch, manually test registration, login, 2FA, logout,
 chat, saved plans, assessment generation, billing, reminders, and enrollment
 requests in a real browser with cookies enabled. This verifies that the
 browser submits CSRF tokens and that new sessions behave correctly.
+
+## 7. Read-only Railway database inventory
+
+Before running any production migration, inspect the database using
+[`database/production_schema_audit.sql`](database/production_schema_audit.sql).
+That script uses only `SELECT` against MySQL `information_schema`, reports
+server/database identity, and checks 18 version-associated table/column
+markers from V2–V8. It does not print customer records or modify data.
+
+The audit output is **evidence, not a migration version ledger**. A version
+can have all of its sampled markers while still having partial differences.
+Compare actual schema definitions with the migration files, inspect existing
+deployment history, and verify that a restorable backup exists before
+deciding which migrations (if any) may safely run. Do not run V2 or V3
+`ALTER TABLE` statements again when their columns already exist.
+
+This is the next read-only step for an authorized Railway database connection.
+No deployment, backup, secret inspection, database writes, or migration
+execution is implied by preparing this check.

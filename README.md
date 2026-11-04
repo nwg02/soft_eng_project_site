@@ -433,3 +433,13 @@ The Gemini assessment will never display catalog identifiers such as
 `gsu-plan-1` or `gisu-plan-01` in explanatory prose. It replaces known
 IDs with their real plan names, including on previously saved reviews,
 without changing the catalog keys used for links and storage.
+
+## MySQL migration CI and read-only audit
+
+In addition to the H2 integration tests, GitHub Actions uses an **ephemeral
+MySQL 8 instance** to validate baseline `database/schema.sql` and V2–V8
+in order. This exercises MySQL-specific DDL without touching Railway.
+`database/production_schema_audit.sql` is a separate, SELECT-only
+information-schema inspection to run on a designated existing MySQL database
+before deciding if any migration is missing. See
+[DEPLOYMENT_READINESS.md](DEPLOYMENT_READINESS.md).
