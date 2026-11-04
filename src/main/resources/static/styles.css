@@ -80,3 +80,5 @@
 .plan-sources{padding:26px max(24px,calc((100vw - 1180px)/2));background:#f9fbff}
 .plan-sources p{max-width:1050px;margin:10px 0}
 @media(max-width:1000px){.market-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:650px){.market-grid{grid-template-columns:1fr}.market-section,.market-comparison{padding:50px 20px}.market-heading,.compare-heading{flex-direction:column;align-items:flex-start}.auth-card{padding:24px}}
+
+.market-shop-link{display:block;text-align:center;margin-top:12px;font-size:12px;font-weight:800;color:#0039A6;text-decoration:none}.market-shop-link:hover{text-decoration:underline}
