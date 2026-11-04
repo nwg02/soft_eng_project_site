@@ -175,3 +175,10 @@
 .assessment-plan{padding:21px}
 .assessment-next-steps{padding:23px 20px}
 }
+
+/* Saved assessment entry point on dashboard. */
+.assessment-dashboard-cta{background:linear-gradient(110deg,#edf4ff,#f9fbff);padding:25px 28px;border:1px solid #c7daf5;border-radius:13px;margin:30px 0}
+.assessment-dashboard-cta h2{margin:0 0 10px;font-size:23px}
+.assessment-dashboard-cta p{color:#567092;font-size:13px;max-width:680px}
+.assessment-dashboard-cta .button{margin:10px 8px 0 0;font-size:12px}
+#assessment-history{scroll-margin-top:24px}
