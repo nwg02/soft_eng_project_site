@@ -115,16 +115,48 @@ public class ChatController {
                 return ResponseEntity.ok(new ChatReply(askGemini(message), "gemini"));
             }
             return ResponseEntity.ok(new ChatReply(askAI(message), "openai"));
+        } catch (GeminiApiException ex) {
+            return ResponseEntity.ok(new ChatReply(
+                    geminiFailureMessage(ex.statusCode) +
+                    " Here's the built-in guide instead: " + guideAnswer(message),
+                    "gemini-error"));
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
             log.warn("GISU AI request interrupted");
         } catch (IOException | RuntimeException ex) {
-            // Don't leak the API key, model provider response body, or user question.
+            // Do not log secrets, Google response bodies, or user messages.
             log.warn("GISU AI service unavailable: {}", ex.getClass().getSimpleName());
         }
 
+        if (!geminiApiKey.isBlank()) {
+            return ResponseEntity.ok(new ChatReply(
+                    "Gemini did not return a response (connection, timeout, or empty output). " +
+                    "Check the Spring Boot terminal logs. Here's the built-in guide instead: " +
+                    guideAnswer(message), "gemini-error"));
+        }
+
         return ResponseEntity.ok(new ChatReply(
-                "AI is temporarily unavailable. " + guideAnswer(message), "guide"));
+                "The AI service is temporarily unavailable. " + guideAnswer(message), "guide"));
+    }
+
+    private static class GeminiApiException extends IOException {
+        final int statusCode;
+
+        GeminiApiException(int statusCode) {
+            super("Gemini returned HTTP " + statusCode);
+            this.statusCode = statusCode;
+        }
+    }
+
+    private String geminiFailureMessage(int status) {
+        return switch (status) {
+            case 400 -> "Gemini rejected the request (HTTP 400). The request or project setup needs checking.";
+            case 401, 403 -> "Gemini denied API access (HTTP " + status + "). Check the key and Google AI Studio project permissions.";
+            case 404 -> "Gemini couldn't find the selected model (HTTP 404). Check that your API key can access the configured Gemini model.";
+            case 429 -> "Gemini's request limit or free-tier quota was reached (HTTP 429). Check your Google AI Studio usage and rate limits.";
+            case 500, 502, 503, 504 -> "Gemini is temporarily unavailable (HTTP " + status + "). Try again later.";
+            default -> "Gemini could not complete your request (HTTP " + status + "). Check the Google AI Studio API settings.";
+        };
     }
 
 
@@ -163,7 +195,7 @@ public class ChatController {
         );
         if (response.statusCode() < 200 || response.statusCode() >= 300) {
             log.warn("Gemini API returned HTTP {} (response body omitted)", response.statusCode());
-            throw new IOException("Gemini API error");
+            throw new GeminiApiException(response.statusCode());
         }
 
         JsonNode root = mapper.readTree(response.body());

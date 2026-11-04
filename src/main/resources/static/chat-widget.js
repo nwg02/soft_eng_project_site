@@ -32,8 +32,9 @@
     close.addEventListener("click", function () { setOpen(false); });
 
     function modeLabel(value) {
-      if (value === "gemini") return "Gemini AI enabled";
-      if (value === "openai" || value === "ai") return "AI answers enabled";
+      if (value === "gemini") return "Gemini key detected · response not yet verified";
+      if (value === "gemini-error") return "Gemini unavailable · built-in guide";
+      if (value === "openai" || value === "ai") return "AI responses enabled";
       return "Built-in insurance guide";
     }
 
