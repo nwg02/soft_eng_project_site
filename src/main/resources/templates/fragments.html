@@ -1,22 +1,23 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body>
-<header th:fragment="header">
-    <a class="brand" th:href="@{/}">GISU Insurance Services</a>
-    <nav>
-        <a th:href="@{/}">Home</a>
-        <a th:href="@{/plans}">Plans</a>
-        <a th:href="@{/assessment}">Assessment</a>
-        <a th:href="@{/dashboard}">Dashboard</a>
-        <a th:href="@{/register}">Register</a>
-        <a th:href="@{/login}">Login</a>
-        <form th:action="@{/logout}" method="post" class="inline-form">
-            <button type="submit">Logout</button>
-        </form>
+<header th:fragment="header" class="site-header">
+  <div class="header-inner">
+    <a class="brand" th:href="@{/}"><span class="brand-mark">G</span><span>GISU<span class="brand-subtitle">HEALTH COVERAGE</span></span></a>
+    <nav aria-label="Main navigation">
+      <a th:href="@{/}">Home</a>
+      <a th:href="@{/plans}">Explore plans</a>
+      <a th:href="@{/assessment}">Assessment</a>
+      <a th:href="@{/dashboard}">Dashboard</a>
+      <a th:href="@{/login}">Log in</a>
+      <a class="nav-cta" th:href="@{/register}">Get started</a>
+      <form th:action="@{/logout}" method="post" class="inline-form"><button type="submit" class="logout-link">Log out</button></form>
     </nav>
+  </div>
 </header>
-<footer th:fragment="footer">
-    <p>GISU Sprint 2 classroom prototype.</p>
+<footer th:fragment="footer" class="site-footer">
+  <div class="footer-inner"><div><strong>GISU</strong><p>Making health coverage easier to understand.</p></div><div><a th:href="@{/plans}">Explore plans</a><a th:href="@{/assessment}">Assessment</a><a href="https://georgiaaccess.gov/" target="_blank" rel="noopener noreferrer">Georgia Access</a></div></div>
+  <div class="footer-bottom">© GISU · Educational prototype. Not an insurer, broker, or enrollment platform.</div>
 </footer>
 </body>
 </html>
