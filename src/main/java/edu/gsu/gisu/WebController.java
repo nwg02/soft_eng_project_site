@@ -239,7 +239,8 @@ public class WebController {
     // Plan education is available without a database connection.
     // Do not expose legacy fictional insurance_plans as real Georgia offerings.
     @GetMapping("/plans")
-    public String plans() {
+    public String plans(Model model) {
+        model.addAttribute("catalogPlans", GeorgiaPlanCatalog.all());
         return "plans";
     }
 
