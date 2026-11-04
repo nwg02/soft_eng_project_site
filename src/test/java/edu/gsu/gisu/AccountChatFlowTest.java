@@ -62,6 +62,10 @@ class AccountChatFlowTest {
                 accountChatService.detectTopic("Summarize my reports"));
         assertEquals(AccountChatService.Topic.SAVED_PLANS,
                 accountChatService.detectTopic("Compare my saved plans"));
+        assertEquals(AccountChatService.Topic.SAVED_PLANS,
+                accountChatService.detectTopic("What plans have I saved?"));
+        assertEquals(AccountChatService.Topic.SAVED_PLANS,
+                accountChatService.detectTopic("Show my saved insurance plans"));
         assertEquals(AccountChatService.Topic.ASSESSMENTS,
                 accountChatService.detectTopic("What did my last assessment say?"));
         assertEquals(AccountChatService.Topic.AGENT_REQUESTS,

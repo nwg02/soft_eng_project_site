@@ -42,8 +42,11 @@ public class AccountChatService {
             return Topic.NOTIFICATIONS;
         if (containsAny(normalized, " report ", " reports ", " claim ", " claims ",
                 " issue ", " issues ")) return Topic.REPORTS;
-        if (containsAny(normalized, " saved plan ", " saved plans ", " bookmarked ",
-                " bookmarks ", " shortlist ", " my plans ", " plan i saved "))
+        if (containsAny(normalized, " saved plan ", " saved plans ",
+                " saved insurance plan ", " saved insurance plans ",
+                " bookmarked ", " bookmarks ", " shortlist ", " my plans ",
+                " plan i saved ", " plans i saved ", " plans have i saved ",
+                " plans did i save ", " insurance plans have i saved "))
             return Topic.SAVED_PLANS;
         if (containsAny(normalized, " assessment ", " assessments ", " preferences ",
                 " priority ")) return Topic.ASSESSMENTS;
