@@ -82,7 +82,7 @@ class OfficialEnrollmentFlowTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Continue to official enrollment")))
                 .andExpect(content().string(containsString("SoloCare Gold PPO")))
-                .andExpect(content().string(containsString("doesn't process applications")));
+                .andExpect(content().string(containsString("Select an official website to continue")));
 
         mvc.perform(post("/enrollment/referrals")
                         .param("planSlug", "gisu-plan-01")
@@ -150,7 +150,7 @@ class OfficialEnrollmentFlowTest {
         }
         mvc.perform(get("/dashboard").session(session))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Archived classroom enrollment data")))
+                .andExpect(content().string(not(containsString("Archived classroom enrollment data"))))
                 .andExpect(content().string(not(containsString("action=\"/enroll\""))))
                 .andExpect(content().string(not(containsString("action=\"/cancel-enrollment\""))))
                 .andExpect(content().string(not(containsString("action=\"/switch-plan\""))));
