@@ -3,6 +3,7 @@ package edu.gsu.gisu;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
@@ -70,6 +71,10 @@ public class WebController {
             model.addAttribute("error",
                     "An account with that email already exists.");
             return "register";
+        } catch (DataAccessException ex) {
+            model.addAttribute("error",
+                    "Account creation is temporarily unavailable because the database could not be accessed. If running locally, start the app with the local profile.");
+            return "register";
         }
     }
 
@@ -85,11 +90,18 @@ public class WebController {
                         @RequestParam String password,
                         Model model,
                         HttpSession session) {
-        List<Map<String, Object>> users = db.queryForList(
-                "SELECT customer_id, first_name, last_name, email, role, " +
-                "password_hash FROM customers WHERE email = ?",
-                email.trim().toLowerCase()
-        );
+        List<Map<String, Object>> users;
+        try {
+            users = db.queryForList(
+                    "SELECT customer_id, first_name, last_name, email, role, " +
+                    "password_hash FROM customers WHERE email = ?",
+                    email.trim().toLowerCase()
+            );
+        } catch (DataAccessException ex) {
+            model.addAttribute("error",
+                    "Sign-in is temporarily unavailable because the database could not be accessed. If running locally, start the app with the local profile.");
+            return "login";
+        }
 
         if (users.isEmpty() ||
                 !BCrypt.checkpw(password,

@@ -23,13 +23,29 @@ GISU helps people explore health insurance plan information, understand plan ter
 - MySQL 8+
 - Maven
 
-## Local setup
+## Local setup (registration and sign-in enabled)
 
-1. Create a MySQL database named `gisu`.
-2. Run `database/schema.sql` for the original prototype schema.
-3. Configure `src/main/resources/application.properties` or environment variables for your local MySQL connection.
-4. Run `mvn spring-boot:run`.
-5. Open http://localhost:8080.
+Run the development profile to use a **persistent, local-only H2 database**. This avoids requiring a Railway/MySQL connection on your Mac.
+
+```bash
+cd ~/Desktop/sprint2_site
+mvn spring-boot:run -Dspring-boot.run.profiles=local
+```
+
+Open http://localhost:8080. You can create a test account and log in; the record persists in `gisu-local.mv.db` across restarts. The local schema is initialized from `src/main/resources/local-schema.sql` with `CREATE TABLE IF NOT EXISTS`. Never commit the generated database file or reuse a real-world account password for a classroom test.
+
+The default application without the `local` profile still connects to the configured MySQL database (including Railway). The local profile **does not** modify or import data into Railway. To use local MySQL instead of H2, supply the existing `MYSQLHOST`, `MYSQLPORT`, `MYSQLUSER`, and `MYSQLPASSWORD` environment variables and run without the local profile.
+
+### AI chat helper
+
+The floating “Ask GISU” button appears across the site. Without an AI API key, it transparently runs in **built-in guide mode** with fixed, educational answers. To enable *actual generated AI replies*, supply your own OpenAI API key **as a server environment variable** before starting Spring Boot:
+
+```bash
+export OPENAI_API_KEY="your-own-key-here"
+mvn spring-boot:run -Dspring-boot.run.profiles=local
+```
+
+Optionally set `OPENAI_MODEL` to an API model you have access to; the default is `gpt-4.1-mini`. Calls are made server-side through the OpenAI Responses API. **Never put the key into JavaScript, an HTML template, a committed properties file, or a public repository.** AI API usage is separately billed. The project limits message size and requests per session; a public production rollout would also require stronger rate limits and spending controls. The assistant handles only general educational questions; it does not see logged-in account data, fetch live insurance rates, or determine eligibility.
 
 ## Database changes
 
