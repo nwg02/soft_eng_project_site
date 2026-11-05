@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Simulate insurance premium payroll deductions for a classroom exercise.">
+  <title>Payroll Simulation | GISU</title>
+  <link rel="stylesheet" th:href="@{/styles.css}" href="/styles.css">
+</head>
+<body>
+<div th:replace="~{fragments :: header}"></div>
+<main class="payroll-main">
+  <a class="billing-back" th:href="@{/dashboard}">← Dashboard</a>
+  <header class="payroll-intro">
+    <span class="eyebrow">PAYCHECK ESTIMATOR</span>
+    <h1>Payroll deductions</h1>
+    <p>Estimate what a hypothetical insurance premium could deduct from each paycheck.</p>
+  </header>
+
+  <p class="plan-bookmark-feedback" role="status" th:if="${param.event != null and param.event[0] == 'created'}">Simulation saved.</p>
+  <p class="plan-bookmark-feedback" role="status" th:if="${param.event != null and param.event[0] == 'simulated'}">Sample paycheck saved.</p>
+  <p class="plan-bookmark-feedback" role="status" th:if="${param.event != null and param.event[0] == 'deleted'}">Simulation and its sample paycheck entries removed.</p>
+  <p class="error" role="alert" th:if="${param.event != null and param.event[0] == 'unavailable'}">This scenario or date was invalid, already recorded, or not found in your account.</p>
+  <p class="error" role="alert" th:if="${error}" th:text="${error}">Error</p>
+
+  <section class="payroll-create">
+    <div>
+      <h2>Create a simulation</h2>
+      <p>Choose any plan document as a reference, or use a general example. The premium and employer contribution below are hypothetical amounts you supply.</p>
+    </div>
+    <form class="payroll-form" th:action="@{/payroll}" method="post">
+      <label for="payroll-plan">Plan document (optional example)</label>
+      <select id="payroll-plan" name="planSlug" required>
+        <option value="general">General hypothetical plan</option>
+        <option th:each="p : ${catalogPlans}" th:value="${p.slug}"
+                th:text="|${p.issuer} · ${p.name}|">Plan name</option>
+      </select>
+      <div class="payroll-fields">
+        <div>
+          <label for="payroll-premium">Hypothetical monthly premium ($)</label>
+          <input id="payroll-premium" type="number" name="monthlyPremium"
+                 min="0.01" max="100000" step="0.01" placeholder="500.00" required>
+        </div>
+        <div>
+          <label for="payroll-employer">Hypothetical employer share per month ($)</label>
+          <input id="payroll-employer" type="number" name="employerContribution"
+                 min="0" max="100000" step="0.01" value="0" required>
+        </div>
+      </div>
+      <label for="payroll-frequency">Pay schedule</label>
+      <select id="payroll-frequency" name="payFrequency" required>
+        <option value="biweekly">Every two weeks (26 paychecks/year)</option>
+        <option value="weekly">Weekly (52/year)</option>
+        <option value="semimonthly">Twice a month (24/year)</option>
+        <option value="monthly">Monthly (12/year)</option>
+      </select>
+      <button class="button button-primary" type="submit">Calculate and save →</button>
+    </form>
+  </section>
+
+  <section class="payroll-scenarios" id="payroll-scenarios" aria-labelledby="payroll-scenarios-title">
+    <div class="payroll-section-head"><h2 id="payroll-scenarios-title">Saved simulations</h2>
+      <span th:text="|${#lists.size(payrollScenarios)} scenarios|">0 scenarios</span></div>
+    <div class="dashboard-empty" th:if="${#lists.isEmpty(payrollScenarios)}">
+      <p>No simulations yet. Enter sample amounts above to calculate a deduction.</p>
+    </div>
+    <article class="payroll-scenario" th:each="s : ${payrollScenarios}">
+      <div class="payroll-scenario-head">
+        <div><span class="eyebrow">HYPOTHETICAL PAYROLL</span><h3 th:text="${s.planLabel}">General hypothetical plan</h3></div>
+        <strong th:text="${s.perPaycheckLabel}">$230.77</strong>
+      </div>
+      <p class="payroll-percheck" th:text="|Estimated per paycheck · ${s.frequencyLabel}|">Every two weeks</p>
+      <dl class="payroll-metrics">
+        <div><dt>Monthly example premium</dt><dd th:text="${s.premiumLabel}">$500.00</dd></div>
+        <div><dt>Monthly employer contribution</dt><dd th:text="${s.employerLabel}">$100.00</dd></div>
+        <div><dt>Your hypothetical monthly share</dt><dd th:text="${s.employeeMonthlyLabel}">$400.00</dd></div>
+        <div><dt>Annual share before paycheck rounding</dt><dd th:text="${s.annualLabel}">$4,800.00</dd></div>
+      </dl>
+      <div class="payroll-scenario-actions">
+        <form th:action="@{/payroll/{id}/simulate(id=${s.id})}" method="post" class="payroll-paycheck-form">
+          <label>Sample paycheck date
+            <input type="date" name="payday" th:value="${today}" required></label>
+          <button class="button button-primary" type="submit">Simulate paycheck</button>
+        </form>
+        <form th:action="@{/payroll/{id}/delete(id=${s.id})}" method="post"
+              onsubmit="return confirm('Delete this hypothetical scenario and all its sample entries?');">
+          <button class="button button-outline" type="submit">Delete scenario</button>
+        </form>
+      </div>
+    </article>
+  </section>
+
+  <section class="payroll-history" id="payroll-history" aria-labelledby="payroll-history-title">
+    <div class="payroll-section-head"><h2 id="payroll-history-title">Sample paycheck history</h2>
+      <span>Latest 100 demo entries</span></div>
+    <p class="payroll-muted" th:if="${#lists.isEmpty(payrollHistory)}">
+      No simulated paycheck deductions yet. Use “Simulate paycheck” in a saved scenario.</p>
+    <div class="payroll-history-list" th:if="${!#lists.isEmpty(payrollHistory)}">
+      <article class="payroll-history-item" th:each="entry : ${payrollHistory}">
+        <div><strong th:text="${entry.planLabel}">Plan example</strong>
+          <small th:text="|Sample payday: ${entry.payday}|">Date</small></div>
+        <div><strong th:text="${entry.amountLabel}">$230.77</strong>
+          <small>Simulated deduction</small></div>
+      </article>
+    </div>
+    <p class="payroll-muted">Estimates are rounded to the nearest cent.</p>
+    <a th:href="@{/billing}">View personal billing records →</a>
+  </section>
+</main>
+<div th:replace="~{fragments :: footer}"></div>
+</body>
+</html>

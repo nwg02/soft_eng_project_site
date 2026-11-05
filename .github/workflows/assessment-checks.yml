@@ -1,0 +1,111 @@
+name: GISU build and integration checks
+on:
+  push:
+    branches:
+      - feature/georgia-health-marketplace-redesign
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - name: Test and package Spring Boot application
+        run: mvn -B -ntp verify
+
+  mysql-migration-check:
+    name: Validate migrations on temporary MySQL 8
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: gisu-ci-only-password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -uroot -pgisu-ci-only-password"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install MySQL client if needed
+        run: command -v mysql || (sudo apt-get update && sudo apt-get install -y default-mysql-client)
+      - name: Initialize disposable database and apply V2 through V8
+        env:
+          MYSQL_PWD: gisu-ci-only-password
+        run: |
+          set -euo pipefail
+          mysql --host=127.0.0.1 --user=root < database/schema.sql
+          for version in 2 3 4 5 6 7 8; do
+            migration=(database/migrations/V${version}__*.sql)
+            if [[ ${#migration[@]} -ne 1 || ! -f ${migration[0]} ]]; then
+              echo "Exactly one migration required for V${version}" >&2
+              exit 1
+            fi
+            echo "Applying ${migration[0]} to disposable MySQL"
+            mysql --host=127.0.0.1 --user=root gisu < "${migration[0]}"
+          done
+          required_tables=(
+            customers insurance_assessments insurance_plans enrollments
+            marketplace_plans payment_history agent_requests user_notifications
+            insurance_claim_records identity_verification_attempts
+            saved_curated_plans enrollment_referrals account_totp_settings
+            account_totp_recovery_codes assessment_ai_reviews
+            payroll_simulations payroll_demo_deductions
+            gisu_enrollment_requests gisu_renewal_reminders gisu_notification_receipts
+          )
+          for table in "${required_tables[@]}"; do
+            found=$(mysql --host=127.0.0.1 --user=root --batch --skip-column-names -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='gisu' AND table_name='${table}'")
+            if [[ "$found" != "1" ]]; then
+              echo "Missing required table: ${table}" >&2
+              exit 1
+            fi
+          done
+          for pair in "enrollments.household_size" "insurance_assessments.zip_code" "insurance_assessments.priority" "account_totp_settings.last_used_step" "gisu_renewal_reminders.notified_at"; do
+            table="${pair%%.*}"
+            column="${pair#*.}"
+            found=$(mysql --host=127.0.0.1 --user=root --batch --skip-column-names -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='gisu' AND table_name='${table}' AND column_name='${column}'")
+            if [[ "$found" != "1" ]]; then
+              echo "Missing expected column: ${pair}" >&2
+              exit 1
+            fi
+          done
+          echo "All versioned migrations applied and required schema markers verified."
+          mysql --host=127.0.0.1 --user=root --batch gisu < database/production_schema_audit.sql > /tmp/gisu_schema_audit.txt
+          found_versions=$(grep -c "all markers found" /tmp/gisu_schema_audit.txt || true)
+          if [[ "$found_versions" != "7" ]]; then
+            echo "The read-only schema audit did not confirm all seven migration versions." >&2
+            cat /tmp/gisu_schema_audit.txt
+            exit 1
+          fi
+          echo "Read-only audit query validated on disposable MySQL."
+
+      - name: Validate upgrade from partially applied V2 on temporary MySQL
+        env:
+          MYSQL_PWD: gisu-ci-only-password
+        run: |
+          set -euo pipefail
+          mysql --host=127.0.0.1 --user=root -e 'DROP DATABASE gisu'
+          mysql --host=127.0.0.1 --user=root < database/schema.sql
+          mysql --host=127.0.0.1 --user=root gisu -e 'ALTER TABLE enrollments ADD COLUMN household_size INT NOT NULL DEFAULT 1'
+          sed -n '/^CREATE TABLE IF NOT EXISTS extension_requests (/ , /^);$/p' database/migrations/V2__georgia_marketplace_schema.sql |
+            mysql --host=127.0.0.1 --user=root gisu
+          mysql --host=127.0.0.1 --user=root gisu -e "INSERT INTO customers(first_name,last_name,email,password_hash) VALUES('CI','Migration','migration-check@example.invalid','example-hash')"
+          before=$(mysql --host=127.0.0.1 --user=root --batch --skip-column-names gisu -e 'SHOW TABLES' | wc -l)
+          test "$before" -eq 6
+          bash scripts/build-railway-partial-v2-migrations.sh |
+            mysql --host=127.0.0.1 --user=root gisu
+          mysql --host=127.0.0.1 --user=root --batch gisu < database/production_schema_audit.sql > /tmp/gisu_partial_upgrade_audit.txt
+          grep -c 'all markers found' /tmp/gisu_partial_upgrade_audit.txt | grep -qx '7'
+          preserved=$(mysql --host=127.0.0.1 --user=root --batch --skip-column-names gisu -e "SELECT COUNT(*) FROM customers WHERE email='migration-check@example.invalid'")
+          test "$preserved" -eq 1
+          echo "Partial V2 upgrade passed, all V2-V8 schema markers present, existing account retained."

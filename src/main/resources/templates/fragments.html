@@ -1,22 +1,50 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body>
-<header th:fragment="header">
-    <a class="brand" th:href="@{/}">GISU Insurance Services</a>
-    <nav>
-        <a th:href="@{/}">Home</a>
-        <a th:href="@{/plans}">Plans</a>
-        <a th:href="@{/assessment}">Assessment</a>
-        <a th:href="@{/dashboard}">Dashboard</a>
-        <a th:href="@{/register}">Register</a>
-        <a th:href="@{/login}">Login</a>
-        <form th:action="@{/logout}" method="post" class="inline-form">
-            <button type="submit">Logout</button>
-        </form>
+<header th:fragment="header" class="site-header">
+  <div class="header-inner">
+    <a class="brand" th:href="@{/}"><span class="brand-mark">G</span><span>GISU<span class="brand-subtitle">HEALTH COVERAGE</span></span></a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a th:href="@{/}">Home</a>
+      <a th:href="@{/plans}">Plans</a>
+      <a th:href="@{/assessment}">Assessment</a>
+      <a th:if="${session.user != null}" th:href="@{/dashboard}">Dashboard</a>
+      <details th:if="${session.user != null}" class="nav-account">
+        <summary>Account <span aria-hidden="true">⌄</span></summary>
+        <div class="nav-account-menu">
+          <a th:href="@{/saved-plans}">Saved plans</a>
+          <a th:href="@{/agent-assistance}">Agent help</a>
+          <a th:href="@{/reports}">Reports</a>
+          <a th:href="@{/billing}">Billing &amp; payments</a>
+          <a th:href="@{/account/security}">Security &amp; 2FA</a>
+          <a th:href="@{/notifications}">Notifications</a>
+          <form th:action="@{/logout}" method="post"><button type="submit">Log out</button></form>
+        </div>
+      </details>
+      <a th:if="${session.user == null}" th:href="@{/login}">Log in</a>
+      <a th:if="${session.user == null}" th:href="@{/register}" class="nav-cta">Create account</a>
     </nav>
+  </div>
 </header>
-<footer th:fragment="footer">
-    <p>GISU Sprint 2 classroom prototype.</p>
+<footer th:fragment="footer" class="site-footer">
+  <div class="footer-inner"><div><strong>GISU</strong><p>Georgia Insurance Services United</p></div><div><a th:href="@{/plans}">Explore plans</a><a th:href="@{/assessment}">Assessment</a><a href="https://georgiaaccess.gov/" target="_blank" rel="noopener noreferrer">Georgia Access</a></div></div>
+  <div class="footer-bottom">© GISU · Student project</div>
+  <div class="chat-widget" id="gisu-chat-widget">
+    <button type="button" id="chat-toggle" class="chat-toggle" aria-controls="chat-panel" aria-expanded="false" aria-label="Open insurance help chat">
+      <span aria-hidden="true">✦</span> Ask GISU
+    </button>
+    <section id="chat-panel" class="chat-panel" aria-label="GISU insurance chat helper" hidden>
+      <div class="chat-header"><div><strong>GISU Help Assistant</strong><span id="chat-mode">Checking mode…</span></div><button type="button" id="chat-close" class="chat-close" aria-label="Close chat">×</button></div>
+      <div id="chat-messages" class="chat-messages" role="log" aria-live="polite" aria-relevant="additions text"><div class="chat-message chat-assistant">Ask about premiums, deductibles, plan types, and coverage options.</div></div>
+      <div class="chat-suggestions"><button type="button" data-chat-question="What is a deductible?">Deductibles</button><button type="button" data-chat-question="Bronze vs Silver vs Gold plans">Metal levels</button><button type="button" data-chat-question="How do I enroll in Georgia?">Enrollment</button></div>
+      <label th:if="${session.user != null}" class="chat-account-optin">
+        <input type="checkbox" id="chat-account-consent">
+        <span><strong>Share this question and a brief account summary with Gemini</strong></span>
+      </label>
+      <form id="chat-form" class="chat-form"><input type="hidden" id="chat-csrf" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"><label for="chat-input" class="sr-only">Your insurance question</label><input type="text" id="chat-input" maxlength="800" autocomplete="off" placeholder="Ask about coverage…" required><button type="submit" id="chat-send">Send</button></form>
+    </section>
+  </div>
+  <script th:src="@{/chat-widget.js}" src="/chat-widget.js" defer></script>
 </footer>
 </body>
 </html>

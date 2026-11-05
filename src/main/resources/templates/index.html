@@ -1,15 +1,29 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>GISU Insurance Services</title><link rel="stylesheet" th:href="@{/styles.css}">
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Browse, compare and save 2027 Georgia health insurance plan documents.">
+  <title>Georgia Insurance Services United | GISU</title>
+  <link rel="stylesheet" th:href="@{/styles.css}" href="/styles.css">
 </head>
 <body>
 <div th:replace="~{fragments :: header}"></div>
-<main>
-    <h1>Insurance Services United</h1>
-    <p>A simple portal to create an account, complete an insurance assessment, and review sample plan options.</p>
-    <p><a class="button" th:href="@{/register}">Create an account</a> <a class="button" th:href="@{/plans}">View plans</a></p>
+<main class="home-main home-compact">
+  <section class="home-landing" aria-labelledby="home-heading">
+    <div class="home-intro">
+      <h1 id="home-heading">A health insurance companion for Georgians</h1>
+      <p>Browse 12 plan documents from Alliant and Kaiser Permanente. Compare options, take an assessment, or save plans for later.</p>
+      <a class="button button-primary home-main-cta" th:href="@{/plans}">Browse plans <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="home-quick-links" aria-label="Get started">
+      <a th:href="@{/plans}" class="home-quick-link"><span class="home-quick-number">01</span><span><strong>Compare plans</strong><small>Filter and compare documents</small></span><span aria-hidden="true">→</span></a>
+      <a th:href="@{/assessment}" class="home-quick-link"><span class="home-quick-number">02</span><span><strong>Take the assessment</strong><small>Explore by coverage priority</small></span><span aria-hidden="true">→</span></a>
+      <a th:href="@{/dashboard}" class="home-quick-link"><span class="home-quick-number">03</span><span><strong>My dashboard</strong><small>Saved plans, reports and updates</small></span><span aria-hidden="true">→</span></a>
+    </div>
+  </section>
+  <section class="home-bottom" aria-label="Coverage information">
+    <a href="https://georgiaaccess.gov/" target="_blank" rel="noopener noreferrer">Georgia Access ↗</a>
+  </section>
 </main>
 <div th:replace="~{fragments :: footer}"></div>
 </body>

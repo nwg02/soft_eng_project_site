@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Two-Factor Sign In | GISU</title><link rel="stylesheet" th:href="@{/styles.css}"></head>
+<body>
+<div th:replace="~{fragments :: header}"></div>
+<main class="auth-main">
+  <section class="auth-card">
+    <span class="eyebrow">SECOND SIGN-IN STEP</span>
+    <h1>Verify your sign-in</h1>
+    <p>Enter the current six-digit code from your authenticator app, or one of your unused recovery codes.</p>
+    <p class="error" th:if="${error}" th:text="${error}" role="alert"></p>
+    <form class="form" th:action="@{/login/verify}" method="post">
+      <label>Authenticator or recovery code
+        <input type="text" name="code" maxlength="30" inputmode="text"
+               autocomplete="one-time-code" placeholder="6-digit or recovery code" required autofocus>
+      </label>
+      <button type="submit" class="button button-primary">Verify and sign in</button>
+    </form>
+    <p class="security-muted" th:text="|${attemptsRemaining} attempts remaining before restarting sign-in.|">5 attempts remaining.</p>
+    <form th:action="@{/login/verify/cancel}" method="post">
+      <button type="submit" class="button button-outline">Cancel sign-in</button>
+    </form>
+  </section>
+</main>
+<div th:replace="~{fragments :: footer}"></div>
+</body></html>

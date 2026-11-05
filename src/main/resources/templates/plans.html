@@ -1,218 +1,81 @@
-
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Insurance Plans</title>
-    <link rel="stylesheet" th:href="@{/styles.css}">
-    <style>
-        .compare-controls {
-            margin: 1.5rem 0;
-            padding: 1rem;
-            border: 1px solid #ccc;
-        }
-
-        .compare-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-        }
-
-        .compare-table th,
-        .compare-table td {
-            border: 1px solid #ccc;
-            padding: 0.75rem;
-            text-align: left;
-        }
-
-        .compare-table th {
-            background: #edf1f4;
-        }
-
-        .plan-select {
-            display: block;
-            margin: 1rem 0;
-        }
-
-        #comparison {
-            overflow-x: auto;
-            margin: 1.5rem 0;
-        }
-
-        .family-size {
-            margin: 1rem 0;
-        }
-    </style>
-</head>
-<body>
-<div th:replace="~{fragments :: header}"></div>
-
-<main>
-    <h1>Sample Insurance Plans</h1>
-    <p>Review plans, compare their features, and enroll in a plan.</p>
-
-    <p th:if="${error == 'invalid'}">
-        The selected plan could not be found. Please choose another plan.
-    </p>
-
-    <p th:if="${error == 'household'}">
-        Family coverage requires a household size between 2 and 20.
-    </p>
-
-    <section class="compare-controls">
-        <h2>Compare Policies</h2>
-        <p>Select at least two plans to compare their coverage and costs.</p>
-        <button type="button" id="compareButton">Compare Selected Plans</button>
-        <button type="button" id="clearButton">Clear Selection</button>
-        <p id="compareMessage" role="status" aria-live="polite"></p>
-    </section>
-
-    <section id="comparison" hidden aria-live="polite">
-        <h2>Policy Comparison</h2>
-        <table class="compare-table">
-            <thead id="comparisonHead"></thead>
-            <tbody id="comparisonBody"></tbody>
-        </table>
-    </section>
-
-    <section id="plans">
-        <article class="plan"
-                 th:each="p : ${plans}"
-                 th:attr="data-plan-id=${p.plan_id},
-                          data-plan-name=${p.plan_name},
-                          data-provider=${p.provider_name},
-                          data-coverage=${p.coverage_type},
-                          data-premium=${p.monthly_premium},
-                          data-deductible=${p.deductible},
-                          data-description=${p.description}">
-
-            <h2 th:text="${p.plan_name}">Plan name</h2>
-            <p th:text="${p.provider_name}">Provider</p>
-
-            <p>Coverage: <span th:text="${p.coverage_type}">individual</span></p>
-            <p>Monthly premium: $<span th:text="${p.monthly_premium}">0.00</span></p>
-            <p>Deductible: $<span th:text="${p.deductible}">0.00</span></p>
-            <p th:text="${p.description}">Plan description</p>
-
-            <label class="plan-select">
-                <input type="checkbox" class="compare-checkbox">
-                Select for comparison
-            </label>
-
-            <form th:action="@{/enroll}" method="post">
-                <input type="hidden" name="planId" th:value="${p.plan_id}">
-
-                <div class="family-size" th:if="${p.coverage_type == 'family'}">
-                    <label>
-                        Household size (2–20):
-                        <input type="number" name="householdSize"
-                               min="2" max="20" value="2" required>
-                    </label>
-                </div>
-
-                <input th:if="${p.coverage_type != 'family'}"
-                       type="hidden" name="householdSize" value="1">
-
-                <button type="submit">Enroll in This Plan</button>
-            </form>
-        </article>
-    </section>
-
-    <p><a th:href="@{/dashboard}">Return to Dashboard</a></p>
-</main>
-
-<div th:replace="~{fragments :: footer}"></div>
-
-<script>
-(() => {
-    const checkboxes = [...document.querySelectorAll(".compare-checkbox")];
-    const compareButton = document.getElementById("compareButton");
-    const clearButton = document.getElementById("clearButton");
-    const message = document.getElementById("compareMessage");
-    const comparison = document.getElementById("comparison");
-    const head = document.getElementById("comparisonHead");
-    const body = document.getElementById("comparisonBody");
-
-    function selectedPlans() {
-        return checkboxes
-            .filter(box => box.checked)
-            .map(box => box.closest(".plan"));
-    }
-
-    compareButton.addEventListener("click", () => {
-        const selected = selectedPlans();
-
-        if (selected.length < 2) {
-            message.textContent = "Select at least two plans to compare.";
-            comparison.hidden = true;
-            return;
-        }
-
-        const fields = [
-            ["Provider", "provider"],
-            ["Coverage", "coverage"],
-            ["Monthly premium", "premium"],
-            ["Deductible", "deductible"],
-            ["Description", "description"]
-        ];
-
-        const headerRow = document.createElement("tr");
-        const featureHeader = document.createElement("th");
-        featureHeader.scope = "col";
-        featureHeader.textContent = "Feature";
-        headerRow.appendChild(featureHeader);
-
-        selected.forEach(plan => {
-            const th = document.createElement("th");
-            th.scope = "col";
-            th.textContent = plan.dataset.planName;
-            headerRow.appendChild(th);
-        });
-
-        head.replaceChildren(headerRow);
-        body.replaceChildren();
-
-        fields.forEach(([title, key]) => {
-            const tr = document.createElement("tr");
-            const th = document.createElement("th");
-            th.scope = "row";
-            th.textContent = title;
-            tr.appendChild(th);
-
-            selected.forEach(plan => {
-                const td = document.createElement("td");
-                const value = plan.dataset[key] || "Not provided";
-
-                if (key === "premium" || key === "deductible") {
-                    const amount = Number(value);
-                    td.textContent = Number.isFinite(amount)
-                        ? "$" + amount.toFixed(2)
-                        : value;
-                } else {
-                    td.textContent = value;
-                }
-
-                tr.appendChild(td);
-            });
-
-            body.appendChild(tr);
-        });
-
-        comparison.hidden = false;
-        message.textContent =
-            selected.length + " plans selected for comparison.";
-        comparison.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-
-    clearButton.addEventListener("click", () => {
-        checkboxes.forEach(box => box.checked = false);
-        comparison.hidden = true;
-        head.replaceChildren();
-        body.replaceChildren();
-        message.textContent = "Comparison cleared.";
-    });
-})();
-</script>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Browse genuine 2027 Georgia health insurance plans with individual insurer document links and plan comparisons.">
+<title>2027 Georgia Health Insurance Plans | GISU</title><link rel="stylesheet" th:href="@{/styles.css}" href="/styles.css"><script th:src="@{/plan-comparison.js}" src="/plan-comparison.js" defer></script></head>
+<body><div th:replace="~{fragments :: header}"></div>
+<main class="plans-main">
+  <section class="plans-intro">
+    <span class="eyebrow">GEORGIA MARKETPLACE · COVERAGE YEAR 2027</span>
+    <h1>Compare and handle all of the right health plans for you. <em>On one simple platform.</em></h1>
+    <p class="plans-lead">Browse genuine Georgia health insurance plans, filter by company and coverage tier, compare options side by side, and view official plan documents without creating a GISU account.</p>
+  </section>
+  <section class="market-section" aria-labelledby="market-title">
+    <div class="market-heading"><div><span class="eyebrow">2027 PLAN EXPLORER</span><h2 id="market-title">Browse available plan documents</h2><p>Explore and compare plan options.</p></div><div class="count-label" id="plan-count" aria-live="polite">Showing 12 of 12 plans</div></div>
+    <div class="market-filters" role="search">
+      <label>Search plans<input id="plan-search" type="search" placeholder="Search by name or type"></label>
+      <label>Insurance company<select id="provider-filter"><option value="all">All companies</option><option value="Alliant Health Plans">Alliant Health Plans</option><option value="Kaiser Permanente">Kaiser Permanente</option></select></label>
+      <label>Metal level<select id="tier-filter"><option value="all">All metal levels</option><option value="Bronze">Bronze</option><option value="Silver">Silver</option><option value="Gold">Gold</option></select></label>
+      <button type="button" id="clear-filters" class="button button-outline">Reset</button>
+    </div>
+    <div class="compare-actions" id="comparison-actions" hidden role="region" aria-label="Selected plan comparison actions">
+      <div class="compare-actions-info"><strong id="selection-count">0 plans selected</strong><span id="selection-hint">Select at least two to compare.</span></div>
+      <div class="compare-actions-buttons">
+        <button type="button" id="show-comparison" class="button button-primary" disabled>Compare plans</button>
+        <button type="button" id="clear-selected" class="button button-outline">Clear selection</button>
+      </div>
+    </div>
+    <div class="plan-bookmark-feedback" th:if="${bookmark == 'saved'}" role="status">Plan saved to your dashboard.</div>
+    <div class="plan-bookmark-feedback" th:if="${bookmark == 'removed'}" role="status">Plan removed from your saved list.</div>
+    <p class="error" th:if="${bookmark == 'invalid'}" role="alert">This plan is not in the catalog.</p>
+    <p class="error" th:if="${param.enrollment != null and param.enrollment[0] == 'invalid'}" role="alert">That official enrollment destination was not available.</p>
+    <div class="market-grid" id="market-grid">
+      <article class="market-plan" th:each="p : ${catalogPlans}"
+               th:id="${p.slug}"
+               th:attr="data-provider=${p.issuer},data-tier=${p.metal},data-type=${p.type},data-deductible=${p.deductibleInName},data-name=${p.name}">
+        <div class="market-card-top">
+          <span class="level-pill" th:classappend="${#strings.toLowerCase(p.metal)}" th:text="${#strings.toUpperCase(p.metal)}">SILVER</span>
+          <span class="market-year" th:text="|2027 · ${p.type}|">2027 · HMO</span>
+        </div>
+        <div class="market-issuer" th:text="${p.issuer}">Issuer</div>
+        <h3 th:text="${p.name}">Plan name</h3>
+        <dl class="market-metrics">
+          <div><dt>Deductible in plan name*</dt><dd th:text="${p.deductibleLabel}">$0</dd></div>
+          <div><dt>Monthly premium</dt><dd>Personal quote required</dd></div>
+        </dl>
+        <p class="market-document" th:text="|${p.documentLabel} · Official insurer document|">Official plan document</p>
+        <label class="market-compare"><input type="checkbox" class="compare-plan"> Add to comparison</label>
+        <form th:if="${signedIn and !savedSlugs.contains(p.slug)}"
+              th:action="@{/saved-plans}" method="post" class="save-plan-form">
+          <input type="hidden" name="planSlug" th:value="${p.slug}">
+          <input type="hidden" name="returnTo" value="plans">
+          <button type="submit" class="button button-outline save-plan-button">♡ Save to my plans</button>
+        </form>
+        <form th:if="${signedIn and savedSlugs.contains(p.slug)}"
+              th:action="@{/saved-plans/remove}" method="post" class="save-plan-form">
+          <input type="hidden" name="planSlug" th:value="${p.slug}">
+          <input type="hidden" name="returnTo" value="plans">
+          <button type="submit" class="button button-outline save-plan-button saved-button">✓ Saved · Remove</button>
+        </form>
+        <a th:if="${!signedIn}" class="button button-outline save-plan-button"
+           th:href="@{/login(reason='savedplan')}">♡ Sign in to save</a>
+        <a class="button button-primary market-link" th:href="${p.documentUrl}" target="_blank" rel="noopener noreferrer">View this plan's details ↗</a>
+        <a class="market-shop-link" th:href="@{/enrollment/plan/{slug}(slug=${p.slug})}">Official enrollment options →</a>
+      </article>
+    </div>
+    <p id="no-results" class="no-results" hidden>No plans match these filters. Try a different search.</p>
+    <p class="market-footnote">*Deductible figures shown are from published plan names.</p>
+  </section>
+  <section class="market-comparison" id="compare-section" aria-labelledby="compare-title">
+    <div class="compare-heading"><div><span class="eyebrow">SIDE-BY-SIDE COMPARISON</span><h2 id="compare-title">Compare selected plans</h2><p>Select two or three plans above to compare them here.</p></div><button type="button" id="clear-compare" class="button button-outline">Clear selection</button></div>
+    <p id="compare-status" role="status" aria-live="polite">Select two or three plans above to see their comparison here.</p>
+    <div id="compare-table-wrap" class="compare-table-wrap" hidden><table class="compare-table"><thead id="compare-head"></thead><tbody id="compare-body"></tbody></table></div>
+  </section>
+  <section class="plans-cta">
+    <div><span class="eyebrow">ENROLLMENT</span><h2>Ready to check final pricing and apply?</h2><p>Review details and continue through Georgia Access.</p></div>
+    <a class="button button-light" href="https://enroll.georgiaaccess.gov/" target="_blank" rel="noopener noreferrer">Verify plans on Georgia Access ↗</a>
+  </section>
+  <section class="plan-sources"><p><strong>Data sources:</strong> <a href="https://alliantplans.com/solocare-sbcs/" target="_blank" rel="noopener noreferrer">Alliant 2027 Georgia SBCs</a> · <a href="https://healthy.kaiserpermanente.org/georgia/support/forms/documents/individual-family" target="_blank" rel="noopener noreferrer">Kaiser 2027 Georgia plan documents</a> · <a href="https://georgiaaccess.gov/public-use-files/" target="_blank" rel="noopener noreferrer">Georgia Access 2027 public-use data</a>. Collection reviewed November 4, 2026. This is a curated subset; future ZIP-specific and premium matching will use Georgia Access data.</p><p>GISU is an independent educational prototype, not an insurance issuer, insurance agent or enrollment platform. Browsing a document does not enroll you in coverage.</p></section>
+</main><div th:replace="~{fragments :: footer}"></div>
 </body>
 </html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Continue from GISU to official Georgia insurer or marketplace enrollment websites.">
+  <title>Official Enrollment Options | GISU</title>
+  <link rel="stylesheet" th:href="@{/styles.css}" href="/styles.css">
+</head>
+<body>
+<div th:replace="~{fragments :: header}"></div>
+<main class="official-enrollment-main">
+  <a class="enrollment-back" th:href="@{/plans}">← Back to plans</a>
+  <section class="enrollment-intro">
+    <span class="eyebrow">2027 GEORGIA · OFFICIAL WEBSITE LINKS</span>
+    <h1>Continue to official enrollment</h1>
+    <p>Select an official website to continue.</p>
+  </section>
+  <section class="enrollment-plan-summary" aria-label="Selected plan document">
+    <span class="level-pill" th:classappend="${#strings.toLowerCase(plan.metal)}" th:text="${#strings.toUpperCase(plan.metal)}">SILVER</span>
+    <p class="enrollment-issuer" th:text="${plan.issuer}">Company</p>
+    <h2 th:text="${plan.name}">Plan name</h2>
+    <p>Plan type: <strong th:text="${plan.type}">HMO</strong> · Deductible in marketing name:
+      <strong th:text="${plan.deductibleLabel}">$0</strong></p>
+    <a th:href="${plan.documentUrl}" target="_blank" rel="noopener noreferrer">Read official plan document ↗</a>
+  </section>
+  <section class="enrollment-request-create" th:if="${signedIn}">
+    <div>
+      <span class="eyebrow">MY ENROLLMENT</span>
+      <h2>Save an enrollment request</h2>
+      <p>Keep this plan in your account as you prepare to apply.</p>
+    </div>
+    <form th:action="@{/enrollment/plan/{slug}/request(slug=${plan.slug})}" method="post">
+      <label for="enrollment-start-date">Preferred coverage start date</label>
+      <input id="enrollment-start-date" name="desiredStart" type="date" th:value="${today}" required>
+      <button class="button button-primary" type="submit">Save enrollment request</button>
+    </form>
+    <a th:href="@{/enrollment/requests}">View my requests →</a>
+  </section>
+
+  <section class="enrollment-choices" aria-label="Official enrollment destinations">
+    <article class="enrollment-choice">
+      <h3>Insurance company</h3>
+      <p th:text="|Review plans and apply on the insurer's website.|">Check insurer availability.</p>
+      <form th:action="@{/enrollment/referrals}" method="post" target="_blank">
+        <input type="hidden" name="planSlug" th:value="${plan.slug}">
+        <input type="hidden" name="destination" value="issuer">
+        <button class="button button-primary" type="submit">Continue to insurer ↗</button>
+      </form>
+    </article>
+    <article class="enrollment-choice">
+      <h3>Georgia Access</h3>
+      <p>Use Georgia's official marketplace to review available coverage, potential savings, and how to apply.</p>
+      <form th:action="@{/enrollment/referrals}" method="post" target="_blank">
+        <input type="hidden" name="planSlug" th:value="${plan.slug}">
+        <input type="hidden" name="destination" value="georgia-access">
+        <button class="button button-outline" type="submit">Continue to Georgia Access ↗</button>
+      </form>
+    </article>
+  </section>
+</main>
+<div th:replace="~{fragments :: footer}"></div>
+</body>
+</html>

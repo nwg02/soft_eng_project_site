@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Assistance Requests | GISU</title><link rel="stylesheet" th:href="@{/styles.css}"></head>
+<body>
+<div th:replace="~{fragments :: header}"></div>
+<main class="account-activity-main">
+  <section class="activity-hero">
+    <span class="eyebrow">GISU ACCOUNT TOOLS</span>
+    <h1>Agent assistance requests</h1>
+    <p>Organize a question about Georgia health insurance and save your preferred contact method in your account.</p>
+  </section>
+  <p class="plan-bookmark-feedback" th:if="${param.event != null and param.event[0] == 'recorded'}" role="status">Request saved.</p>
+  <p class="error" th:if="${error}" th:text="${error}" role="alert"></p>
+
+  <section class="activity-panel">
+    <div class="activity-heading"><h2>New request</h2></div>
+    <form class="activity-form" th:action="@{/agent-assistance}" method="post">
+      <div class="activity-field-grid">
+        <label>Preferred contact method
+          <select name="contactMethod" required>
+            <option value="email">Email</option>
+            <option value="phone">Phone</option>
+          </select>
+        </label>
+        <label>Preferred time
+          <select name="preferredTime" required>
+            <option value="any">No preference</option>
+            <option value="morning">Morning</option>
+            <option value="afternoon">Afternoon</option>
+            <option value="evening">Evening</option>
+          </select>
+        </label>
+      </div>
+      <label>What do you want help understanding?
+        <select name="topic" required>
+          <option value="understand">Understanding insurance terms</option>
+          <option value="compare">Comparing insurance plans</option>
+          <option value="marketplace">Marketplace and enrollment questions</option>
+          <option value="other">Something else</option>
+        </select>
+      </label>
+      <label>Additional notes <span class="optional-label">(optional)</span>
+        <textarea name="notes" maxlength="350" rows="3" placeholder="Example: I want to understand the difference between HMO and PPO plan documents."></textarea>
+      </label>
+      <button class="button button-primary" type="submit">Save request</button>
+    </form>
+  </section>
+
+  <section class="activity-history">
+    <div class="activity-heading"><h2>Your request history</h2><p>Only you can see these account records.</p></div>
+    <div class="dashboard-empty" th:if="${#lists.isEmpty(agentRequests)}"><h3>No assistance requests yet</h3><p>Your saved requests will appear here.</p></div>
+    <article class="activity-item" th:each="r : ${agentRequests}">
+      <div class="activity-item-head"><strong>Request saved</strong><span th:text="${r.created_at}">Date</span></div>
+      <p th:text="${r.topic}">Question</p>
+      <p class="activity-meta">Preferred contact: <span th:text="${r.contact_method}">email</span> · Preferred time: <span th:text="${r.preferred_time}">any</span></p>
+    </article>
+  </section>
+</main>
+<div th:replace="~{fragments :: footer}"></div>
+</body></html>
